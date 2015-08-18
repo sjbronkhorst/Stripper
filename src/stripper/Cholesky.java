@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import java.math.BigDecimal;
 import linalg.Matrix;
 import linalg.Vector;
 
@@ -52,7 +53,7 @@ public class Cholesky
     
     
     
- public Matrix getL(Matrix A)
+ public strictfp Matrix getL(Matrix A)
  {
      Matrix R = Matrix.getMatrix(A.rows(), A.cols());
      R.clear();
@@ -63,11 +64,14 @@ public class Cholesky
          {
          
             
-                 double sum = 0.0;
+                 double sum = 0;
                  
                  for (int k = 0; k < j; k++)
                  {
                  sum+=R.get(i, k) * R.get(j, k);
+                 
+                 
+                 
                  }
                  
                  
@@ -77,19 +81,21 @@ public class Cholesky
                 
                 
                 
+                
                 double ans = Math.sqrt(A.get(i, i)-sum);
                 
+                              
+                
 
-               // System.out.println("i = " + i);
+               
 
-                System.out.println("i = " + i);
-
+                
                 
                 if(Double.isNaN(ans))
                 {
-                    
                     System.out.println("A :"+A.get(i,i));
                     System.out.println("Sum " + sum);
+                   
                     
                     System.out.println("ERROR : Matrix is not positive-definite");
                 }
@@ -169,5 +175,7 @@ public class Cholesky
      
      
  }
+ 
+ 
  
 }

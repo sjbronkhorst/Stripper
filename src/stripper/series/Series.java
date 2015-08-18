@@ -18,10 +18,14 @@ public abstract class Series {
     public Series(double a) {
 
         this.a = a;
-
     }
     
-    public abstract double getYmIntegral(double m, double a);
+    
+    public abstract double getFunctionValue(double y,int m);
+    
+    
+    
+    public abstract double getYmIntegral(int m, double a);
 
    
 

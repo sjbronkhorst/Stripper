@@ -20,14 +20,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Window;
 
 /**
  *
  * @author SJ
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  */
 public class FileHandler {
 
-    private String filePath = "C:/Users/SJ/Desktop/file.txt";
+    
     private Map<Integer, Node> nodeMap = new HashMap<>();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
     private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
@@ -72,9 +79,12 @@ public class FileHandler {
         return strips;
     }
 
-    public void ReadFile() throws FileNotFoundException, IOException {
+    public void ReadFile() throws FileNotFoundException, IOException, IllegalStateException {
+        
+        
         File file = fileDialog.showOpenDialog(null);
-
+       
+        
         if (file != null) {
 
             Node.clearNumbering();
@@ -95,7 +105,7 @@ public class FileHandler {
             br.close();
             fr.close();
 
-            FileReader fr2 = new FileReader(filePath);
+            FileReader fr2 = new FileReader(file);
             BufferedReader br2 = new BufferedReader(fr2);
             String[] s = new String[nrOfLines];
 

@@ -34,6 +34,7 @@ public class TableViewEdit extends Application {
     
     ModelViewPane mvp = new ModelViewPane();
     
+    
     LoadPane lp = new LoadPane(this);
     
     TextField modelLengthField = new TextField();
@@ -56,7 +57,8 @@ public class TableViewEdit extends Application {
     
     
     public static void main(String[] args) {
-        Application.launch(args);
+        
+            Application.launch(args);
     }
     
     @Override

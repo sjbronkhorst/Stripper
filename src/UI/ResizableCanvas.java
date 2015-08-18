@@ -21,17 +21,17 @@ import javafx.stage.Stage;
            // heightProperty().addListener(evt -> draw());
         }
  
-//        private void draw() {
-//            double width = getWidth();
-//            double height = getHeight();
-// 
-//            GraphicsContext gc = getGraphicsContext2D();
-//            gc.clearRect(0, 0, width, height);
-// 
-//            gc.setStroke(Color.RED);
-//            gc.strokeLine(0, 0, width, height);
-//            gc.strokeLine(0, height, width, 0);
-//        }
+        private void draw() {
+            double width = getWidth();
+            double height = getHeight();
+ 
+            GraphicsContext gc = getGraphicsContext2D();
+            gc.clearRect(0, 0, width, height);
+ 
+            gc.setStroke(Color.RED);
+            gc.strokeLine(0, 0, width, height);
+            gc.strokeLine(0, height, width, 0);
+        }
  
         @Override
         public boolean isResizable() {
@@ -49,23 +49,23 @@ import javafx.stage.Stage;
         }
     
  
-//    public void start(Stage stage) throws Exception {
-//
-//        ResizableCanvas canvas = new ResizableCanvas();
-// 
-//        StackPane stackPane = new StackPane();
-//        stackPane.getChildren().add(canvas);
-// 
-//        // Bind canvas size to stack pane size.
-//        canvas.widthProperty().bind(
-//                       stackPane.widthProperty());
-//        canvas.heightProperty().bind(
-//                       stackPane.heightProperty());
-// 
-//        stage.setScene(new Scene(stackPane));
-//        stage.setTitle("Tip 1: Resizable Canvas");
-//        stage.show();
-//    }
+    public void start(Stage stage) throws Exception {
+
+        ResizableCanvas canvas = new ResizableCanvas();
+ 
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().add(canvas);
+ 
+        // Bind canvas size to stack pane size.
+        canvas.widthProperty().bind(
+                       stackPane.widthProperty());
+        canvas.heightProperty().bind(
+                       stackPane.heightProperty());
+ 
+        stage.setScene(new Scene(stackPane));
+        stage.setTitle("Tip 1: Resizable Canvas");
+        stage.show();
+    }
 }
 
 

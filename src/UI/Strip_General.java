@@ -29,7 +29,7 @@ public class Strip_General {
 
     private static AtomicInteger stripSequence = new AtomicInteger(0);
     
-    private ObservableList<PointLoad> pointLoads = FXCollections.<PointLoad>observableArrayList();
+    private final ObservableList<PointLoad> pointLoads = FXCollections.<PointLoad>observableArrayList();
 
     private final ReadOnlyIntegerWrapper stripId = new ReadOnlyIntegerWrapper(this, "stripId", stripSequence.incrementAndGet());
 
@@ -48,7 +48,7 @@ public class Strip_General {
     private boolean hasNode1, hasNode2;
     
     
-    private double a, t, beta;
+    private double a, t;
     private Material mat;
     
    // private double distLoadZMagnitude = 0.00001;
@@ -318,12 +318,8 @@ double c=0;
 
         double Dxy = G * t * t * t / 12;
 
-        double[] I = new double[5];
-
-            
-            I = Y.getIntegralValues(m, n);
-            
-          
+        double[] I = Y.getIntegralValues(m, n);
+        
         double c = 1.0 / (420 * b * b * b);
 
         double K11 = c * (5040 * Dx * I[0]
@@ -337,15 +333,6 @@ double c=0;
                 - 42 * b * b * b * D1 * I[2]
                 + 22 * b * b * b * b * b * Dy * I[3]
                 + 168 * b * b * b * Dxy * I[4]);
-        
-        for (int i = 0; i < 5; i++)
-        {
-            System.out.println("I"+ (i+1) + " = "+ I[i]);    
-        }
-
-        
-        
-        
         
 
         double K13 = c * (-5040 * Dx * I[0]
@@ -406,8 +393,7 @@ double c=0;
         S.set(K43, 3, 2);
         S.set(K44, 3, 3);
         
-       
-
+        
         return S;
     }
     
@@ -423,19 +409,9 @@ double c=0;
         double vy = mat.getVy();
         double G = mat.getG();
 
-        double Dx = (Ex * t * t * t) / (12 * (1 - vx * vy));
+       
+        double[] I = Y.getIntegralValues(m, n);
 
-        double Dy = (Ey * t * t * t) / (12 * (1 - vx * vy));
-
-        double D1 = (vx * Ey * t * t * t) / (12 * (1 - vx * vy));
-
-        double Dxy = G * t * t * t / 12;
-
-        double[] I = new double[5];
-
-        
-        
-        I = Y.getIntegralValues(m, n);
 
         double C1 = Y.getMu_m(m)/a;
         double C2 = Y.getMu_m(n)/a;
@@ -527,6 +503,20 @@ double c=0;
         K.addSubmatrix(getMembraneStiffnessMatrix(m, n), membraneIndices);
         
         
+        
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++)
+            {
+                
+                if(Math.abs(K.get(i,j)) < 0.000001)
+                {
+                    K.set(0.0 , i , j);
+                }
+                
+            }
+            
+        }
+        
         return K;
     }
     
@@ -573,7 +563,7 @@ double c=0;
         Matrix R = Matrix.getMatrix(8, 8);
         Matrix r = Matrix.getMatrix(4,4);
         
-        beta = getStripAngle();
+        
         
         double s = (node2.getZCoord() - node1.getZCoord())/getStripWidth();
         double c = (node2.getXCoord() - node1.getXCoord())/getStripWidth();

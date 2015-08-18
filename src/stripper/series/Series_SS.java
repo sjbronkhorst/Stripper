@@ -6,6 +6,7 @@
 package stripper.series;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 
 
 /**
@@ -18,6 +19,7 @@ public class Series_SS extends Series {
         super(a);
     }
 
+    @Override
     public double getFunctionValue(double y, int m) {
         return Math.sin(m * Math.PI * y / a);
     }
@@ -74,6 +76,7 @@ public class Series_SS extends Series {
         return m*Math.PI;
     }
     
+    @Override
     public double [] getIntegralValues(int m, int n)
     {
         
@@ -122,7 +125,15 @@ public class Series_SS extends Series {
     public double getFirstDerivativeIntegral(int m) {
         return Math.sin(Math.PI*m);
     }
-    
+
+    @Override
+    public double getYmIntegral(int m, double a) {
+       
+
+       IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        return ilg.integrate(2000, this.getFunction(m), 0, a);
+    }
+
     
 
 }

@@ -7,6 +7,10 @@ package stripper.series;
  */
 
 
+import UI.LineChartWindow;
+import UI.XYChartDataUtil;
+import javafx.application.Application;
+import javafx.stage.Stage;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 import stripper.series.Series_CC;
@@ -16,7 +20,7 @@ import stripper.series.Series_SS;
  *
  * @author SJ
  */
-public class Integrator {
+public class Integrator extends Application {
 
     public double smartIntegrate(UnivariateFunction f, double from, double to , int nrOfPoints) {
         
@@ -136,6 +140,14 @@ public class Integrator {
     
     public static void main (String[]args)
     {
+        
+        
+       Application.launch(args);
+        
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         Series_CC Ym = new Series_CC(2000);
         
         
@@ -153,18 +165,51 @@ public class Integrator {
         //1999.993995313753952306310691754
         //1999.99399531
         
-        //System.out.println(in.smartIntegrate(Ym.getFunction(3, 10), 0, 2000, 200000));
         
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
-       System.out.println(ilg.integrate(2000, Ym.getFunction(200, 2), 0, 2000));
         
-        System.out.println(Ym.getFunctionValue(1950.5, 30, 10));
-        
+       // IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(128, 0.98, 5);
+      // System.out.println(ilg.integrate(2000, Ym.getF5(40, 4), 0, 2000));
        
+       //System.out.println(in.smartIntegrate(Ym.getF2(10, 10), 0, 2000, 200000));
+        //System.out.println(in.bruteForceIntegrate(Ym.getF2(10, 10), 0, 2000, 200000));
+        
+//        double [] I = Ym.getIntegralValues(1, 10);
+//        
+//        for (int i = 0; i < 5; i++) {
+//            System.out.println("I"+ (i+1)+" = " + I[i]);
+//            
+//        }
+        
+        System.out.println(Ym.getYmIntegral(1, 2000));
+        
+        double [] xData = new double[2000];
+        double [] yData = new double[2000];
+        
+        for (int i = 0; i < 2000; i++) 
+        {
+            yData[i] = Ym.getF2Value(i, 1, 10);
+            xData[i] = i;
+        }
         
         
         
+//        XYChartDataUtil.addSeries(xData, yData, "");
+//        LineChartWindow lcw = new LineChartWindow("", "", "", "", 0, 2000, XYChartDataUtil.getDataList());
+//        Stage s = new Stage();
+//        lcw.start(s);
         
+        //-0.1319990064163165605150652791214
+        //-0.1319990064251739
+        
+        //0.00001114192707159213930514932167171
+        //0.000011141927070865642
+        
+        //0.13199900641631661261502386961801
+        //0.13199900641679452
+        
+        
+        //1.8107835630540130847836127165559
+        //-0.6196960314348914
         
     }
 }

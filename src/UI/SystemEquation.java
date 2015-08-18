@@ -7,11 +7,9 @@ package UI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.scene.control.ProgressIndicator;
-import linalg.Matrix;
 import linalg.Vector;
 import stripper.Cholesky;
 import stripper.Node;
@@ -21,6 +19,9 @@ import stripper.series.Series_SS;
 /**
  *
  * @author SJ
+ * 
+ * 
+ * 
  */
 public class SystemEquation {
 
@@ -29,7 +30,7 @@ public class SystemEquation {
     int[][] localToGlobalConfNumbering;
     double[] dataPoints;
     Vector[] Uarr = new Vector[101];
-    private ProgressIndicator pi;
+    
     
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
     
@@ -83,8 +84,6 @@ public class SystemEquation {
 
         Cholesky c = new Cholesky();
 
-        Vector U = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
-
         Series Y = new Series_SS(StripTableUtil.getStripList().get(0).getStripLength());
 
         double[] xData = new double[101];
@@ -92,9 +91,9 @@ public class SystemEquation {
 
         for (int i = 1; i < ModelProperties.getFourierTerms(); i++) {
 
-            Vector temp = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+            Vector temp = c.getX(a.getK(i), a.getF(i));
 
-            temp = c.getX(a.getK(i), a.getF(i));
+            
 
             for (int j = 0; j < 101; j++) {
                 Vector temp2 = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
@@ -102,11 +101,13 @@ public class SystemEquation {
 
                 temp2.scale(Y.getFunctionValue(StripTableUtil.getStripList().get(0).getStripLength() * (j / 100.0), i));
                 Uarr[j].add(temp2);
+                temp2.release();
 
             }
             
             progress.set((i+1)/ModelProperties.getFourierTerms());
             //System.out.println(i+1/ModelProperties.getFourierTerms());
+            temp.release();
 
         }
 

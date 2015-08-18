@@ -10,6 +10,10 @@ import stripper.Direction;
 /**
  *
  * @author SJ
+ * 
+ * 
+ * 
+ * 
  */
 public class DistributedLoad 
 {

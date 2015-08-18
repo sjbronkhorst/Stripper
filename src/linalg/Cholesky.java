@@ -1,6 +1,5 @@
 package linalg;
 
-import serialize.ProfileMatrix;
 
 public class Cholesky {
 

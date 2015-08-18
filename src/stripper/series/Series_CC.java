@@ -8,7 +8,6 @@ package stripper.series;
 import java.math.BigDecimal;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
-import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -20,8 +19,31 @@ public class Series_CC extends Series {
         super(a);
     }
 
-    public strictfp double getFunctionValue(double y, int m, int n) {
+    @Override
+    public strictfp double getFunctionValue(double y, int m) {
+        double Pi = Math.PI;
 
+        double um = Pi * (2 * m + 1) / 2.0;
+
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+        
+        
+
+        double km = um / a;
+
+        BigDecimal Ym;
+
+        BigDecimal cosh = new BigDecimal(-alphaM * -cosh(km * y));
+        BigDecimal sinh = new BigDecimal(-sinh(km * y));
+        BigDecimal sin = new BigDecimal(sin(km * y));
+        BigDecimal cos = new BigDecimal(-alphaM * cos(km * y));
+
+        Ym = (cos.add(sin).add(sinh).add(cosh));
+
+        return Ym.doubleValue();
+    }
+
+    public strictfp double getF1Value(double y, int m, int n) {
         double Pi = Math.PI;
 
         double um = Pi * (2 * m + 1) / 2.0;
@@ -32,33 +54,9 @@ public class Series_CC extends Series {
         double km = um / a;
         double kn = un / a;
 
-        BigDecimal Ym = new BigDecimal("0.0");
-        BigDecimal Yn = new BigDecimal("0.0");
+        BigDecimal Ym ;
+        BigDecimal Yn ;
 
-       // System.out.println("stupid som ="+ (-alphaM * -cosh(km * y) -sinh(km * y)));
-//        if ((-alphaM * -cosh(km * y)  -sinh(km * y)) == 0.0) {
-//             Ym = sin(km * y) - alphaM * (cos(km * y));
-//             Yn = sin(kn * y) - alphaN * (cos(kn * y));
-//        } else {
-//             Ym = sin(km * y) - sinh(km * y) - alphaM * (cos(km * y) - cosh(km * y));
-//             Yn = sin(kn * y) - sinh(kn * y) - alphaN * (cos(kn * y) - cosh(kn * y));
-//        }
-//        System.out.println(Pi);
-//        System.out.println(um);
-//        System.out.println(un);
-//        System.out.println(alphaM);
-//        System.out.println(alphaN);
-//        System.out.println(km);
-//        System.out.println(kn);
-//        System.out.println(Ym);
-//        System.out.println(Yn);
-//        System.out.println("sin " + sin(km * y));
-//        System.out.println("sinh " + -sinh(km * y));
-//
-//        // System.out.println("km*y = " + km*y);
-//        System.out.println("cos " + -alphaM * cos(km * y));
-//        System.out.println("cosh " + -alphaM * -cosh(km * y));
-       
         BigDecimal cosh = new BigDecimal(-alphaM * -cosh(km * y));
         BigDecimal sinh = new BigDecimal(-sinh(km * y));
         BigDecimal sin = new BigDecimal(sin(km * y));
@@ -72,103 +70,234 @@ public class Series_CC extends Series {
         BigDecimal cosN = new BigDecimal(-alphaN * cos(kn * y));
 
         Yn = cosN.add(sinN).add(sinhN).add(coshN);
-        
+
         BigDecimal ans = Ym.multiply(Yn);
 
         return ans.doubleValue();
 
-        //return Ym * Yn;
     }
 
-    public double getYmIntegral(double m, double a) {
+    public strictfp double getF2Value(double y, int m, int n) {
+        // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
 
-        return (a - a * Math.cos(Math.PI * m)) / (Math.PI * m);
+        //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
+        double Pi = Math.PI;
+
+        double um = Pi * (2 * m + 1) / 2.0;
+        double un = Pi * (2 * n + 1) / 2.0;
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+
+        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double km = um / a;
+        double kn = un / a;
+
+        BigDecimal Ymd2 ;
+        BigDecimal Yn ;
+
+        BigDecimal cosh = new BigDecimal(alphaM * km * km * cosh(km * y));
+
+        BigDecimal sinh = new BigDecimal(-km * km * sinh(km * y));
+        BigDecimal sin = new BigDecimal(-km * km * sin(km * y));
+        BigDecimal cos = new BigDecimal(alphaM * km * km * cos(km * y));
+
+        Ymd2 = (cos.add(sin).add(sinh).add(cosh));
+
+        BigDecimal coshN = new BigDecimal(-alphaN * -cosh(kn * y));
+        BigDecimal sinhN = new BigDecimal(-sinh(kn * y));
+        BigDecimal sinN = new BigDecimal(sin(kn * y));
+        BigDecimal cosN = new BigDecimal(-alphaN * cos(kn * y));
+
+        Yn = cosN.add(sinN).add(sinhN).add(coshN);
+
+        BigDecimal ans = Ymd2.multiply(Yn);
+
+        return ans.doubleValue();
     }
 
-    public UnivariateFunction getFunction(int m, int n) {
+    public strictfp double getF4Value(double y, int m, int n) {
+        // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
 
-        UnivariateFunction f = new UnivariateFunction() {
+        //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
+        double Pi = Math.PI;
 
-            @Override
-            public double value(double x) {
-                return getFunctionValue(x, m, n);
-            }
+        double um = Pi * (2 * m + 1) / 2.0;
+        double un = Pi * (2 * n + 1) / 2.0;
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
-        };
+        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double km = um / a;
+        double kn = un / a;
+
+        BigDecimal Ymd2 ;
+        BigDecimal Ynd2 ;
+
+        BigDecimal cosh = new BigDecimal(alphaM * km * km * cosh(km * y));
+
+        BigDecimal sinh = new BigDecimal(-km * km * sinh(km * y));
+        BigDecimal sin = new BigDecimal(-km * km * sin(km * y));
+        BigDecimal cos = new BigDecimal(alphaM * km * km * cos(km * y));
+
+        Ymd2 = (cos.add(sin).add(sinh).add(cosh));
+
+        BigDecimal coshN = new BigDecimal(alphaN * kn * kn * cosh(kn * y));
+
+        BigDecimal sinhN = new BigDecimal(-kn * kn * sinh(kn * y));
+        BigDecimal sinN = new BigDecimal(-kn * kn * sin(kn * y));
+        BigDecimal cosN = new BigDecimal(alphaN * kn * kn * cos(kn * y));
+
+        Ynd2 = cosN.add(sinN).add(sinhN).add(coshN);
+
+        BigDecimal ans = Ymd2.multiply(Ynd2);
+
+        return ans.doubleValue();
+    }
+
+    public strictfp double getF5Value(double y, int m, int n) {
+        //Ymd1 = alphaM*(km*sin(km*y) + km*sinh(km*y)) + km*cos(km*y) - km*cosh(km*y)
+        //Ynd1 = alphaN*(kn*sin(kn*y) + kn*sinh(kn*y)) + kn*cos(kn*y) - kn*cosh(kn*y)
+
+        double Pi = Math.PI;
+
+        double um = Pi * (2 * m + 1) / 2.0;
+        double un = Pi * (2 * n + 1) / 2.0;
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+
+        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double km = um / a;
+        double kn = un / a;
+
+        BigDecimal Ymd1 ;
+        BigDecimal Ynd1;
+
+        BigDecimal cosh = new BigDecimal(-km * cosh(km * y));
+
+        BigDecimal sinh = new BigDecimal(alphaM * km * sinh(km * y));
+        BigDecimal sin = new BigDecimal(alphaM * km * sin(km * y));
+        BigDecimal cos = new BigDecimal(km * cos(km * y));
+
+        Ymd1 = (cos.add(sin).add(sinh).add(cosh));
+
+        BigDecimal coshN = new BigDecimal(-kn * cosh(kn * y));
+
+        BigDecimal sinhN = new BigDecimal(alphaN * kn * sinh(kn * y));
+        BigDecimal sinN = new BigDecimal(alphaN * kn * sin(kn * y));
+        BigDecimal cosN = new BigDecimal(kn * cos(kn * y));
+
+        Ynd1 = cosN.add(sinN).add(sinhN).add(coshN);
+
+        BigDecimal ans = Ymd1.multiply(Ynd1);
+
+        return ans.doubleValue();
+    }
+
+    @Override
+    public double getYmIntegral(int m, double a) {
+       
+
+       IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        return ilg.integrate(2000, this.getFunction(m), 0, a);
+    }
+
+    public UnivariateFunction getFunction(int m) {
+
+        UnivariateFunction f = (double x) -> getFunctionValue(x, m);
+
+        return f;
+    }
+    public UnivariateFunction getF1(int m, int n) {
+
+        UnivariateFunction f = (double x) -> getF1Value(x, m, n);
 
         return f;
     }
 
-//    public UnivariateFunction getFirstDerivativeFunction(int m) 
-//    {
-//        UnivariateFunction f = new UnivariateFunction() {
-//
-//            @Override
-//            public double value(double x) {
-//                return getFirstDerivativeValue(x, m);
-//            }
-//           
-//        };
-//        
-//         return f;
-//    }
+    public UnivariateFunction getF2(int m, int n) {
+
+        UnivariateFunction f = (double x) -> getF2Value(x, m, n);
+
+        return f;
+    }
+
+    public UnivariateFunction getF4(int m, int n) {
+
+        UnivariateFunction f = (double x) -> getF4Value(x, m, n);
+
+        return f;
+    }
+
+    public UnivariateFunction getF5(int m, int n) {
+
+        UnivariateFunction f = (double x) -> getF5Value(x, m, n);
+
+        return f;
+    }
+
+
     @Override
     public double getFirstDerivativeValue(double y, int m) {
         return 0.0;
     }
 
-//
-//    @Override
-//    public double getSecondDerivativeValue(double y, int m) {
-//        return -Math.sin(m * Math.PI * y / a) * (m * Math.PI / a) * (m * Math.PI/ a);
-//    }
+
     @Override
     public double getMu_m(int m) {
-        return m * Math.PI;
+        double Pi = Math.PI;
+        
+        return Pi * (2 * m + 1) / 2.0;
     }
 
     public double getI1(int m, int n) {
-
-        if(m!= n)
+        
+        if(m != n)
         {
             return 0.0;
         }
-        
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(32, 0.98, 5);
-        return ilg.integrate(2000, this.getFunction(m, n), 0, a);
+
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        return ilg.integrate(2000, this.getF1(m, n), 0, a);
 
     }
 
     public double getI2(int m, int n) {
-        return 0.0;
+       
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        return ilg.integrate(2000, this.getF2(m, n), 0, a);
     }
 
     public double getI3(int m, int n) {
-        return 0.0;
+
+        return getI2(n, m);
     }
 
     public double getI4(int m, int n) {
-        return 0.0;
+        
+        if(m != n)
+        {
+            return 0.0;
+        }
+
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        return ilg.integrate(2000, this.getF4(n, m), 0, a);
     }
 
     public double getI5(int m, int n) {
-        return 0.0;
+        
+
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        return ilg.integrate(2000, this.getF5(n, m), 0, a);
+
     }
 
     @Override
     public double[] getIntegralValues(int m, int n) {
-        return null;
-    }
-
-    public double[] getIValues(int m, int n) {
 
         double[] I = new double[5];
 
         I[0] = getI1(m, n);
-        I[1] = 0;
-        I[2] = 0;
-        I[3] = 0;
-        I[4] = 0;
+        I[1] = getI2(m, n);
+        I[2] = getI3(m, n);
+        I[3] = getI4(m, n);
+        I[4] = getI5(m, n);
 
         return I;
     }
