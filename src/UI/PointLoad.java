@@ -5,6 +5,7 @@
  */
 package UI;
 
+import stripper.Strip;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;

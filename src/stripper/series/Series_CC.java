@@ -6,6 +6,14 @@
 package stripper.series;
 
 import java.math.BigDecimal;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.concurrent.Task;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 
@@ -17,6 +25,7 @@ public class Series_CC extends Series {
 
     public Series_CC(double a) {
         super(a);
+        isSimplySupported = false;
     }
 
     @Override
@@ -26,8 +35,6 @@ public class Series_CC extends Series {
         double um = Pi * (2 * m + 1) / 2.0;
 
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
-        
-        
 
         double km = um / a;
 
@@ -54,8 +61,8 @@ public class Series_CC extends Series {
         double km = um / a;
         double kn = un / a;
 
-        BigDecimal Ym ;
-        BigDecimal Yn ;
+        BigDecimal Ym;
+        BigDecimal Yn;
 
         BigDecimal cosh = new BigDecimal(-alphaM * -cosh(km * y));
         BigDecimal sinh = new BigDecimal(-sinh(km * y));
@@ -91,8 +98,8 @@ public class Series_CC extends Series {
         double km = um / a;
         double kn = un / a;
 
-        BigDecimal Ymd2 ;
-        BigDecimal Yn ;
+        BigDecimal Ymd2;
+        BigDecimal Yn;
 
         BigDecimal cosh = new BigDecimal(alphaM * km * km * cosh(km * y));
 
@@ -128,8 +135,8 @@ public class Series_CC extends Series {
         double km = um / a;
         double kn = un / a;
 
-        BigDecimal Ymd2 ;
-        BigDecimal Ynd2 ;
+        BigDecimal Ymd2;
+        BigDecimal Ynd2;
 
         BigDecimal cosh = new BigDecimal(alphaM * km * km * cosh(km * y));
 
@@ -166,7 +173,7 @@ public class Series_CC extends Series {
         double km = um / a;
         double kn = un / a;
 
-        BigDecimal Ymd1 ;
+        BigDecimal Ymd1;
         BigDecimal Ynd1;
 
         BigDecimal cosh = new BigDecimal(-km * cosh(km * y));
@@ -192,9 +199,9 @@ public class Series_CC extends Series {
 
     @Override
     public double getYmIntegral(int m, double a) {
-       
-
-       IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        
+        
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getFunction(m), 0, a);
     }
 
@@ -204,6 +211,7 @@ public class Series_CC extends Series {
 
         return f;
     }
+
     public UnivariateFunction getF1(int m, int n) {
 
         UnivariateFunction f = (double x) -> getF1Value(x, m, n);
@@ -232,24 +240,21 @@ public class Series_CC extends Series {
         return f;
     }
 
-
     @Override
     public double getFirstDerivativeValue(double y, int m) {
         return 0.0;
     }
 
-
     @Override
     public double getMu_m(int m) {
         double Pi = Math.PI;
-        
+
         return Pi * (2 * m + 1) / 2.0;
     }
 
     public double getI1(int m, int n) {
-        
-        if(m != n)
-        {
+
+        if (m != n) {
             return 0.0;
         }
 
@@ -259,7 +264,7 @@ public class Series_CC extends Series {
     }
 
     public double getI2(int m, int n) {
-       
+
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getF2(m, n), 0, a);
     }
@@ -270,9 +275,8 @@ public class Series_CC extends Series {
     }
 
     public double getI4(int m, int n) {
-        
-        if(m != n)
-        {
+
+        if (m != n) {
             return 0.0;
         }
 
@@ -281,23 +285,73 @@ public class Series_CC extends Series {
     }
 
     public double getI5(int m, int n) {
-        
 
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getF5(n, m), 0, a);
 
     }
 
+    /**
+     * Computes the 5 integrals simultaneously for increased performance.
+     * 
+     * @param m Fourier term row 
+     * @param n Fourier term column 
+     * @return double array of size 5 with indexes corresponding to integral number (1-5)
+     */
+    
     @Override
     public double[] getIntegralValues(int m, int n) {
 
         double[] I = new double[5];
 
-        I[0] = getI1(m, n);
-        I[1] = getI2(m, n);
-        I[2] = getI3(m, n);
-        I[3] = getI4(m, n);
-        I[4] = getI5(m, n);
+        Callable<Double> tsk1 = () -> getI1(m, n);
+
+        Callable<Double> tsk2 = () -> getI2(m, n);
+
+        Callable<Double> tsk3 = () -> getI3(m, n);
+
+        Callable<Double> tsk4 = () -> getI4(m, n);
+
+        Callable<Double> tsk5 = () -> getI5(m, n);
+
+        ExecutorService service;
+        final Future<Double> thread1, thread2, thread3, thread4, thread5;
+
+        service = Executors.newFixedThreadPool(5);
+        thread1 = service.submit(tsk1);
+        thread2 = service.submit(tsk2);
+        thread3 = service.submit(tsk3);
+        thread4 = service.submit(tsk4);
+        thread5 = service.submit(tsk5);
+
+        try {
+            I[0] = thread1.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            I[1] = thread2.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            I[2] = thread3.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            I[3] = thread4.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            I[4] = thread5.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        service.shutdownNow();
 
         return I;
     }

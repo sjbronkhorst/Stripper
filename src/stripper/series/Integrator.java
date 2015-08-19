@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 import stripper.series.Series_CC;
-import stripper.series.Series_SS;
+
 
 /**
  *

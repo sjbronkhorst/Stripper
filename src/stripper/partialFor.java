@@ -11,8 +11,9 @@ import java.util.logging.Logger;
 import linalg.Matrix;
 import stripper.materials.Material;
 import stripper.materials.Material_Steel;
-import stripper.series.Series;
 import stripper.series.Series_SS;
+import stripper.series.Series;
+
 
 /**
  *

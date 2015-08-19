@@ -5,6 +5,7 @@
  */
 package UI;
 
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.swing.plaf.basic.BasicTreeUI;
+import stripper.Strip;
 
 /**
  *

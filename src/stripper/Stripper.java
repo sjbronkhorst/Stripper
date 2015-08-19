@@ -5,8 +5,6 @@
  */
 package stripper;
 
-import UI.Strip_General;
-import UI.Strip;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ExecutorService;
@@ -28,33 +26,41 @@ public class Stripper {
 
     /**
      * @param args the command line arguments
+     * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws InterruptedException, Exception {
 
         int modelLength = 2000;
-        double force = 0.0001;
+        double force = 0.001;
 
                 
         Material usrMat = new  Material_Steel();
         
         Node n1 = new Node(0, 0);
         Node n2 = new Node(100, 0);
+        Node n3 = new Node(100, 0);
         
 
         Series_CC Y = new Series_CC(modelLength);
         
         Strip_General myStrip = new Strip_General(n1, n2);
+        Strip_General myStrip2 = new Strip_General(n2, n3);
      
-        myStrip.setProperties(usrMat, 2, 2000, Y);
+        myStrip.setProperties(usrMat, 10, modelLength, Y);
+        myStrip2.setProperties(usrMat, 10, modelLength, Y);
       
         myStrip.setUdlZ(force);
+        myStrip2.setUdlZ(force);
 
-        int nTerms = 5;
+        int nTerms =1;
         int nNodes = 2;
 
    
        CoupledMatrix_1 cK = new CoupledMatrix_1(nNodes, nTerms);
        CoupledVector_1 fK = new CoupledVector_1(nNodes, nTerms);
+       
+//       Vector fK = Vector.getVector(8*nTerms);
+//       fK.clear();
    
         
         for (int i = 1; i < nTerms+1; i++) 
@@ -65,15 +71,25 @@ public class Stripper {
         {
                                 
            cK.addStiffnessMatrix(myStrip.getStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
+           //cK.addStiffnessMatrix(myStrip2.getStiffnessMatrix(i, j), myStrip2.getNode1(), myStrip2.getNode2(), i, j);
            
                                     
         }
-            fK.addForceVector(myStrip.getLoadVector(i), myStrip.getNode1(),myStrip.getNode2(),i);
+          fK.addForceVector(myStrip.getLoadVector(i), myStrip.getNode1(),myStrip.getNode2(),i);
+         // fK.addForceVector(myStrip2.getLoadVector(i), myStrip2.getNode1(),myStrip2.getNode2(),i);
           
         }
 
-        Cholesky chol = new Cholesky();
-        Vector u = chol.getX(cK.getMatrix(), fK.getVector());
+        
+        //cK.getMatrix().printf("cK ");
+       //myStrip.getOldMembraneStiffnessMatrix(1, 1).printf("Old");
+       // myStrip.getMembraneStiffnessMatrix(1, 1).printf("New");
+       Cholesky chol = new Cholesky();
+       Vector u = chol.getX(cK.getMatrix(), fK.getVector());
+       // SerializeUtils.serialize(cK.getMatrix(), "CC" + nTerms*8);
+        
+//        Matrix k = SerializeUtils.deserialze("CC" + nTerms*8);
+//        k.printf("k");
      
     
 // Comparison with Euler beam theory
@@ -95,7 +111,7 @@ public class Stripper {
         
         for (int i = 0; i < nTerms; i++)
         {
-            uu += u.get((i*4)+2)*Y.getFunctionValue(1000, i+1);
+            uu += u.get((i*4)+2)*Y.getFunctionValue(modelLength/2.0, i+1);
           
         }
         

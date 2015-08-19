@@ -10,10 +10,10 @@
  */
 package UI;
 
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
@@ -22,6 +22,7 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import stripper.FileHandler;
 import stripper.Node;
+import stripper.Strip;
 
 /**
  *

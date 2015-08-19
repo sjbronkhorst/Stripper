@@ -5,21 +5,25 @@
  */
 package stripper.series;
 
-import org.apache.commons.math3.analysis.UnivariateFunction;
-
 /**
  *
  * @author SJ
  */
 public abstract class Series {
 
-    double a;
+    protected double a; // Series domain length i.e. length of strip
+    protected boolean isSimplySupported;
+    
 
     public Series(double a) {
 
         this.a = a;
     }
     
+    public boolean isSimplySupported()
+    {
+        return isSimplySupported;
+    }
     
     public abstract double getFunctionValue(double y,int m);
     

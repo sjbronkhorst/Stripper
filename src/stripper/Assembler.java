@@ -12,6 +12,8 @@ import linalg.Vector;
 /**
  *
  * @author SJ
+ * 
+ * 
  */
 public class Assembler {
 
@@ -43,12 +45,12 @@ public class Assembler {
 
         for (int i = 0; i < nrOfElements; i++) {
 
-            int[] indices = new int[strips.get(i).getStiffnessMatrixInGlobalCoordinates(m).cols()];
+            int[] indices = new int[strips.get(i).getStiffnessMatrix(m , m).cols()];
             for (int j = 0; j < indices.length; j++) {
                 indices[j] = i * indices.length + j;
             }
 
-            Kt.addSubmatrix(strips.get(i).getStiffnessMatrixInGlobalCoordinates(m), indices);
+            Kt.addSubmatrix(strips.get(i).getRotatedStiffnessMatrix(m, m), indices);
         }
 
         Matrix K = T.transpose().multiply(Kt).multiply(T);
@@ -66,7 +68,7 @@ public class Assembler {
         {
             for (int j = 0; j < strips.get(i).getLoadVector(m).size(); j++) 
             {
-                Ft.set(strips.get(i).getLoadVector(m).get(j), j + i*strips.get(i).getLoadVector(m).size());
+                Ft.set(strips.get(i).getRotatedLoadVector(m).get(j), j + i*strips.get(i).getLoadVector(m).size());
             }
             
             

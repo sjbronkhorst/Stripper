@@ -5,6 +5,7 @@
  */
 package UI;
 
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import stripper.Node;
+import stripper.Strip;
 
 /**
  *

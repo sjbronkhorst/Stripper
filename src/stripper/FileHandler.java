@@ -9,8 +9,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import UI.Strip;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +18,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Window;
 
 /**
  *
@@ -132,7 +129,7 @@ public class FileHandler {
 
                         if (n1 != null && n2 != null) {
 
-                            strips.add(new Strip(n1, n2));
+                            strips.add(new Strip_General(n1, n2));   ///////////fout !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         }
                     } else {
                         System.out.println("File syntax error");

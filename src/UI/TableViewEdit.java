@@ -1,5 +1,6 @@
 package UI;
 
+
 import stripper.Node;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -29,55 +30,50 @@ import javafx.util.converter.IntegerStringConverter;
 
 import stripper.materials.Material;
 import stripper.materials.Material_Steel;
+import stripper.Strip;
+import stripper.Strip_General;
 
 public class TableViewEdit extends Application {
-    
+
     ModelViewPane mvp = new ModelViewPane();
-    
-    
+
     LoadPane lp = new LoadPane(this);
-    
+
     TextField modelLengthField = new TextField();
     TextField thicknessField = new TextField();
-    
+
     private double biggestX = 0;
     private double biggestY = 0;
-    
+
     Button calcBtn = new Button("Calculate");
-    
+
     ProgressBar progInd = new ProgressBar(0);
-    
+
     SystemEquation s;
-    
+
     HomeMenuBar menuBar = new HomeMenuBar(this);
-    
+
     TabPane tabPane = new TabPane();
     Tab geometryTab = new Tab("Geometry");
     Tab loadTab = new Tab("Loads");
-    
-    
+
     public static void main(String[] args) {
-        
-            Application.launch(args);
+
+        Application.launch(args);
     }
-    
+
     @Override
     public void start(Stage stage) {
-        
-        progInd.setStyle("-fx-progress-color: blue;");
-        
-        //progInd.setMinSize(50, 50);
-        
-       
-        
-        
 
+        progInd.setStyle("-fx-progress-color: blue;");
+
+        //progInd.setMinSize(50, 50);
         //String filePath = "C:/Users/SJ/Desktop/file.txt";
         //String filePath = "C:/Users/SJ/Desktop/icon.png";
         Image ic = new Image("file:///C:/Users/SJ/Desktop/icon.png");
-        
+
         stage.getIcons().add(ic);
-        
+
         TableView<Node> table = new TableView<>(NodeTableUtil.getNodeList());
 // Make the TableView editable
         table.setEditable(true);
@@ -85,39 +81,39 @@ public class TableViewEdit extends Application {
         addIdColumn(table);
         addXCoordColumn(table);
         addZCoordColumn(table);
-        
+
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
+
         TableView<Strip> stripTable = new TableView<>(StripTableUtil.getStripList());
         stripTable.setEditable(true);
         addStripIdColumn(stripTable);
         addNode1Column(stripTable);
         addNode2Column(stripTable);
-        
+
         stripTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
+
         Button addBtn = new Button("Add");
         Button removeBtn = new Button("Remove");
-        
+
         Button stripAddBtn = new Button("Add");
         Button stripRemoveBtn = new Button("Remove");
         Button stripPropertyBtn = new Button("Properties");
-        
+
         Button plotBtn = new Button("Plot");
-        
+
         Slider slider = new Slider(0, 100, 50);
-        
+
         slider.setMajorTickUnit(10);
         slider.setMinorTickCount(1);
         slider.showTickMarksProperty().set(true);
         slider.snapToTicksProperty().set(true);
         slider.showTickLabelsProperty().set(true);
-        
+
         slider.valueProperty().addListener(new ChangeListener<Number>() {
-            
+
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                
+
                 if (slider.isFocused()) {
 
                     //System.out.println("Changed from " + oldValue + " to " + newValue);
@@ -126,32 +122,37 @@ public class TableViewEdit extends Application {
                 }
             }
         });
-        
+
         plotBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
-                
+
                 LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
-                
+
                 Stage s = new Stage();
-                
+
                 s.getIcons().add(ic);
                 chart.start(s);
-                
+
             }
         });
-        
+
         calcBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
+
+                Material mat = new Material_Steel();
+                ModelProperties.setModelMaterial(mat);
+                //ModelProperties.setFourierTerms(1);
                 
                 for (Strip s : StripTableUtil.getStripList()) {
+
+                    s.setProperties(ModelProperties.getModelMaterial(),Double.parseDouble(thicknessField.textProperty().get()),Double.parseDouble(modelLengthField.textProperty().get()),ModelProperties.getFourierSeries());
+                     
                     
-                    Material mat = new Material_Steel();
-                    ModelProperties.setModelMaterial(mat);
-                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()));
+                    
                     //s.getStiffnessMatrix(1, 1).printf("k" + Integer.toString(s.getStripId()));
                     //s.getMembraneStiffnessMatrix(1, 1).printf("M");
                     // s.getRotationMatrix().printf("R");
@@ -159,52 +160,52 @@ public class TableViewEdit extends Application {
 
                 }
                 
+                
+
                 s = new SystemEquation(StripTableUtil.getStripList(), NodeTableUtil.getNodeList());
                 
+               
+
                 Task<Void> task = new Task<Void>() {
-                    
+
                     @Override
                     protected Void call() throws Exception {
                         
                         s.getDisplacementVector()[50].printf("U ");
+                                                
                         s.setDisplacedState((int) slider.getValue());
                         System.out.println((int) slider.getValue());
                         draw();
-                        
+
                         return null;
                     }
                 };
                 progInd.progressProperty().bind(s.progressProperty());
-                
+
                 new Thread(task).start();
 
-                
-                
-                
-                
-                
             }
         });
-        
+
         stripPropertyBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
-                
+
                 Strip s = stripTable.getSelectionModel().getSelectedItem();
-                
+
                 System.out.println("Strip " + s.getStripId() + " properties :");
                 System.out.println("width = " + s.getStripWidth());
-                
+
             }
         });
-        
+
         stripRemoveBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
                 Strip s = stripTable.getSelectionModel().getSelectedItem();
-                
+
                 if (s != null) {
                     StripTableUtil.removeStrip(s);
                     System.out.println("Strip " + s.getStripId() + " removed.");
@@ -212,41 +213,41 @@ public class TableViewEdit extends Application {
                     System.out.println("ERROR : No nodes selected !");
                 }
                 draw();
-                
+
             }
         });
-        
+
         stripAddBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
-                Strip s = new Strip();
+                Strip s = new Strip_General();
                 StripTableUtil.addStrip(s);
                 draw();
                 System.out.println("Strip " + s.getStripId() + " added.");
-                
+
             }
         });
-        
+
         addBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
-                
+
                 Node n = new Node(0, 0);
                 NodeTableUtil.addNode(n);
                 draw();
                 System.out.println("Node " + n.getNodeId() + " added.");
-                
+
             }
         });
-        
+
         removeBtn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
                 Node n = table.getSelectionModel().getSelectedItem();
-                
+
                 if (n != null) {
                     NodeTableUtil.removeNode(n);
                     System.out.println("Node " + n.getNodeId() + " removed.");
@@ -254,54 +255,49 @@ public class TableViewEdit extends Application {
                     System.out.println("ERROR : No nodes selected !");
                 }
                 draw();
-                
+
             }
         });
-        
+
         loadTab.setContent(lp.getPane());
-        
+
         VBox tableBox = new VBox(10);
         HBox nodeBox = new HBox(10);
         HBox stripBox = new HBox(10);
-        
+
         VBox nodeControlBox = new VBox(10);
         VBox stripControlBox = new VBox(10);
-        
+
         VBox rightBox = new VBox();
-        
+
         rightBox.getChildren().addAll(mvp.getPane(), modelLengthField, thicknessField, calcBtn, progInd, plotBtn, slider);
-        
+
         rightBox.setStyle("-fx-padding: 0;"
                 + "-fx-border-style: solid inside;"
                 + "-fx-border-width: 0;"
                 + "-fx-border-insets: 5;"
                 + "-fx-border-radius: 5;"
                 + "-fx-border-color: black;");
-        
+
         //progInd.setPrefWidth(2000);
-       
-                
-        
-                
-        
         nodeBox.getChildren().addAll(table, nodeControlBox);
         addBtn.setMinWidth(130);
         removeBtn.setMinWidth(130);
-        
+
         nodeControlBox.getChildren().addAll(addBtn, removeBtn);
-        
+
         stripControlBox.getChildren().addAll(stripAddBtn, stripRemoveBtn, stripPropertyBtn);
-        
+
         stripAddBtn.setMinWidth(130);
         stripRemoveBtn.setMinWidth(130);
-        
+
         stripBox.getChildren().addAll(stripTable, stripControlBox);
-        
+
         Label nodeLabel = new Label("Nodes :");
         Label stripLabel = new Label("Strips :");
-        
+
         tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox);
-        
+
         geometryTab.setContent(tableBox);
         //loadTab.setContent(loadTable);
 
@@ -311,9 +307,9 @@ public class TableViewEdit extends Application {
         //tableBox.setMinHeight(1200);
         //tableBox.setMinWidth(400);
         SplitPane sp = new SplitPane();
-        
+
         sp.getItems().addAll(tabPane, rightBox);
-        
+
         BorderPane root = new BorderPane(sp);
         tableBox.setStyle("-fx-padding: 10;"
                 + "-fx-border-style: solid inside;"
@@ -321,7 +317,7 @@ public class TableViewEdit extends Application {
                 + "-fx-border-insets: 5;"
                 + "-fx-border-radius: 5;"
                 + "-fx-border-color: blue;");
-        
+
         root.setTop(menuBar.getMenuBar());
         //root.setLeft(tabPane);
 
@@ -340,117 +336,117 @@ public class TableViewEdit extends Application {
         stage.setTitle("Stripper - FSM by SJ Bronkhorst");
         stage.show();
     }
-    
+
     public void addIdColumn(TableView<Node> table) {
 // Id column is non-editable
         table.getColumns().add(NodeTableUtil.getIDColumn());
     }
-    
+
     public void addXCoordColumn(TableView<Node> table) {
-        
+
         TableColumn<Node, Double> fNameCol = NodeTableUtil.getXCoordColumn();
-        
+
         DoubleStringConverter converter = new DoubleStringConverter();
         fNameCol.setCellFactory(TextFieldTableCell.<Node, Double>forTableColumn(converter));
-        
+
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
         });
-        
+
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
             Node node = e.getRowValue();
-            
+
             System.out.println("X-Coordinate changed for Node "
                     + node.getNodeId() + " at row " + (row + 1) + " to " + e.getNewValue());
-            
+
             NodeTableUtil.getNodeList().get(row).setXCoord(e.getNewValue());
             draw();
         });
-        
+
         table.getColumns().add(fNameCol);
     }
-    
+
     public void addZCoordColumn(TableView<Node> table) {
-        
+
         TableColumn<Node, Double> fNameCol = NodeTableUtil.getZCoordColumn();
-        
+
         DoubleStringConverter converter = new DoubleStringConverter();
         fNameCol.setCellFactory(TextFieldTableCell.<Node, Double>forTableColumn(converter));
-        
+
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
             Node node = e.getRowValue();
-            
+
             System.out.println("Z-Coordinate changed for Node "
                     + node.getNodeId() + " at row " + (row + 1) + " to " + e.getNewValue());
-            
+
             NodeTableUtil.getNodeList().get(row).setZCoord(e.getNewValue());
             draw();
         });
-        
+
         table.getColumns().add(fNameCol);
     }
-    
+
     public void addStripIdColumn(TableView<Strip> table) {
 // Id column is non-editable
         table.getColumns().add(StripTableUtil.getIDColumn());
     }
-    
+
     public void addNode1Column(TableView<Strip> table) {
-        
+
         TableColumn<Strip, Integer> fNameCol = StripTableUtil.getNode1Column();
-        
+
         IntegerStringConverter converter = new IntegerStringConverter();
         fNameCol.setCellFactory(TextFieldTableCell.<Strip, Integer>forTableColumn(converter));
-        
+
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
         });
-        
+
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
-            
+
             Strip strip = e.getRowValue();
-            
+
             System.out.println("First node changed for Strip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
-            
+
             StripTableUtil.getStripList().get(row).setNode1(NodeTableUtil.getNodeMap().get(e.getNewValue()));
             System.out.println("New node id " + NodeTableUtil.getNodeMap().get(e.getNewValue()).getNodeId());
-            
+
             draw();
         });
-        
+
         table.getColumns().add(fNameCol);
     }
-    
+
     public void addNode2Column(TableView<Strip> table) {
-        
+
         TableColumn<Strip, Integer> fNameCol = StripTableUtil.getNode2Column();
-        
+
         IntegerStringConverter converter = new IntegerStringConverter();
         fNameCol.setCellFactory(TextFieldTableCell.<Strip, Integer>forTableColumn(converter));
-        
+
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
         });
-        
+
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
             Strip strip = e.getRowValue();
-            
+
             System.out.println("Second node changed for Strip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
-            
+
             StripTableUtil.getStripList().get(row).setNode2(NodeTableUtil.getNodeMap().get(e.getNewValue()));
-            
+
             draw();
         });
-        
+
         table.getColumns().add(fNameCol);
     }
-    
+
     public void draw() {
         mvp.draw();
     }

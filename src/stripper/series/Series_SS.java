@@ -7,6 +7,7 @@ package stripper.series;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
+import stripper.series.Series;
 
 
 /**
@@ -17,6 +18,7 @@ public class Series_SS extends Series {
 
     public Series_SS(double a) {
         super(a);
+        isSimplySupported = true;
     }
 
     @Override
@@ -90,7 +92,7 @@ public class Series_SS extends Series {
         double m4 = m*m*m*m;
         
         double n2 = n*n;
-        double n4 = n*n*n*n;
+        
         
         if(m==n)
         {
