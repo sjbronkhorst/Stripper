@@ -5,16 +5,11 @@ package stripper;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 import UI.PointLoad;
 import linalg.Matrix;
 import linalg.Vector;
-import stripper.Node;
-import stripper.Strip;
 
 import stripper.materials.Material;
-import stripper.series.Series;
 import stripper.series.Series_SS;
 import stripper.series.Series;
 
@@ -22,110 +17,31 @@ import stripper.series.Series;
  *
  * @author SJ
  */
-public class Strip_SS extends Strip{
-
-   
-        
-   
+public class Strip_SS extends Strip {
 
     public Strip_SS(Node node1, Node node2) {
 
         setNode1(node1);
         setNode2(node2);
-        
-        
-                
+
     }
 
-    
-
     public Strip_SS() {
-        
+
         hasNode1 = false;
         hasNode2 = false;
         this.node1Id.set(0);
         this.node2Id.set(0);
-        
-        
-        
+
     }
-    
-   
-    
+
     @Override
-    public void setProperties(Material mat , double thickness , double length, Series Y)
-    {
-        this.mat = mat;
-        this.t = thickness;
-        this.a = length;
-        Y = new Series_SS(a);
+    public void setProperties(Material mat, double thickness, double length, Series Y) {
+        super.mat = mat;
+        super.t = thickness;
+        super.a = length;
+        super.Y = new Series_SS(a);
     }
-    
-    @Override
-    public Vector getLoadVector(int m)
-    {
-        
-        // Bending udl
-        Vector F = Vector.getVector(8);
-        
-        F.clear();
-        
-        
-        F.set(getStripWidth()/2.0, 2);
-        F.set(getStripWidth()*getStripWidth()/12.0,3);
-        
-        F.set(getStripWidth()/2.0, 6);
-        F.set(-getStripWidth()*getStripWidth()/12.0,7);
-        
-        F.scale(Y.getYmIntegral(m, a)*udlZ.doubleValue());
-        
-        // In plane udl
-        
-        Vector fp = Vector.getVector(8);
-        
-        fp.set(udlX.doubleValue()*Y.getYmIntegral(m, a),0);
-        fp.set(udlY.doubleValue()*(a/Y.getMu_m(m)*Y.getFirstDerivativeIntegral(m)),1);
-        fp.set(udlX.doubleValue()*Y.getYmIntegral(m, a),4);
-        fp.set(udlY.doubleValue()*(a/Y.getMu_m(m)*Y.getFirstDerivativeIntegral(m)),5);
-        
-        fp.scale(getStripWidth()/2.0);
-        
-        F.add(fp);
-        
-        
-        
-        
-        //Pointloads
-        
-        for (PointLoad p : pointLoads) {
-            double x = p.getX();
-            double y = p.getY();
-            double magnitude = p.getMagnitude();
-            
-
-            double c = magnitude * Y.getFunctionValue(y, m);
-            double xb = x / getStripWidth();
-
-            Vector f = Vector.getVector(8);
-
-            f.set(1 - 3 * xb * xb + 2 * xb * xb * xb, 2);
-            f.set(x * (1 - 2 * xb + xb * xb), 3);
-            f.set(3 * xb * xb - 2 * xb * xb * xb, 6);
-            f.set(x * (xb * xb - xb), 7);
-            f.scale(c);
-
-            F.add(f);
-        }
-        
-        
-        
-        return F;
-    }
-    
-   
-    
-    
-    
 
     public Matrix getBendingStiffnessMatrix(int m, int n) {
 
@@ -180,148 +96,96 @@ public class Strip_SS extends Strip{
 
         return S;
     }
-    
+
     public Matrix getMembraneStiffnessMatrix(int m, int n) {
-        
+
         Matrix M = Matrix.getMatrix(4, 4);
 
-        double b = getStripWidth();
+        if (m == n) {
 
-        double Ex = mat.getEx();
-        double Ey = mat.getEy();
-        double vx = mat.getVx();
-        double vy = mat.getVy();
-        double G = mat.getG();
-        double k = (m * Math.PI) / a;
+            double b = getStripWidth();
 
-        
+            double Ex = mat.getEx();
+            double Ey = mat.getEy();
+            double vx = mat.getVx();
+            double vy = mat.getVy();
+            double G = mat.getG();
+            double k = (m * Math.PI) / a;
 
-        
-        double E1 = Ex/(1-vx*vy);
-        double E2 = Ey/(1-vx*vy);
-        
-        
-        
+            double E1 = Ex / (1 - vx * vy);
+            double E2 = Ey / (1 - vx * vy);
 
-        double K11 = a*E1/(2.0*b)+(a*b*k*k*G)/6.0;
+            double K11 = a * E1 / (2.0 * b) + (a * b * k * k * G) / 6.0;
 
-        double K12 = (a*k*vx*E2/4.0)-a*k*G/4.0;
-        
-        double K13 = -a*E1/(2*b)+a*b*k*k*G/12;
-        
-        double K14 = (a*k*vx*E2/4)+a*k*G/4;
-        
-        double K22 = (a*b*k*k*E2/6)+a*G/(2*b);
-        
-        double K23 = -(a*k*vx*E2/4)-a*k*G/4;
-        
-        double K24 = (a*b*k*k*E2/12)-a*G/(2*b);
-        
-        double K33 = K11;
-        double K34 = -K12;
-        
-        double K44 = K22;
-        
-        double K21 = K12;
-        double K31 = K13;
-        double K32 = K23;
-        double K41 = K14;
-        double K42 = K24;
-        double K43 = K34;
-        
-                
+            double K12 = (a * k * vx * E2 / 4.0) - a * k * G / 4.0;
 
-        M.set(K11, 0, 0);
-        M.set(K12, 0, 1);
-        M.set(K13, 0, 2);
-        M.set(K14, 0, 3);
+            double K13 = -a * E1 / (2 * b) + a * b * k * k * G / 12;
 
-        M.set(K21, 1, 0);
-        M.set(K22, 1, 1);
-        M.set(K23, 1, 2);
-        M.set(K24, 1, 3);
+            double K14 = (a * k * vx * E2 / 4) + a * k * G / 4;
 
-        M.set(K31, 2, 0);
-        M.set(K32, 2, 1);
-        M.set(K33, 2, 2);
-        M.set(K34, 2, 3);
+            double K22 = (a * b * k * k * E2 / 6) + a * G / (2 * b);
 
-        M.set(K41, 3, 0);
-        M.set(K42, 3, 1);
-        M.set(K43, 3, 2);
-        M.set(K44, 3, 3);
-        
-       M.scale(getStripThickness());
+            double K23 = -(a * k * vx * E2 / 4) - a * k * G / 4;
+
+            double K24 = (a * b * k * k * E2 / 12) - a * G / (2 * b);
+
+            double K33 = K11;
+            double K34 = -K12;
+
+            double K44 = K22;
+
+            double K21 = K12;
+            double K31 = K13;
+            double K32 = K23;
+            double K41 = K14;
+            double K42 = K24;
+            double K43 = K34;
+
+            M.set(K11, 0, 0);
+            M.set(K12, 0, 1);
+            M.set(K13, 0, 2);
+            M.set(K14, 0, 3);
+
+            M.set(K21, 1, 0);
+            M.set(K22, 1, 1);
+            M.set(K23, 1, 2);
+            M.set(K24, 1, 3);
+
+            M.set(K31, 2, 0);
+            M.set(K32, 2, 1);
+            M.set(K33, 2, 2);
+            M.set(K34, 2, 3);
+
+            M.set(K41, 3, 0);
+            M.set(K42, 3, 1);
+            M.set(K43, 3, 2);
+            M.set(K44, 3, 3);
+
+            M.scale(getStripThickness());
+        }
+
+        if (m != n) {
+            M.clear();
+        }
 
         return M;
     }
-    
+
     @Override
-    public Matrix getStiffnessMatrix(int m , int n)
-    {
-        Matrix K = Matrix.getMatrix(8,8);
-        
+    public Matrix getStiffnessMatrix(int m, int n) {
+        Matrix K = Matrix.getMatrix(8, 8);
+
         K.clear();
-        
-        int [] bendingIndices = {2,3,6,7};
-        
+
+        int[] bendingIndices = {2, 3, 6, 7};
+
         K.addSubmatrix(getBendingStiffnessMatrix(m, n), bendingIndices);
-        
-        int [] membraneIndices = {0,1,4,5}; 
-        
+
+        int[] membraneIndices = {0, 1, 4, 5};
+
         K.addSubmatrix(getMembraneStiffnessMatrix(m, n), membraneIndices);
-        
-        
+
         return K;
     }
-  
-    
-    @Override
-    public Matrix getRotationMatrix()
-    {
-        Matrix R = Matrix.getMatrix(8, 8);
-        Matrix r = Matrix.getMatrix(4,4);
-        
-        beta = getStripAngle();
-        
-        double s = (node2.getZCoord() - node1.getZCoord())/getStripWidth();
-        double c = (node2.getXCoord() - node1.getXCoord())/getStripWidth();
-        
-        r.clear();
-        r.set(c, 0, 0);
-        r.set(1 ,1,1);
-        r.set(c,2,2);
-        r.set(1,3,3);
-        r.set(s,2,0);
-        r.set(-s,0,2);
-        
-        int [] ind1 = {0,1,2,3};
-        int [] ind2 = {4,5,6,7};
-        
-        R.clear();
-        
-        R.addSubmatrix(r, ind1);
-        R.addSubmatrix(r, ind2);
-        
-        
-        
-        return R;
-        
-    }
-
-    @Override
-    public String toString() {
-        return "Strip " + stripId.getValue().toString();
-    }
-
-   
-
-    @Override
-    public void addPointLoad(double x, double y, double magnitude) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-           
 
 }

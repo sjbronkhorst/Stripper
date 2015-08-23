@@ -104,6 +104,8 @@ public class CoupledMatrix_1 {
         
         matrix.addSubmatrix(quarterMatrix, rowIndex, colIndex);
         
+        
+        
     }
     
     public void addStiffnessMatrix(Matrix stiffness, Node firstNode , Node secondNode , int m , int n)
@@ -126,6 +128,8 @@ public class CoupledMatrix_1 {
         addQuarterMatrix(S12, firstNode.getNodeId()-1, secondNode.getNodeId()-1, m, n);
         
         addQuarterMatrix(S21, secondNode.getNodeId()-1, firstNode.getNodeId()-1, m, n);
+        
+        
         
         
         

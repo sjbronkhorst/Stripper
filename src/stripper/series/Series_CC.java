@@ -6,6 +6,7 @@
 package stripper.series;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -264,6 +265,8 @@ public class Series_CC extends Series {
     }
 
     public double getI2(int m, int n) {
+        
+        
 
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getF2(m, n), 0, a);
@@ -362,7 +365,7 @@ public class Series_CC extends Series {
 
     @Override
     public double getFirstDerivativeIntegral(int m) {
-        return Math.sin(Math.PI * m);
+        return 0.0;
     }
 
     public double sin(double d) {

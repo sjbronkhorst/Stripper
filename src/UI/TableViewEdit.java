@@ -1,8 +1,9 @@
 package UI;
 
-
 import stripper.Node;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -10,8 +11,10 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -36,7 +39,9 @@ import stripper.Strip_General;
 public class TableViewEdit extends Application {
 
     ModelViewPane mvp = new ModelViewPane();
-
+    
+    Boolean disCalced = false;
+   
     LoadPane lp = new LoadPane(this);
 
     TextField modelLengthField = new TextField();
@@ -46,6 +51,7 @@ public class TableViewEdit extends Application {
     private double biggestY = 0;
 
     Button calcBtn = new Button("Calculate");
+    Button plotBtn = new Button("Plot");
 
     ProgressBar progInd = new ProgressBar(0);
 
@@ -65,7 +71,9 @@ public class TableViewEdit extends Application {
     @Override
     public void start(Stage stage) {
 
+       
         progInd.setStyle("-fx-progress-color: blue;");
+        
 
         //progInd.setMinSize(50, 50);
         //String filePath = "C:/Users/SJ/Desktop/file.txt";
@@ -99,7 +107,7 @@ public class TableViewEdit extends Application {
         Button stripRemoveBtn = new Button("Remove");
         Button stripPropertyBtn = new Button("Properties");
 
-        Button plotBtn = new Button("Plot");
+        
 
         Slider slider = new Slider(0, 100, 50);
 
@@ -127,6 +135,11 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                
+                if(disCalced)
+                {
+
+                XYChartDataUtil.addSeries(s.getxData(), s.getyData(), "Displacement");
 
                 LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
 
@@ -134,6 +147,11 @@ public class TableViewEdit extends Application {
 
                 s.getIcons().add(ic);
                 chart.start(s);
+                }
+                else
+                {
+                    System.out.println("Nothing to plot");
+                }
 
             }
         });
@@ -143,46 +161,59 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                Material mat = new Material_Steel();
-                ModelProperties.setModelMaterial(mat);
-                //ModelProperties.setFourierTerms(1);
-                
+               
+
                 for (Strip s : StripTableUtil.getStripList()) {
 
-                    s.setProperties(ModelProperties.getModelMaterial(),Double.parseDouble(thicknessField.textProperty().get()),Double.parseDouble(modelLengthField.textProperty().get()),ModelProperties.getFourierSeries());
-                     
-                    
-                    
+                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
+
                     //s.getStiffnessMatrix(1, 1).printf("k" + Integer.toString(s.getStripId()));
                     //s.getMembraneStiffnessMatrix(1, 1).printf("M");
                     // s.getRotationMatrix().printf("R");
                     //s.getRotatedLoadVector(1).printf("P"+Integer.toString(s.getStripId()));
-
                 }
-                
-                
 
                 s = new SystemEquation(StripTableUtil.getStripList(), NodeTableUtil.getNodeList());
-                
-               
 
                 Task<Void> task = new Task<Void>() {
 
                     @Override
                     protected Void call() throws Exception {
-                        
+
+                        progInd.progressProperty().bind(s.progressProperty());
+
                         s.getDisplacementVector()[50].printf("U ");
-                                                
+
                         s.setDisplacedState((int) slider.getValue());
                         System.out.println((int) slider.getValue());
+                        
+                        disCalced = true;
+                        
+                        
+                        
                         draw();
 
                         return null;
                     }
                 };
-                progInd.progressProperty().bind(s.progressProperty());
 
-                new Thread(task).start();
+                Thread t = new Thread(task);
+                t.start();
+                
+                
+                   
+                
+                        
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                        
 
             }
         });

@@ -46,7 +46,6 @@ public abstract class Strip {
 
     protected boolean hasNode1, hasNode2;
 
-    // private double distLoadZMagnitude = 0.00001;
     public static void clearNumbering() {
         stripSequence.set(0);
     }
@@ -125,8 +124,6 @@ public abstract class Strip {
         return hasNode1 && hasNode2;
     }
 
-    public abstract Matrix getRotationMatrix();
-
     public double getStripLength() {
         return a;
     }
@@ -168,9 +165,92 @@ public abstract class Strip {
         return RF;
     }
 
-    public abstract Vector getLoadVector(int m);
+    @Override
+    public String toString() {
+        return "Strip " + stripId.getValue().toString();
+    }
 
-    public abstract void addPointLoad(double x, double y, double magnitude);
+    public Matrix getRotationMatrix() {
+        Matrix R = Matrix.getMatrix(8, 8);
+        Matrix r = Matrix.getMatrix(4, 4);
+
+        double s = (node2.getZCoord() - node1.getZCoord()) / getStripWidth();
+        double c = (node2.getXCoord() - node1.getXCoord()) / getStripWidth();
+
+        r.clear();
+        r.set(c, 0, 0);
+        r.set(1, 1, 1);
+        r.set(c, 2, 2);
+        r.set(1, 3, 3);
+        r.set(s, 2, 0);
+        r.set(-s, 0, 2);
+
+        int[] ind1 = {0, 1, 2, 3};
+        int[] ind2 = {4, 5, 6, 7};
+
+        R.clear();
+
+        R.addSubmatrix(r, ind1);
+        R.addSubmatrix(r, ind2);
+
+        return R;
+
+    }
+
+    public Vector getLoadVector(int m) {
+
+        // Bending udl
+        Vector F = Vector.getVector(8);
+
+        F.clear();
+
+        if (udlZ.doubleValue() != 0.0) {
+
+            F.set(getStripWidth() / 2.0, 2);
+            F.set(getStripWidth() * getStripWidth() / 12.0, 3);
+
+            F.set(getStripWidth() / 2.0, 6);
+            F.set(-getStripWidth() * getStripWidth() / 12.0, 7);
+
+            F.scale(Y.getYmIntegral(m, a) * udlZ.doubleValue());
+        }
+
+        // In plane udl
+        Vector fp = Vector.getVector(8);
+
+        fp.set(udlX.doubleValue() * Y.getYmIntegral(m, a), 0);
+        fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 1);
+        fp.set(udlX.doubleValue() * Y.getYmIntegral(m, a), 4);
+        fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 5);
+
+        fp.scale(getStripWidth() / 2.0);
+
+        F.add(fp);
+
+        //Pointloads
+        for (UI.PointLoad p : pointLoads) {
+            double x = p.getX();
+            double y = p.getY();
+            double magnitude = p.getMagnitude();
+
+            double c = magnitude * Y.getFunctionValue(y, m);
+            double xb = x / getStripWidth();
+
+            Vector f = Vector.getVector(8);
+
+            f.set(1 - 3 * xb * xb + 2 * xb * xb * xb, 2);
+            f.set(x * (1 - 2 * xb + xb * xb), 3);
+            f.set(3 * xb * xb - 2 * xb * xb * xb, 6);
+            f.set(x * (xb * xb - xb), 7);
+            f.scale(c);
+
+            F.add(f);
+        }
+
+        return F;
+    }
+
+    
 
     public abstract Matrix getStiffnessMatrix(int n, int m);
 

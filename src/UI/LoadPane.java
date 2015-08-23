@@ -86,10 +86,13 @@ public class LoadPane
 
             @Override
             public void handle(ActionEvent event) {
+                if(stripChoice.getSelectionModel().selectedIndexProperty().get() >= 0)
+                {
                 PointLoad p = new PointLoad();
                 PointLoadTableUtil.addPointLoad(p,stripChoice.getValue());
                 viewer.draw();
                 System.out.println("PointLoad " + p.getID() + " added to " + stripChoice.getValue().toString());
+                }
 
             }
         });

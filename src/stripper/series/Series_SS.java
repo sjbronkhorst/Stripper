@@ -7,14 +7,13 @@ package stripper.series;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
-import stripper.series.Series;
 
 
 /**
  *
  * @author SJ
  */
-public class Series_SS extends Series {
+public class Series_SS extends Series{
 
     public Series_SS(double a) {
         super(a);
@@ -26,11 +25,12 @@ public class Series_SS extends Series {
         return Math.sin(m * Math.PI * y / a);
     }
     
-    public double getYmIntegral(double m, double a)
-    {
-        
-        return (a - a*Math.cos(Math.PI*m))/(Math.PI*m);
-    }
+//    @Override
+//    public double getYmIntegral(int m, double a)
+//    {
+//        System.out.println("getYmIntegral()");
+//        return (a - a*Math.cos(Math.PI*m))/(Math.PI*m);
+//    }
     
     public UnivariateFunction getFunction(int m) 
     {

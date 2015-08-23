@@ -33,69 +33,68 @@ public class Stripper {
         int modelLength = 2000;
         double force = 0.001;
 
-                
-        Material usrMat = new  Material_Steel();
-        
+        Material usrMat = new Material_Steel();
+
         Node n1 = new Node(0, 0);
-        Node n2 = new Node(100, 0);
-        Node n3 = new Node(100, 0);
-        
+        Node n2 = new Node(2, 0);
 
         Series_CC Y = new Series_CC(modelLength);
-        
         Strip_General myStrip = new Strip_General(n1, n2);
-        Strip_General myStrip2 = new Strip_General(n2, n3);
-     
         myStrip.setProperties(usrMat, 10, modelLength, Y);
-        myStrip2.setProperties(usrMat, 10, modelLength, Y);
-      
-        myStrip.setUdlZ(force);
-        myStrip2.setUdlZ(force);
 
-        int nTerms =1;
+        myStrip.setUdlZ(force);
+
+        int nTerms = 20;
         int nNodes = 2;
 
-   
-       CoupledMatrix_1 cK = new CoupledMatrix_1(nNodes, nTerms);
-       CoupledVector_1 fK = new CoupledVector_1(nNodes, nTerms);
+        CoupledMatrix_1 cK = new CoupledMatrix_1(nNodes, nTerms);
+        CoupledVector_1 fK = new CoupledVector_1(nNodes, nTerms);
+        
        
+
 //       Vector fK = Vector.getVector(8*nTerms);
 //       fK.clear();
-   
-        
-        for (int i = 1; i < nTerms+1; i++) 
-        {
-                   
-            
-            for (int j = 1; j < nTerms+1; j++) 
-        {
-                                
-           cK.addStiffnessMatrix(myStrip.getStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
-           //cK.addStiffnessMatrix(myStrip2.getStiffnessMatrix(i, j), myStrip2.getNode1(), myStrip2.getNode2(), i, j);
-           
-                                    
-        }
-          fK.addForceVector(myStrip.getLoadVector(i), myStrip.getNode1(),myStrip.getNode2(),i);
-         // fK.addForceVector(myStrip2.getLoadVector(i), myStrip2.getNode1(),myStrip2.getNode2(),i);
-          
+        for (int i = 1; i < nTerms + 1; i++) {
+
+            for (int j = 1; j < nTerms + 1; j++) {
+
+                cK.addStiffnessMatrix(myStrip.getStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
+
+            }
+            fK.addForceVector(myStrip.getLoadVector(i), myStrip.getNode1(), myStrip.getNode2(), i);
+
         }
 
+        //cK.getMatrix().printf("cK");
         
-        //cK.getMatrix().printf("cK ");
-       //myStrip.getOldMembraneStiffnessMatrix(1, 1).printf("Old");
-       // myStrip.getMembraneStiffnessMatrix(1, 1).printf("New");
-       Cholesky chol = new Cholesky();
-       Vector u = chol.getX(cK.getMatrix(), fK.getVector());
-       // SerializeUtils.serialize(cK.getMatrix(), "CC" + nTerms*8);
+       
         
+        
+        //myStrip.getOldMembraneStiffnessMatrix(1, 1).printf("Old");
+        // myStrip.getMembraneStiffnessMatrix(1, 1).printf("New");
+        // 
+       // SerializeUtils.serialize(cK.getMatrix(), "Broken");
+//        Matrix k = SerializeUtils.deserialze("Broken");
+//        k.printf("Broken");
+//        
+//        Matrix CK = cK.getMatrix();
+//        CK.scale(-1);
+//        CK.add(k);
+//        CK.printf("SUM");
+        
+        
+        
+        
+        //     System.out.println("SS" + nTerms * 8);
+        Cholesky chol = new Cholesky();
+        Vector u = chol.getX(cK.getMatrix(), fK.getVector());
+        //Vector u = cK.getMatrix().inverse().multiply(fK.getVector());
+        
+
 //        Matrix k = SerializeUtils.deserialze("CC" + nTerms*8);
 //        k.printf("k");
-     
-    
-// Comparison with Euler beam theory
-        
-        
-        double I = myStrip.getStripWidth()*Math.pow(myStrip.getStripThickness(), 3)/12.0;
+ ////Comparison with Euler beam theory
+        double I = myStrip.getStripWidth() * Math.pow(myStrip.getStripThickness(), 3) / 12.0;
         System.out.println("I=" + I);
         double E = usrMat.getEx();
         System.out.println("E=" + E);
@@ -103,25 +102,20 @@ public class Stripper {
         System.out.println("L=" + L);
         double P = force;
         System.out.println("P=" + P);
-        double w = P*myStrip.getStripWidth() * Math.pow(L, 4) / (384 * E * I);
-        
-       
-          double uu = 0;
-        System.out.println("Beam theory = " + w);
-        
-        for (int i = 0; i < nTerms; i++)
-        {
-            uu += u.get((i*4)+2)*Y.getFunctionValue(modelLength/2.0, i+1);
-          
-        }
-        
-  
-        System.out.println("UU = " +uu);
-        double error = 100*(w-uu)/w;
-        
-        System.out.println("Error: " + error);
-        
+        double w = P * myStrip.getStripWidth() * Math.pow(L, 4) / (384 * E * I);
 
+        double uu = 0;
+        System.out.println("Beam theory = " + w);
+
+        for (int i = 0; i < nTerms; i++) {
+            uu += u.get((i * 4) + 2) * Y.getFunctionValue(modelLength / 2.0, i + 1);
+
+        }
+
+        System.out.println("UU = " + uu);
+        double error = 100 * (w - uu) / w;
+
+        System.out.println("Error: " + error);
         //THREADING EXAMPLE
         /*
          double time1 = System.currentTimeMillis();
@@ -179,5 +173,4 @@ public class Stripper {
         return bd.doubleValue();
     }
 
-   
 }

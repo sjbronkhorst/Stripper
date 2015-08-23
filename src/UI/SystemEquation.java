@@ -30,8 +30,21 @@ public class SystemEquation {
     List<Strip> strips = new ArrayList<>();
     List<Node> nodes = new ArrayList<>();
     int[][] localToGlobalConfNumbering;
-    double[] dataPoints;
-    Vector[] Uarr = new Vector[101];
+    private Vector[] Uarr = new Vector[101];
+    private double[] xData = new double[101];
+    private double[] yData = new double[101];
+
+    public double[] getxData() {
+        return xData;
+    }
+
+    public double[] getyData() {
+        return yData;
+    }
+    
+    
+    
+    
 
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
 
@@ -106,7 +119,7 @@ public class SystemEquation {
 
                 }
 
-                progress.set((i + 1) / ModelProperties.getFourierTerms());
+                progress.set((double)(i + 1) / (double)ModelProperties.getFourierTerms());
                 //System.out.println(i+1/ModelProperties.getFourierTerms());
                 temp.release();
 
@@ -123,6 +136,10 @@ public class SystemEquation {
 //       Vector fK = Vector.getVector(8*nTerms);
 //       fK.clear();
             for (int i = 1; i < ModelProperties.getFourierTerms() + 1; i++) {
+                
+                progress.set((double)(i + 1) / (double)ModelProperties.getFourierTerms());
+                
+                
 
                 for (int j = 1; j < ModelProperties.getFourierTerms() + 1; j++) {
 
@@ -140,7 +157,7 @@ public class SystemEquation {
                     fK.addForceVector(myStrip.getRotatedLoadVector(i), myStrip.getNode1(), myStrip.getNode2(), i);
                     
                 }
-                progress.set((i + 1) / ModelProperties.getFourierTerms());
+                
 
             }
             System.out.println("Assembly done, commencing cholesky");
@@ -148,6 +165,8 @@ public class SystemEquation {
             
             Cholesky chol = new Cholesky();
             Vector u = chol.getX(cK.getMatrix(), fK.getVector());
+            
+          
 
             System.out.println("Displacements calculated");
 
@@ -173,14 +192,13 @@ public class SystemEquation {
 
         }
 
-        double[] xData = new double[101];
-        double[] yData = new double[101];
+        
         for (int i = 0; i < 101; i++) {
             xData[i] = StripTableUtil.getStripList().get(0).getStripLength() * (i / 100.0);
             yData[i] = Uarr[i].get(2);
         }
 
-        XYChartDataUtil.addSeries(xData, yData, "Displacement");
+        
 
         return Uarr;
     }

@@ -3,7 +3,6 @@ package UI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import linalg.Vector;
 
 @SuppressWarnings("unchecked")
 public class XYChartDataUtil {

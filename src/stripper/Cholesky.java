@@ -5,7 +5,6 @@
  */
 package stripper;
 
-import java.math.BigDecimal;
 import linalg.Matrix;
 import linalg.Vector;
 
@@ -93,6 +92,8 @@ public class Cholesky
                 
                 if(Double.isNaN(ans))
                 {
+                    
+                    System.out.println(i);
                     System.out.println("A :"+A.get(i,i));
                     System.out.println("Sum " + sum);
                    
