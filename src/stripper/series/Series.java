@@ -43,6 +43,22 @@ public abstract class Series {
     
     public abstract double getMu_m(int m);
     
+    public double sin(double d) {
+        return Math.sin(d);
+    }
+
+    public double sinh(double d) {
+        return Math.sinh(d);
+    }
+
+    public double cos(double d) {
+        return Math.cos(d);
+    }
+
+    public double cosh(double d) {
+        return Math.cosh(d);
+    }
+    
 
 //    public UnivariateFunction getFunction(int m) {
 //

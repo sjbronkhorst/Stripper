@@ -5,15 +5,13 @@
  */
 package stripper;
 
-import UI.PointLoad;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import linalg.Matrix;
-import linalg.Vector;
 import stripper.materials.Material;
 import stripper.materials.Material_Steel;
 import stripper.series.Series;
-import stripper.series.Series_CC;
+
 
 /**
  *
@@ -191,8 +189,18 @@ public class Strip_General extends Strip {
         BigDecimal K14B = K141.add(K142).add(K143).add(K144).add(K145);
         K14B = K14B.multiply(c);
         double K14 = K14B.doubleValue();
+        
+         BigDecimal K211 = _2520.multiply(b).multiply(Dx).multiply(I[0]);
+        BigDecimal K212 = _neg1.multiply(_462).multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
+        BigDecimal K213 = _neg1.multiply(_42).multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
+        BigDecimal K214 = _22.multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
+        BigDecimal K215 = _168.multiply(b).multiply(b).multiply(b).multiply(Dxy).multiply(I[4]);
 
-        double K21 = K12;
+        BigDecimal K21B = K211.add(K212).add(K213).add(K214).add(K215);
+        K21B = K21B.multiply(c);
+        double K21 = K21B.doubleValue();
+
+        
 
 //        double K22 = c * (1680 * b * b * Dx * I[0]
 //                - 56 * b * b * b * b * D1 * I[1]
@@ -226,14 +234,54 @@ public class Strip_General extends Strip {
         K24B = K24B.multiply(c);
         double K24 = K24B.doubleValue();
 
-        double K31 = K13;
-        double K32 = K23;
+       BigDecimal K311 = _neg1.multiply(_5040).multiply(Dx).multiply(I[0]);
+        BigDecimal K312 = _504.multiply(b).multiply(b).multiply(D1).multiply(I[1]);
+        BigDecimal K313 = _504.multiply(b).multiply(b).multiply(D1).multiply(I[2]);
+        BigDecimal K314 = _54.multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
+        BigDecimal K315 = _neg1.multiply(_2016).multiply(b).multiply(b).multiply(Dxy).multiply(I[4]);
+
+        BigDecimal K31B = K311.add(K312).add(K313).add(K314).add(K315);
+        K31B = K31B.multiply(c);
+        double K31 = K31B.doubleValue();
+        
+        
+        
+         BigDecimal K321 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
+        BigDecimal K322 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
+        BigDecimal K323 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
+        BigDecimal K324 = _13.multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
+        BigDecimal K325 = _neg1.multiply(_168).multiply(b).multiply(b).multiply(b).multiply(Dxy).multiply(I[4]);
+
+        BigDecimal K32B = K321.add(K322).add(K323).add(K324).add(K325);
+        K32B = K32B.multiply(c);
+        double K32 = K32B.doubleValue();
+        
+        
         double K33 = K11;
-        double K34 = -K21;
+        
+         BigDecimal K341 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
+        BigDecimal K342 = _462.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
+        BigDecimal K343 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
+        BigDecimal K344 = _neg1.multiply(_22).multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
+        BigDecimal K345 = _neg1.multiply(_168).multiply(b).multiply(b).multiply(b).multiply(Dxy).multiply(I[4]);
+
+        BigDecimal K34B = K341.add(K342).add(K343).add(K344).add(K345);
+        K34B = K34B.multiply(c);
+        double K34 = K34B.doubleValue();
 
         double K41 = K14;
         double K42 = K24;
-        double K43 = K34;
+        
+         BigDecimal K431 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
+        BigDecimal K432 = _462.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
+        BigDecimal K433 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
+        BigDecimal K434 = _neg1.multiply(_22).multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
+        BigDecimal K435 = _neg1.multiply(_168).multiply(b).multiply(b).multiply(b).multiply(Dxy).multiply(I[4]);
+
+        BigDecimal K43B = K431.add(K432).add(K433).add(K434).add(K435);
+        K43B = K43B.multiply(c);
+        double K43 = K43B.doubleValue();
+        
         double K44 = K22;
 
         S.set(K11, 0, 0);
@@ -655,17 +703,6 @@ public class Strip_General extends Strip {
 //
 //        return K;
 //    }
-    public static void main(String[] args) {
-        Node n1 = new Node(0, 0);
-        Node n2 = new Node(100, 0);
-
-        Material mat = new Material_Steel();
-        Series_CC Y = new Series_CC(2000);
-
-        Strip_General s = new Strip_General(n1, n2);
-        s.setProperties(mat, 10, 2000, Y);
-
-        //s.getStiffnessMatrix(1, 1).printf("K ");
-    }
+    
 
 }

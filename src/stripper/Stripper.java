@@ -7,14 +7,7 @@ package stripper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import linalg.Matrix;
-import serialize.ProfileMatrix;
 import linalg.Vector;
-import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
-import serialize.SerializeUtils;
 import stripper.materials.*;
 import stripper.series.*;
 
@@ -36,86 +29,99 @@ public class Stripper {
         Material usrMat = new Material_Steel();
 
         Node n1 = new Node(0, 0);
-        Node n2 = new Node(2, 0);
+        Node n2 = new Node(10, 0);
 
-        Series_CC Y = new Series_CC(modelLength);
+        Series_CF Y = new Series_CF(modelLength);
         Strip_General myStrip = new Strip_General(n1, n2);
         myStrip.setProperties(usrMat, 10, modelLength, Y);
 
         myStrip.setUdlZ(force);
 
-        int nTerms = 20;
+       
+            
+        
+        int nTerms = 1;
         int nNodes = 2;
 
-        CoupledMatrix_1 cK = new CoupledMatrix_1(nNodes, nTerms);
+       
+            
+        for (nTerms = 1; nTerms < 25; nTerms++) {
+            
+        
+        
+        
+            
+         CoupledMatrix_1 cK = new CoupledMatrix_1(nNodes, nTerms);
         CoupledVector_1 fK = new CoupledVector_1(nNodes, nTerms);
         
-       
+       // myStrip.getBendingStiffnessMatrix(1,2 , Y.getIntegralValues(1, 2)).printf("12");
+       // myStrip.getBendingStiffnessMatrix(2,1 , Y.getIntegralValues(2, 1)).printf("21");
+      
 
-//       Vector fK = Vector.getVector(8*nTerms);
-//       fK.clear();
+
         for (int i = 1; i < nTerms + 1; i++) {
 
             for (int j = 1; j < nTerms + 1; j++) {
 
                 cK.addStiffnessMatrix(myStrip.getStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
+                
+                
 
             }
             fK.addForceVector(myStrip.getLoadVector(i), myStrip.getNode1(), myStrip.getNode2(), i);
 
         }
 
-        //cK.getMatrix().printf("cK");
+      
         
        
         
         
-        //myStrip.getOldMembraneStiffnessMatrix(1, 1).printf("Old");
-        // myStrip.getMembraneStiffnessMatrix(1, 1).printf("New");
-        // 
-       // SerializeUtils.serialize(cK.getMatrix(), "Broken");
-//        Matrix k = SerializeUtils.deserialze("Broken");
-//        k.printf("Broken");
-//        
-//        Matrix CK = cK.getMatrix();
-//        CK.scale(-1);
-//        CK.add(k);
-//        CK.printf("SUM");
+       
+       //SerializeUtils.serialize(cK.getMatrix(), "CC" + nTerms * 8);
+
         
         
-        
-        
-        //     System.out.println("SS" + nTerms * 8);
         Cholesky chol = new Cholesky();
         Vector u = chol.getX(cK.getMatrix(), fK.getVector());
-        //Vector u = cK.getMatrix().inverse().multiply(fK.getVector());
+        //cK.getMatrix().printf("cK");
+        //System.out.println("CC" + nTerms * 8 + " Done !");
+        
+        
+       
         
 
 //        Matrix k = SerializeUtils.deserialze("CC" + nTerms*8);
 //        k.printf("k");
  ////Comparison with Euler beam theory
         double I = myStrip.getStripWidth() * Math.pow(myStrip.getStripThickness(), 3) / 12.0;
-        System.out.println("I=" + I);
+      //  System.out.println("I=" + I);
         double E = usrMat.getEx();
-        System.out.println("E=" + E);
+      //  System.out.println("E=" + E);
         double L = myStrip.getStripLength();
-        System.out.println("L=" + L);
+       // System.out.println("L=" + L);
         double P = force;
-        System.out.println("P=" + P);
-        double w = P * myStrip.getStripWidth() * Math.pow(L, 4) / (384 * E * I);
+       // System.out.println("P=" + P);
+        double w = P * myStrip.getStripWidth() * Math.pow(L, 4) / (8.0 * E * I);
 
         double uu = 0;
-        System.out.println("Beam theory = " + w);
+        //System.out.println("Beam theory = " + w);
 
         for (int i = 0; i < nTerms; i++) {
-            uu += u.get((i * 4) + 2) * Y.getFunctionValue(modelLength / 2.0, i + 1);
+            uu += u.get((i * 4) + 2)* Y.getFunctionValue(modelLength , i + 1);
 
         }
+       
 
-        System.out.println("UU = " + uu);
+        System.out.println( uu);
         double error = 100 * (w - uu) / w;
+        
+        }
 
-        System.out.println("Error: " + error);
+       // System.out.println("Error: " + error);
+        
+        
+    
         //THREADING EXAMPLE
         /*
          double time1 = System.currentTimeMillis();

@@ -6,7 +6,6 @@
 package stripper.series;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.concurrent.Task;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 
@@ -22,20 +20,19 @@ import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussInteg
  *
  * @author SJ
  */
-public class Series_CC extends Series {
+public class Series_CF extends Series {
 
-    public Series_CC(double a) {
+    public Series_CF(double a) {
         super(a);
-        isSimplySupported = false;
     }
 
     @Override
-    public strictfp double getFunctionValue(double y, int m) {
-       
+    public double getFunctionValue(double y, int m) {
+        
 
         double um = getMu_m(m);
 
-        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+        double alphaM = (sin(um) + sinh(um)) / (cos(um) + cosh(um));
 
         double km = um / a;
 
@@ -51,14 +48,15 @@ public class Series_CC extends Series {
         return Ym.doubleValue();
     }
 
-    public strictfp double getF1Value(double y, int m, int n) {
+    public double getF1Value(double y, int m, int n) {
         
-
+        
+        
         double um = getMu_m(m);
         double un = getMu_m(n);
-        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+        double alphaM = (sin(um) + sinh(um)) / (cos(um) + cosh(um));
 
-        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double alphaN = (sin(un) + sinh(un)) / (cos(un) + cosh(un));
         double km = um / a;
         double kn = un / a;
 
@@ -82,20 +80,16 @@ public class Series_CC extends Series {
         BigDecimal ans = Ym.multiply(Yn);
 
         return ans.doubleValue();
-
     }
 
-    public strictfp double getF2Value(double y, int m, int n) {
-        // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
-
-        //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
+    public double getF2Value(double y, int m, int n) {
         double Pi = Math.PI;
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+        double alphaM = (sin(um) + sinh(um)) / (cos(um) + cosh(um));
 
-        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double alphaN = (sin(un) + sinh(un)) / (cos(un) + cosh(un));
         double km = um / a;
         double kn = un / a;
 
@@ -122,17 +116,14 @@ public class Series_CC extends Series {
         return ans.doubleValue();
     }
 
-    public strictfp double getF4Value(double y, int m, int n) {
-        // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
-
-        //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
-        
+    public double getF4Value(double y, int m, int n) {
+        double Pi = Math.PI;
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+        double alphaM = (sin(um) + sinh(um)) / (cos(um) + cosh(um));
 
-        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double alphaN = (sin(un) + sinh(un)) / (cos(un) + cosh(un));
         double km = um / a;
         double kn = un / a;
 
@@ -160,17 +151,14 @@ public class Series_CC extends Series {
         return ans.doubleValue();
     }
 
-    public strictfp double getF5Value(double y, int m, int n) {
-        //Ymd1 = alphaM*(km*sin(km*y) + km*sinh(km*y)) + km*cos(km*y) - km*cosh(km*y)
-        //Ynd1 = alphaN*(kn*sin(kn*y) + kn*sinh(kn*y)) + kn*cos(kn*y) - kn*cosh(kn*y)
-
-        
+    public double getF5Value(double y, int m, int n) {
+       
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+        double alphaM = (sin(um) + sinh(um)) / (cos(um) + cosh(um));
 
-        double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        double alphaN = (sin(un) + sinh(un)) / (cos(un) + cosh(un));
         double km = um / a;
         double kn = un / a;
 
@@ -196,14 +184,14 @@ public class Series_CC extends Series {
         BigDecimal ans = Ymd1.multiply(Ynd1);
 
         return ans.doubleValue();
+
     }
 
     @Override
     public double getYmIntegral(int m, double a) {
-        
-        
+
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
-        return ilg.integrate(2000, this.getFunction(m), 0, a);
+        return ilg.integrate(2000, getFunction(m), 0, a);
     }
 
     public UnivariateFunction getFunction(int m) {
@@ -249,20 +237,17 @@ public class Series_CC extends Series {
     @Override
     public double getMu_m(int m) {
         double Pi = Math.PI;
+        
         if(m == 1)
         {
-            return 4.7300;
+            return 1.875;
         }
         if(m == 2)
         {
-            return 7.8532;
-        }
-        if(m == 3)
-        {
-            return 10.9960;
+            return 4.694;
         }
 
-        return Pi * (2 * m + 1) / 2.0;
+        return Pi * (2 * m - 1) / 2.0;
     }
 
     public double getI1(int m, int n) {
@@ -277,8 +262,6 @@ public class Series_CC extends Series {
     }
 
     public double getI2(int m, int n) {
-        
-        
 
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getF2(m, n), 0, a);
@@ -291,7 +274,7 @@ public class Series_CC extends Series {
 
     public double getI4(int m, int n) {
 
-        if (m != n) {
+       if (m != n) {
             return 0.0;
         }
 
@@ -308,12 +291,12 @@ public class Series_CC extends Series {
 
     /**
      * Computes the 5 integrals simultaneously for increased performance.
-     * 
-     * @param m Fourier term row 
-     * @param n Fourier term column 
-     * @return double array of size 5 with indexes corresponding to integral number (1-5)
+     *
+     * @param m Fourier term row
+     * @param n Fourier term column
+     * @return double array of size 5 with indexes corresponding to integral
+     * number (1-5)
      */
-    
     @Override
     public double[] getIntegralValues(int m, int n) {
 
@@ -342,28 +325,28 @@ public class Series_CC extends Series {
         try {
             I[0] = thread1.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Series_CF.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             I[1] = thread2.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Series_CF.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             I[2] = thread3.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Series_CF.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             I[3] = thread4.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Series_CF.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             I[4] = thread5.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Series_CF.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         service.shutdownNow();
@@ -371,15 +354,23 @@ public class Series_CC extends Series {
         return I;
     }
 
-    public static void main(String[] args) {
-
-    }
-
     @Override
     public double getFirstDerivativeIntegral(int m) {
         return 0.0;
     }
-
     
+    public static void main(String[]args)
+    {
+        
+        Series_CF y = new Series_CF(2000);
+        
+        double I [] = y.getIntegralValues(2, 1);
+        
+        for (int i = 0; i < 5; i++)
+        {
+            System.out.println(i+" " + I[i]);
+        }
+            
+            }
 
 }
