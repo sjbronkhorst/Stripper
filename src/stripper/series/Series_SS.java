@@ -136,6 +136,11 @@ public class Series_SS extends Series{
         return ilg.integrate(2000, this.getFunction(m), 0, a);
     }
 
+    @Override
+    public String toString() {
+       return "S-S";
+    }
+
     
 
 }

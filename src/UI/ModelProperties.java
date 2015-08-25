@@ -10,6 +10,7 @@ import stripper.materials.Material_Steel;
 import stripper.series.Series;
 import stripper.series.Series_CC;
 import stripper.series.Series_CF;
+import stripper.series.Series_SS;
 
 /**
  *
@@ -21,7 +22,7 @@ public class ModelProperties
   private static Material modelMaterial = new Material_Steel();
   private static double modelLength = 2000;
   private static int fourierTerms = 10;
-  private static Series fourierSeries = new Series_CF(modelLength);
+  private static Series fourierSeries = Series.getSerieslList().get(0);
 
     public static Material getModelMaterial() {
         return modelMaterial;
@@ -37,6 +38,7 @@ public class ModelProperties
 
     public static void setModelLength(double modelLength) {
         ModelProperties.modelLength = modelLength;
+        fourierSeries.setLength(modelLength);
     }
 
     public static int getFourierTerms() {
@@ -54,8 +56,11 @@ public class ModelProperties
 
     public static void setFourierSeries(Series fourierSeries) {
         ModelProperties.fourierSeries = fourierSeries;
+        ModelProperties.fourierSeries.setLength(modelLength);
     }
 
+    
+    
    
     
   

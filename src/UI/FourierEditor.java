@@ -10,15 +10,14 @@
 package UI;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import stripper.series.Series;
 
 /**
  *
@@ -26,32 +25,50 @@ import javafx.stage.Stage;
  */
 public class FourierEditor extends Application {
     
-    Label fourierLabel = new Label("Number of Fourier terms : " + ModelProperties.getFourierTerms());
-       
-    
-    
+    Label seriesLabel = new Label("Selected Fourier series : ");
+    Label termsLabel = new Label("Number of longitudinal terms : " + ModelProperties.getFourierTerms());
+    private ChoiceBox<Series> seriesChoice = new ChoiceBox<>(Series.getSerieslList());
+
+     
     
     @Override
     public void start(Stage primaryStage) {
+        
+        
+        seriesChoice.getSelectionModel().select(ModelProperties.getFourierSeries());
+       
+       seriesChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                
+              if(seriesChoice.getSelectionModel().selectedIndexProperty().get() >= 0)
+                { 
+            ModelProperties.setFourierSeries(seriesChoice.getItems().get((int)newValue));
+            
+                    System.out.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
+                }
+                
+                
+            }
+        });
        
        
         
         VBox root = new VBox();
-        root.getChildren().addAll(fourierLabel);
+        root.getChildren().addAll(seriesLabel,seriesChoice , termsLabel);
 
         
         Scene scene = new Scene(root, 300, 250);
         
-        primaryStage.setTitle("Model Properties");
+        primaryStage.setTitle("Fourier Series");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
+    
+    
+    
+   
     
 }

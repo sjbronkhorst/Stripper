@@ -380,6 +380,11 @@ public class Series_CC extends Series {
         return 0.0;
     }
 
+    @Override
+    public String toString() {
+        return "C-C";
+    }
+
     
 
 }

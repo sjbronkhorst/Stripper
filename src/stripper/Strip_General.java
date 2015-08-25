@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import linalg.Matrix;
 import stripper.materials.Material;
-import stripper.materials.Material_Steel;
 import stripper.series.Series;
 
 

@@ -39,12 +39,12 @@ public class HomeMenuBar {
     private MenuItem fileRead = new MenuItem("Open File...");
     private MenuItem fileWrite = new MenuItem("Save As...");
     private MenuItem materialEdit = new MenuItem("Material");
-    private MenuItem setFourierTerms = new MenuItem("Fourier terms");
+    private MenuItem setBC = new MenuItem("Fourier series");
 
     public HomeMenuBar(TableViewEdit viewer) {
 
         fileMenu.getItems().addAll(fileRead, fileWrite);
-        editMenu.getItems().addAll(materialEdit , setFourierTerms);
+        editMenu.getItems().addAll(materialEdit , setBC);
         
         
         menuBar.getMenus().add(fileMenu);
@@ -105,7 +105,7 @@ public class HomeMenuBar {
             }
         });
         
-        setFourierTerms.setOnAction(new EventHandler<ActionEvent>() {
+        setBC.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {

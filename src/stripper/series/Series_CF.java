@@ -373,4 +373,9 @@ public class Series_CF extends Series {
             
             }
 
+    @Override
+    public String toString() {
+        return "C-F";
+    }
+
 }

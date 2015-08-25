@@ -2,8 +2,6 @@ package UI;
 
 import stripper.Node;
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -11,10 +9,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -31,8 +27,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
-import stripper.materials.Material;
-import stripper.materials.Material_Steel;
 import stripper.Strip;
 import stripper.Strip_General;
 
@@ -45,6 +39,7 @@ public class TableViewEdit extends Application {
     LoadPane lp = new LoadPane(this);
 
     TextField modelLengthField = new TextField();
+    
     TextField thicknessField = new TextField();
 
     private double biggestX = 0;
@@ -175,7 +170,7 @@ public class TableViewEdit extends Application {
 
                 s = new SystemEquation(StripTableUtil.getStripList(), NodeTableUtil.getNodeList());
 
-                Task<Void> task = new Task<Void>() {
+               Task<Void> task = new Task<Void>() {
 
                     @Override
                     protected Void call() throws Exception {
