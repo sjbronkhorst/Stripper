@@ -63,7 +63,7 @@ Both ends of this beam are simply-supported (S-S) :
 
 ## Fourier series :
 
-In FSM the boundary condtions of a model is determined by it's Fourier series.
+In FSM the boundary condtions of a model is determined by its Fourier series.
 
 Take the following Fourier series on the domain 0 to a as an example:
 
