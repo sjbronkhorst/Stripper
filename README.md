@@ -65,7 +65,7 @@ Both ends of this beam are simply-supported (S-S) :
 
 In FSM the boundary condtions of a model is determined by its Fourier series.
 
-Take the following Fourier series on the domain 0 to a as an example:
+Take the following Fourier series on the domain y=0 to y=a as an example:
 
 Y(y) = sin(u.y/a) , (u = pi, 2.pi,3.pi, ... , m.pi)
 
