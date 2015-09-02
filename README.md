@@ -1,4 +1,9 @@
 # Stripper
+
+
+**Strip (noun) - A long narrow piece, usually of uniform width** 
+**Stripper (noun) - A person or thing that breaks something into strips**.
+
 ###Hello newcomer, welcome to my thesis project - Stripper.
 ===
 
