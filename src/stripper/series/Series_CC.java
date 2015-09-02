@@ -6,7 +6,6 @@
 package stripper.series;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.concurrent.Task;
+import linalg.Matrix;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 
@@ -23,6 +22,46 @@ import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussInteg
  * @author SJ
  */
 public class Series_CC extends Series {
+    
+    public Matrix I1Mat;
+    public Matrix I2Mat;
+    public Matrix I3Mat;
+    public Matrix I4Mat;
+    public Matrix I5Mat;
+    boolean integralsCalculated = false;
+    
+    @Override
+    public void computeAllIntegrals(int nTerms)
+    {
+        I1Mat = Matrix.getMatrix(nTerms,nTerms);
+        I2Mat = Matrix.getMatrix(nTerms,nTerms);
+        I3Mat = Matrix.getMatrix(nTerms,nTerms);
+        I4Mat = Matrix.getMatrix(nTerms,nTerms);
+        I5Mat = Matrix.getMatrix(nTerms,nTerms);
+        
+        double [] I = new double[5];
+        
+        for (int i = 1; i < nTerms+1; i++)
+        {
+            for (int j = i; j < nTerms+1; j++)
+            {
+                
+                I = getIntegralValues(i, j);
+                
+                I1Mat.set(I[0], i-1, j-1);
+                
+                I2Mat.set(I[1], i-1, j-1);
+                
+                I3Mat.set(I[2], i-1, j-1);
+                
+                I4Mat.set(I[3], i-1, j-1);
+                I5Mat.set(I[4], i-1, j-1);
+            }
+            
+        }
+        
+        integralsCalculated = true;
+    }
 
     public Series_CC(double a) {
         super(a);
@@ -45,6 +84,8 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-sinh(km * y));
         BigDecimal sin = new BigDecimal(sin(km * y));
         BigDecimal cos = new BigDecimal(-alphaM * cos(km * y));
+        
+       
 
         Ym = (cos.add(sin).add(sinh).add(cosh));
 
@@ -56,9 +97,16 @@ public class Series_CC extends Series {
 
         double um = getMu_m(m);
         double un = getMu_m(n);
+        
+//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
+//
+//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
+        
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        
+        
         double km = um / a;
         double kn = un / a;
 
@@ -69,6 +117,7 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-sinh(km * y));
         BigDecimal sin = new BigDecimal(sin(km * y));
         BigDecimal cos = new BigDecimal(-alphaM * cos(km * y));
+       
 
         Ym = (cos.add(sin).add(sinh).add(cosh));
 
@@ -76,6 +125,8 @@ public class Series_CC extends Series {
         BigDecimal sinhN = new BigDecimal(-sinh(kn * y));
         BigDecimal sinN = new BigDecimal(sin(kn * y));
         BigDecimal cosN = new BigDecimal(-alphaN * cos(kn * y));
+        
+       
 
         Yn = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -93,9 +144,14 @@ public class Series_CC extends Series {
 
         double um = getMu_m(m);
         double un = getMu_m(n);
+//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
+//
+//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
+        
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        
         double km = um / a;
         double kn = un / a;
 
@@ -107,13 +163,15 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-km * km * sinh(km * y));
         BigDecimal sin = new BigDecimal(-km * km * sin(km * y));
         BigDecimal cos = new BigDecimal(alphaM * km * km * cos(km * y));
-
+       
         Ymd2 = (cos.add(sin).add(sinh).add(cosh));
 
         BigDecimal coshN = new BigDecimal(-alphaN * -cosh(kn * y));
         BigDecimal sinhN = new BigDecimal(-sinh(kn * y));
         BigDecimal sinN = new BigDecimal(sin(kn * y));
         BigDecimal cosN = new BigDecimal(-alphaN * cos(kn * y));
+        
+       
 
         Yn = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -130,9 +188,15 @@ public class Series_CC extends Series {
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
+//
+//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
+        
+       double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        
+        
         double km = um / a;
         double kn = un / a;
 
@@ -144,6 +208,7 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-km * km * sinh(km * y));
         BigDecimal sin = new BigDecimal(-km * km * sin(km * y));
         BigDecimal cos = new BigDecimal(alphaM * km * km * cos(km * y));
+        
 
         Ymd2 = (cos.add(sin).add(sinh).add(cosh));
 
@@ -152,6 +217,8 @@ public class Series_CC extends Series {
         BigDecimal sinhN = new BigDecimal(-kn * kn * sinh(kn * y));
         BigDecimal sinN = new BigDecimal(-kn * kn * sin(kn * y));
         BigDecimal cosN = new BigDecimal(alphaN * kn * kn * cos(kn * y));
+        
+       
 
         Ynd2 = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -168,9 +235,15 @@ public class Series_CC extends Series {
 
         double um = getMu_m(m);
         double un = getMu_m(n);
+//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
+//
+//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
+        
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
+        
+        
         double km = um / a;
         double kn = un / a;
 
@@ -182,7 +255,7 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(alphaM * km * sinh(km * y));
         BigDecimal sin = new BigDecimal(alphaM * km * sin(km * y));
         BigDecimal cos = new BigDecimal(km * cos(km * y));
-
+       
         Ymd1 = (cos.add(sin).add(sinh).add(cosh));
 
         BigDecimal coshN = new BigDecimal(-kn * cosh(kn * y));
@@ -190,6 +263,8 @@ public class Series_CC extends Series {
         BigDecimal sinhN = new BigDecimal(alphaN * kn * sinh(kn * y));
         BigDecimal sinN = new BigDecimal(alphaN * kn * sin(kn * y));
         BigDecimal cosN = new BigDecimal(kn * cos(kn * y));
+        
+       
 
         Ynd1 = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -251,7 +326,7 @@ public class Series_CC extends Series {
         double Pi = Math.PI;
         if(m == 1)
         {
-            return 4.7300;
+            return 4.730;
         }
         if(m == 2)
         {
@@ -318,6 +393,10 @@ public class Series_CC extends Series {
     public double[] getIntegralValues(int m, int n) {
 
         double[] I = new double[5];
+        
+        if(!integralsCalculated)
+        {
+        
 
         Callable<Double> tsk1 = () -> getI1(m, n);
 
@@ -367,13 +446,31 @@ public class Series_CC extends Series {
         }
 
         service.shutdownNow();
+        }
+        else
+        {
+            if(n>=m)
+            {
+            I[0] = I1Mat.get(m-1, n-1);
+            I[1] = I2Mat.get(m-1, n-1);
+            I[2] = I3Mat.get(m-1, n-1);
+            I[3] = I4Mat.get(m-1, n-1);
+            I[4] = I5Mat.get(m-1, n-1);
+            }
+            else
+            {
+            I[0] = I1Mat.get(n-1, m-1);
+            I[1] = I3Mat.get(n-1, m-1);
+            I[2] = I2Mat.get(n-1, m-1);
+            I[3] = I4Mat.get(n-1, m-1);
+            I[4] = I5Mat.get(n-1, m-1);
+            }
+        }
 
         return I;
     }
 
-    public static void main(String[] args) {
-
-    }
+   
 
     @Override
     public double getFirstDerivativeIntegral(int m) {
@@ -386,5 +483,38 @@ public class Series_CC extends Series {
     }
 
     
+    
+     public static void main(String[] args) 
+    {
+//        int n = 240;
+//        double a = 2000;
+//        double y = 1000;
+//        Series_CC s= new Series_CC(a);
+//        double un = s.getMu_m(n);
+//       // double alphaN = (s.sin(un) - s.sinh(un)) / (s.cos(un) - s.cosh(un));
+//        
+//        double kn = un / a;
+//        
+//        
+//        System.out.println("un = " + un);
+//        
+//        System.out.println("kn = " + kn);
+////        System.out.println("bigSIN = " + s.bigSin(un));
+////        System.out.println("bigSINH = " + s.bigSinh(un));
+////        System.out.println("bigcos = " + s.bigCos(un));
+////        System.out.println("bigcosh = " + s.bigCosh(un));
+//        
+//        System.out.println("SIN = " + s.sin(un));
+//        System.out.println("SINH = " + s.sinh(un));
+//        System.out.println("cos = " + s.cos(un));
+//        System.out.println("cosh = " + s.cosh(un));
+//        
+//        
+////        BigDecimal alphaN = (s.bigSin(un).subtract(s.bigSinh(un))).divide((s.bigCos(un).subtract(s.bigCosh(un))),1000,RoundingMode.HALF_UP);
+////        System.out.println("alphaN = " + alphaN);
+//        
+////        BigDecimal coshN = new BigDecimal("-1").multiply(alphaN).multiply(new BigDecimal("-1").multiply(s.bigCosh(kn * y)));
+
+    }
 
 }

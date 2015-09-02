@@ -32,7 +32,7 @@ public abstract class Strip {
 
     protected ObservableList<UI.PointLoad> pointLoads = FXCollections.<UI.PointLoad>observableArrayList();
 
-    protected final ReadOnlyIntegerWrapper stripId = new ReadOnlyIntegerWrapper(this, "stripId", stripSequence.incrementAndGet());
+    protected ReadOnlyIntegerWrapper stripId = new ReadOnlyIntegerWrapper(this, "stripId", stripSequence.incrementAndGet());
 
     protected final ReadOnlyIntegerWrapper node1Id = new ReadOnlyIntegerWrapper(this, "node1Id", 0);
     protected final ReadOnlyIntegerWrapper node2Id = new ReadOnlyIntegerWrapper(this, "node2Id", 0);
@@ -43,7 +43,8 @@ public abstract class Strip {
 
     protected Node node1;
     protected Node node2;
-
+    
+    
     protected boolean hasNode1, hasNode2;
 
     public static void clearNumbering() {
@@ -222,7 +223,8 @@ public abstract class Strip {
         fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 1);
         fp.set(udlX.doubleValue() * Y.getYmIntegral(m, a), 4);
         fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 5);
-
+        
+      
         fp.scale(getStripWidth() / 2.0);
 
         F.add(fp);

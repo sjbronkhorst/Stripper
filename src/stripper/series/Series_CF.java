@@ -378,4 +378,9 @@ public class Series_CF extends Series {
         return "C-F";
     }
 
+    @Override
+    public void computeAllIntegrals(int nTerms) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

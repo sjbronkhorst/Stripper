@@ -87,7 +87,7 @@ public class HomeMenuBar {
 
                 }
 
-                for (Strip s : f.getStripList()) {
+                for (UIStrip s : f.getStripList()) {
                     StripTableUtil.addStrip(s);
                 }
 

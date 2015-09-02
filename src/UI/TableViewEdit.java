@@ -28,11 +28,14 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 import stripper.Strip;
-import stripper.Strip_General;
+import stripper.Strip_SS;
+
 
 public class TableViewEdit extends Application {
 
     ModelViewPane mvp = new ModelViewPane();
+    
+    
     
     Boolean disCalced = false;
    
@@ -69,6 +72,8 @@ public class TableViewEdit extends Application {
        
         progInd.setStyle("-fx-progress-color: blue;");
         
+        
+        
 
         //progInd.setMinSize(50, 50);
         //String filePath = "C:/Users/SJ/Desktop/file.txt";
@@ -87,7 +92,7 @@ public class TableViewEdit extends Application {
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableView<Strip> stripTable = new TableView<>(StripTableUtil.getStripList());
+        TableView<UIStrip> stripTable = new TableView<>(StripTableUtil.getStripList());
         stripTable.setEditable(true);
         addStripIdColumn(stripTable);
         addNode1Column(stripTable);
@@ -147,6 +152,7 @@ public class TableViewEdit extends Application {
                 {
                     System.out.println("Nothing to plot");
                 }
+                
 
             }
         });
@@ -156,9 +162,15 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
+                
+                ModelProperties.getStripList().clear();
+                for (UIStrip s : StripTableUtil.getStripList()) 
+                {
+                    ModelProperties.addStrip(s);
+                }
                
 
-                for (Strip s : StripTableUtil.getStripList()) {
+                for (Strip s : ModelProperties.getStripList()) {
 
                     s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
 
@@ -167,13 +179,15 @@ public class TableViewEdit extends Application {
                     // s.getRotationMatrix().printf("R");
                     //s.getRotatedLoadVector(1).printf("P"+Integer.toString(s.getStripId()));
                 }
+                
+                ModelProperties.getFourierSeries().setLength(ModelProperties.getModelLength());
 
-                s = new SystemEquation(StripTableUtil.getStripList(), NodeTableUtil.getNodeList());
+                s = new SystemEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
-               Task<Void> task = new Task<Void>() {
+             // Task<Void> task = new Task<Void>() {
 
-                    @Override
-                    protected Void call() throws Exception {
+                //    @Override
+                //    protected Void call() throws Exception {
 
                         progInd.progressProperty().bind(s.progressProperty());
 
@@ -188,12 +202,12 @@ public class TableViewEdit extends Application {
                         
                         draw();
 
-                        return null;
-                    }
-                };
+                    //    return null;
+                   // }
+              //  };
 
-                Thread t = new Thread(task);
-                t.start();
+               // Thread t = new Thread(task);
+              //  t.start();
                 
                 
                    
@@ -218,7 +232,7 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                Strip s = stripTable.getSelectionModel().getSelectedItem();
+                UIStrip s = stripTable.getSelectionModel().getSelectedItem();
 
                 System.out.println("Strip " + s.getStripId() + " properties :");
                 System.out.println("width = " + s.getStripWidth());
@@ -230,7 +244,7 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                Strip s = stripTable.getSelectionModel().getSelectedItem();
+                UIStrip s = stripTable.getSelectionModel().getSelectedItem();
 
                 if (s != null) {
                     StripTableUtil.removeStrip(s);
@@ -247,7 +261,10 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                Strip s = new Strip_General();
+                
+                
+                UIStrip s = new UIStrip();
+                //////////////////////////////////////////////////////////
                 StripTableUtil.addStrip(s);
                 draw();
                 System.out.println("Strip " + s.getStripId() + " added.");
@@ -414,17 +431,17 @@ public class TableViewEdit extends Application {
         table.getColumns().add(fNameCol);
     }
 
-    public void addStripIdColumn(TableView<Strip> table) {
+    public void addStripIdColumn(TableView<UIStrip> table) {
 // Id column is non-editable
         table.getColumns().add(StripTableUtil.getIDColumn());
     }
 
-    public void addNode1Column(TableView<Strip> table) {
+    public void addNode1Column(TableView<UIStrip> table) {
 
-        TableColumn<Strip, Integer> fNameCol = StripTableUtil.getNode1Column();
+        TableColumn<UIStrip, Integer> fNameCol = StripTableUtil.getNode1Column();
 
         IntegerStringConverter converter = new IntegerStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Integer>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Integer>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -433,7 +450,7 @@ public class TableViewEdit extends Application {
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
 
-            Strip strip = e.getRowValue();
+            UIStrip strip = e.getRowValue();
 
             System.out.println("First node changed for Strip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
@@ -447,12 +464,12 @@ public class TableViewEdit extends Application {
         table.getColumns().add(fNameCol);
     }
 
-    public void addNode2Column(TableView<Strip> table) {
+    public void addNode2Column(TableView<UIStrip> table) {
 
-        TableColumn<Strip, Integer> fNameCol = StripTableUtil.getNode2Column();
+        TableColumn<UIStrip, Integer> fNameCol = StripTableUtil.getNode2Column();
 
         IntegerStringConverter converter = new IntegerStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Integer>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Integer>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -460,7 +477,7 @@ public class TableViewEdit extends Application {
 
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
-            Strip strip = e.getRowValue();
+            UIStrip strip = e.getRowValue();
 
             System.out.println("Second node changed for Strip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());

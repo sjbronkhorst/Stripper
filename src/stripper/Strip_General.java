@@ -5,8 +5,16 @@
  */
 package stripper;
 
+import UI.UIStrip;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import linalg.Matrix;
 import stripper.materials.Material;
 import stripper.series.Series;
@@ -20,6 +28,8 @@ public class Strip_General extends Strip {
 
     private int mLastComputed = 0;
     private int nLastComputed = 0;
+    
+    
 
     private double[] integralArray = new double[5];
 
@@ -28,6 +38,27 @@ public class Strip_General extends Strip {
         setNode1(node1);
         setNode2(node2);
 
+    }
+    
+     public Strip_General(UIStrip uiStrip) {
+        if (!uiStrip.hasBothNodes()) {
+
+            hasNode1 = false;
+            hasNode2 = false;
+            this.node1Id.set(0);
+            this.node2Id.set(0);
+        } else {
+            setNode1(uiStrip.getNode1());
+            setNode2(uiStrip.getNode2());
+            
+            setUdlX(uiStrip.getUdlX());
+            setUdlY(uiStrip.getUdlY());
+            setUdlZ(uiStrip.getUdlZ());
+            
+            this.stripId.set(uiStrip.getStripId());
+            
+            this.pointLoads = uiStrip.getPointLoadList();
+        }
     }
 
     public boolean integralLastComputed(int m, int n) {
@@ -658,32 +689,40 @@ public class Strip_General extends Strip {
         int[] bendingIndices = {2, 3, 6, 7};
         int[] membraneIndices = {0, 1, 4, 5};
 
-        // Callable<Void> tsk1 = () -> {
+         Callable<Void> tsk1 = () -> {
         K.addSubmatrix(getBendingStiffnessMatrix(m, n, integralArray), bendingIndices);
-       //     return null;
-        // };
+            return null;
+         };
 
-        // Callable<Void> tsk2 = () -> {
+        Callable<Void> tsk2 = () -> {
         K.addSubmatrix(getMembraneStiffnessMatrix(m, n, integralArray), membraneIndices);
 
-        //     return null;
-        // };
-//        ExecutorService service;
-//        final Future<Void> thread1, thread2;
-//
-//        service = Executors.newFixedThreadPool(2);
-//        thread1 = service.submit(tsk1);
-//        thread2 = service.submit(tsk2);
-//        
-//        try {
-//            thread1.get();
-//            thread2.get();
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (ExecutionException ex) {
-//            Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        //service.shutdownNow();
+             return null;
+         };
+        ExecutorService service;
+        final Future<Void> thread1, thread2;
+
+        service = Executors.newFixedThreadPool(2);
+        thread1 = service.submit(tsk1);
+        thread2 = service.submit(tsk2);
+        
+        
+        try {
+            thread1.get();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            thread2.get();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+        service.shutdownNow();
         return K;
     }
 

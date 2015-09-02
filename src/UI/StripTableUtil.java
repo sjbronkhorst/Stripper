@@ -12,7 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
-import stripper.Strip;
+
 
 
 
@@ -22,20 +22,20 @@ import stripper.Strip;
  */
 public class StripTableUtil {
 
-    private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
-    private static Map<Integer , Strip> stripMap = new HashMap();
+    private static ObservableList<UIStrip> strips = FXCollections.<UIStrip>observableArrayList();
+    private static Map<Integer , UIStrip> stripMap = new HashMap();
 
-    public static ObservableList<Strip> getStripList() {
+    public static ObservableList<UIStrip> getStripList() {
         return strips;
     }
 
-    public static void addStrip(Strip n) {
+    public static void addStrip(UIStrip n) {
         strips.add(n);
         stripMap.put(n.getStripId(), n);
         
     }
     
-    public static void removeStrip(Strip n)
+    public static void removeStrip(UIStrip n)
     {
         strips.remove(n);
         stripMap.remove(n);
@@ -56,15 +56,15 @@ public class StripTableUtil {
         
     }
     
-   public static Map<Integer , Strip> getStripMap()
+   public static Map<Integer , UIStrip> getStripMap()
     {
         return stripMap;
     }
     
     
 
-    public static TableColumn<Strip, Integer> getIDColumn() {
-        TableColumn<Strip, Integer> idColumn = new TableColumn("Strip ID");
+    public static TableColumn<UIStrip, Integer> getIDColumn() {
+        TableColumn<UIStrip, Integer> idColumn = new TableColumn("Strip ID");
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("stripId"));
 
@@ -72,8 +72,8 @@ public class StripTableUtil {
 
     }
 
-    public static TableColumn<Strip, Integer> getNode1Column() {
-        TableColumn<Strip, Integer> node1Column = new TableColumn("Node 1");
+    public static TableColumn<UIStrip, Integer> getNode1Column() {
+        TableColumn<UIStrip, Integer> node1Column = new TableColumn("Node 1");
 
         node1Column.setCellValueFactory(new PropertyValueFactory<>("node1Id"));
 
@@ -81,8 +81,8 @@ public class StripTableUtil {
 
     }
 
-    public static TableColumn<Strip, Integer> getNode2Column() {
-        TableColumn<Strip, Integer> node2Column = new TableColumn("Node 2");
+    public static TableColumn<UIStrip, Integer> getNode2Column() {
+        TableColumn<UIStrip, Integer> node2Column = new TableColumn("Node 2");
 
         node2Column.setCellValueFactory(new PropertyValueFactory<>("node2Id"));
 
@@ -90,8 +90,8 @@ public class StripTableUtil {
 
     }
     
-    public static TableColumn<Strip, Double> getUDLZColumn() {
-        TableColumn<Strip, Double> udlZColumn = new TableColumn("Load - Z");
+    public static TableColumn<UIStrip, Double> getUDLZColumn() {
+        TableColumn<UIStrip, Double> udlZColumn = new TableColumn("Load - Z");
 
         udlZColumn.setCellValueFactory(new PropertyValueFactory<>("udlZ"));
 
@@ -99,16 +99,16 @@ public class StripTableUtil {
 
     }
     
-    public static TableColumn<Strip, Double> getUDLXColumn() {
-        TableColumn<Strip, Double> udlZColumn = new TableColumn("Load - X");
+    public static TableColumn<UIStrip, Double> getUDLXColumn() {
+        TableColumn<UIStrip, Double> udlZColumn = new TableColumn("Load - X");
 
         udlZColumn.setCellValueFactory(new PropertyValueFactory<>("udlX"));
 
         return udlZColumn;
 
     }
-    public static TableColumn<Strip, Double> getUDLYColumn() {
-        TableColumn<Strip, Double> udlZColumn = new TableColumn("Load - Y");
+    public static TableColumn<UIStrip, Double> getUDLYColumn() {
+        TableColumn<UIStrip, Double> udlZColumn = new TableColumn("Load - Y");
 
         udlZColumn.setCellValueFactory(new PropertyValueFactory<>("udlY"));
 

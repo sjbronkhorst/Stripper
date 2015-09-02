@@ -41,10 +41,6 @@ public class SystemEquation {
     public double[] getyData() {
         return yData;
     }
-    
-    
-    
-    
 
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
 
@@ -57,6 +53,7 @@ public class SystemEquation {
         this.nodes = nodes;
 
         if (ModelProperties.getFourierSeries().isSimplySupported()) {
+
             localToGlobalConfNumbering = new int[strips.size() * 8][2];
 
             for (int i = 0; i < strips.size() * 8; i++) {
@@ -85,13 +82,10 @@ public class SystemEquation {
 
     public Vector[] getDisplacementVector() {
 
-        
-
         for (int i = 0; i < 101; i++) {
             Uarr[i] = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+            Uarr[i].clear();
         }
-
-        
 
         Cholesky c = new Cholesky();
 
@@ -101,104 +95,89 @@ public class SystemEquation {
 
         if (Y.isSimplySupported()) {
 
-            Assembler a = new Assembler(StripTableUtil.getStripList(), NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
-            a.getK(1).printf("Global K");
-            a.getF(1).printf("Global P");
+            Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
 
             for (int i = 1; i < ModelProperties.getFourierTerms(); i++) {
 
                 Vector temp = c.getX(a.getK(i), a.getF(i));
 
+               
+//                a.getK(i).printf("Global K " + i);
+//                a.getF(i).printf("Global P " + i);
+
                 for (int j = 0; j < 101; j++) {
                     Vector temp2 = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
                     temp2.add(temp);
-
-                    temp2.scale(Y.getFunctionValue(StripTableUtil.getStripList().get(0).getStripLength() * (j / 100.0), i));
+                    
+                    temp2.scale(Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i));
+                   
                     Uarr[j].add(temp2);
                     temp2.release();
 
                 }
 
-                progress.set((double)(i + 1) / (double)ModelProperties.getFourierTerms());
+                progress.set((double) (i + 1) / (double) ModelProperties.getFourierTerms());
                 //System.out.println(i+1/ModelProperties.getFourierTerms());
                 temp.release();
 
             }
 
-        } else {
-
-           
+        }
+        else {
 
             CoupledMatrix_1 cK = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
             CoupledVector_1 fK = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
-            
 
 //       Vector fK = Vector.getVector(8*nTerms);
 //       fK.clear();
             for (int i = 1; i < ModelProperties.getFourierTerms() + 1; i++) {
-                
-                progress.set((double)(i + 1) / (double)ModelProperties.getFourierTerms());
-                
-                
+
+                progress.set((double) (i + 1) / (double) ModelProperties.getFourierTerms());
 
                 for (int j = 1; j < ModelProperties.getFourierTerms() + 1; j++) {
 
-                    
-                    for (Strip myStrip : strips)
-                    {
+                    for (Strip myStrip : strips) {
                         cK.addStiffnessMatrix(myStrip.getRotatedStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
                     }
-                    
-                    
+
                 }
-                
+
                 for (Strip myStrip : strips) {
-                    
+
                     fK.addForceVector(myStrip.getRotatedLoadVector(i), myStrip.getNode1(), myStrip.getNode2(), i);
-                    
+
                 }
-                
 
             }
             System.out.println("Assembly done, commencing cholesky");
 
-            
             Cholesky chol = new Cholesky();
             Vector u = chol.getX(cK.getMatrix(), fK.getVector());
-            
-          
 
             System.out.println("Displacements calculated");
 
-           
             for (Node n : nodes) {
-                
-            
-             for (int i = 0; i < ModelProperties.getFourierTerms(); i++)
-        {
-            
-            for (int j = 0; j < 101; j++) {
-            
-            
-            Uarr[j].add(u.get((i*4)+ 4*ModelProperties.getFourierTerms()*(n.getNodeId()-1) )*Y.getFunctionValue(ModelProperties.getModelLength()* (j / 100.0), i+1), 4*(n.getNodeId()-1));
-            Uarr[j].add(u.get((i*4)+ 4*ModelProperties.getFourierTerms()*(n.getNodeId()-1)+1)*Y.getFunctionValue(ModelProperties.getModelLength()* (j / 100.0), i+1),4*(n.getNodeId()-1)+1);
-            Uarr[j].add(u.get((i*4)+ 4*ModelProperties.getFourierTerms()*(n.getNodeId()-1)+2)*Y.getFunctionValue(ModelProperties.getModelLength()* (j / 100.0), i+1),4*(n.getNodeId()-1)+2);
-            Uarr[j].add(u.get((i*4)+ 4*ModelProperties.getFourierTerms()*(n.getNodeId()-1)+3)*Y.getFunctionValue(ModelProperties.getModelLength()* (j / 100.0), i+1),4*(n.getNodeId()-1)+3);
+
+                for (int i = 0; i < ModelProperties.getFourierTerms(); i++) {
+
+                    for (int j = 0; j < 101; j++) {
+
+                        Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1)) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1));
+                        Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
+                        Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
+                        Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 3) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 3);
+                    }
+                }
             }
-        }
-            }
-              
+
             System.out.println("Done ...");
 
         }
 
-        
         for (int i = 0; i < 101; i++) {
-            xData[i] = StripTableUtil.getStripList().get(0).getStripLength() * (i / 100.0);
+            xData[i] = strips.get(0).getStripLength() * (i / 100.0);
             yData[i] = Uarr[i].get(2);
         }
-
-        
 
         return Uarr;
     }

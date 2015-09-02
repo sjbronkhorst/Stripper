@@ -6,6 +6,7 @@ package stripper;
  * and open the template in the editor.
  */
 import UI.PointLoad;
+import UI.UIStrip;
 import linalg.Matrix;
 import linalg.Vector;
 
@@ -33,6 +34,27 @@ public class Strip_SS extends Strip {
         this.node1Id.set(0);
         this.node2Id.set(0);
 
+    }
+
+    public Strip_SS(UIStrip uiStrip) {
+        if (!uiStrip.hasBothNodes()) {
+
+            hasNode1 = false;
+            hasNode2 = false;
+            this.node1Id.set(0);
+            this.node2Id.set(0);
+        } else {
+            setNode1(uiStrip.getNode1());
+            setNode2(uiStrip.getNode2());
+            
+            setUdlX(uiStrip.getUdlX());
+            setUdlY(uiStrip.getUdlY());
+            setUdlZ(uiStrip.getUdlZ());
+            
+            this.stripId.set(uiStrip.getStripId());
+            
+            this.pointLoads = uiStrip.getPointLoadList();
+        }
     }
 
     @Override
@@ -119,15 +141,15 @@ public class Strip_SS extends Strip {
 
             double K12 = (a * k * vx * E2 / 4.0) - a * k * G / 4.0;
 
-            double K13 = -a * E1 / (2 * b) + a * b * k * k * G / 12;
+            double K13 = -a * E1 / (2.0 * b) + a * b * k * k * G / 12;
 
-            double K14 = (a * k * vx * E2 / 4) + a * k * G / 4;
+            double K14 = (a * k * vx * E2 / 4.0) + a * k * G / 4;
 
-            double K22 = (a * b * k * k * E2 / 6) + a * G / (2 * b);
+            double K22 = (a * b * k * k * E2 / 6.0) + (a * G / (2.0 * b));
 
-            double K23 = -(a * k * vx * E2 / 4) - a * k * G / 4;
+            double K23 = -(a * k * vx * E2 / 4.0) - (a * k * G / 4.0);
 
-            double K24 = (a * b * k * k * E2 / 12) - a * G / (2 * b);
+            double K24 = (a * b * k * k * E2 / 12.0) - (a * G / (2.0 * b));
 
             double K33 = K11;
             double K34 = -K12;

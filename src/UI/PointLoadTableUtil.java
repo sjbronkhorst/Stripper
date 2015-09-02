@@ -10,7 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
-import stripper.Strip;
+
 
 /**
  *
@@ -22,7 +22,7 @@ public class PointLoadTableUtil
 
    
     
-    public static void setStrip(Strip strip)
+    public static void setStrip(UIStrip strip)
     {
         
         pointLoads.clear();
@@ -41,13 +41,13 @@ public class PointLoadTableUtil
         return pointLoads;
     }
     
-    public static void addPointLoad(PointLoad p , Strip strip)
+    public static void addPointLoad(PointLoad p , UIStrip strip)
     {
         pointLoads.add(p);
         strip.getPointLoadList().add(p);
     }
     
-    public static void removePointLoad(PointLoad p , Strip strip)
+    public static void removePointLoad(PointLoad p , UIStrip strip)
     {
         pointLoads.remove(p);
         strip.getPointLoadList().remove(p);

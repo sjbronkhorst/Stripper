@@ -5,6 +5,8 @@
  */
 package stripper.series;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,6 +37,8 @@ public abstract class Series {
         
         return seriesList;
     }
+    public abstract void computeAllIntegrals(int nTerms);
+            
     
 
     public Series(double a) {
@@ -71,16 +75,64 @@ public abstract class Series {
     
     public abstract double getMu_m(int m);
     
-    public double sin(double d) {
-        return Math.sin(d);
-    }
+   
+    
+//    public BigDecimal bigSin(double d) {
+//        return new BigDecimal(Math.sin(d));
+//    }
+//    
+//    public BigDecimal bigCos(double d) {
+//        return new BigDecimal(Math.cos(d));
+//    }
+//    
+//    public BigDecimal bigSinh(double d) {
+//         //sinh(x) = ( ex - e-x )/2
+//        
+//        BigDecimal e = new BigDecimal("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149");
+//        
+//        int d_intPart = (int)d;
+//        double remainder = d - d_intPart;
+//       
+//        BigDecimal bigPart1 = e.pow(d_intPart); 
+//        BigDecimal smallPart1 = new BigDecimal(Math.pow(Math.E, remainder));
+//        
+//        
+//        BigDecimal bigPart2 = BigDecimal.ONE.divide(e.pow(d_intPart),100,RoundingMode.HALF_UP);
+//        BigDecimal smallPart2 = new BigDecimal(Math.pow(Math.E, -remainder));
+//        
+//        return (bigPart1.multiply(smallPart1).subtract(bigPart2.multiply(smallPart2))).divide(new BigDecimal("2.0"));
+//    }
+//    
+//    public BigDecimal bigCosh(double d) {
+//        
+//         //cosh(x) = ( ex + e-x )/2
+//        
+//        BigDecimal e = new BigDecimal("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149");
+//        
+//        int d_intPart = (int)d;
+//        double remainder = d - d_intPart;
+//        
+//        BigDecimal bigPart1 = e.pow(d_intPart); 
+//        BigDecimal smallPart1 = new BigDecimal(Math.pow(Math.E, remainder));
+//        
+//        
+//        BigDecimal bigPart2 = BigDecimal.ONE.divide(e.pow(d_intPart),100,RoundingMode.HALF_UP);
+//        BigDecimal smallPart2 = new BigDecimal(Math.pow(Math.E, -remainder));
+//        
+//        return (bigPart1.multiply(smallPart1).add(bigPart2.multiply(smallPart2))).divide(new BigDecimal("2.0"));
+//        
+//    }
+    
     
     @Override
     public abstract String toString();
    
-
+ public double sin(double d) {
+        return Math.sin(d);
+    }
     public double sinh(double d) {
-        return Math.sinh(d);
+        
+      return Math.sinh(d);
     }
 
     public double cos(double d) {

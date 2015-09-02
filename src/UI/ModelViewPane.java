@@ -181,9 +181,9 @@ public class ModelViewPane {
         double x4 = 0;
         double y4 = 0;
 
-        for (Strip s : StripTableUtil.getStripList()) {
+        for (UIStrip s : StripTableUtil.getStripList()) {
 
-            if (s.hasTwoNodes()) {
+            if (s.hasBothNodes()) {
 
                 x1 = s.getNode1().getXCoord();
                 y1 = s.getNode1().getZCoord();

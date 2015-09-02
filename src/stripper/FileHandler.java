@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.UIStrip;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -34,14 +35,14 @@ public class FileHandler {
     
     private Map<Integer, Node> nodeMap = new HashMap<>();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
-    private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
+    private ObservableList<UIStrip> strips = FXCollections.<UIStrip>observableArrayList();
     private FileChooser fileDialog = new FileChooser();
 
     public FileHandler() {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
     }
 
-    public void writeFile(ObservableList<Node> nodes, ObservableList<Strip> strips) throws IOException {
+    public void writeFile(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
 
         File file = fileDialog.showSaveDialog(null);
 
@@ -56,7 +57,7 @@ public class FileHandler {
                 bw.newLine();
             }
 
-            for (Strip strip : strips) {
+            for (UIStrip strip : strips) {
                 bw.append("e " + strip.getNode1Id() + " " + strip.getNode2Id());
                 bw.newLine();
             }
@@ -72,7 +73,7 @@ public class FileHandler {
         return nodes;
     }
 
-    public ObservableList<Strip> getStripList() {
+    public ObservableList<UIStrip> getStripList() {
         return strips;
     }
 
@@ -129,7 +130,7 @@ public class FileHandler {
 
                         if (n1 != null && n2 != null) {
 
-                            strips.add(new Strip_General(n1, n2));   ///////////fout !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            strips.add(new UIStrip(n1, n2));   ///////////fout !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         }
                     } else {
                         System.out.println("File syntax error");
