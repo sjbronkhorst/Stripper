@@ -24,30 +24,26 @@ public class Stripper {
      */
     public static void main(String[] args) throws InterruptedException, Exception {
 
-        int modelLength = 2000;
+        int modelLength = 8000;
         double force = 0.0001;
 
         Material usrMat = new Material_Steel();
 
         Node n1 = new Node(0, 0);
-        Node n2 = new Node(0, 1);
+        Node n2 = new Node(0, 100);
 
         Series_SS Y = new Series_SS(modelLength);
 
         Strip_SS myStrip = new Strip_SS(n1, n2);
-        myStrip.setProperties(usrMat, 100, modelLength, Y);
+        myStrip.setProperties(usrMat, 10, modelLength, Y);
 
         myStrip.setUdlX(force);
 
-       int maxTerms = 20;
+        int maxTerms = 20;
         //Y.computeAllIntegrals(maxTerms);
-        
-       
-        
-            for (int k = 1; k < maxTerms; k++) {
-            
-        
-        
+
+        for (int k = 1; k < maxTerms; k++) {
+
             int nTerms = k;
             int nNodes = 2;
 
@@ -65,7 +61,7 @@ public class Stripper {
 
             }
 
-           // SerializeUtils.serialize(cK.getMatrix(), "CC" + nTerms * 8);
+            // SerializeUtils.serialize(cK.getMatrix(), "CC" + nTerms * 8);
             Cholesky chol = new Cholesky();
             Vector u = chol.getX(cK.getMatrix(), fK.getVector());
             //cK.getMatrix().printf("cK");
@@ -75,7 +71,7 @@ public class Stripper {
 //        Matrix k = SerializeUtils.deserialze("CC" + nTerms*8);
 //        k.printf("k");
             ////Comparison with Euler beam theory
-            double I =  myStrip.getStripThickness()* Math.pow(myStrip.getStripWidth(), 3) / 12.0;
+            double I = myStrip.getStripThickness() * Math.pow(myStrip.getStripWidth(), 3) / 12.0;
             //  System.out.println("I=" + I);
             double E = usrMat.getEx();
             //  System.out.println("E=" + E);
@@ -83,30 +79,53 @@ public class Stripper {
             // System.out.println("L=" + L);
             double P = force;
             // System.out.println("P=" + P);
-            double w = 5*P * myStrip.getStripWidth() * Math.pow(L, 4) / (384 * E * I);
+            double w = 5 * P * myStrip.getStripWidth() * Math.pow(L, 4) / (384 * E * I);
 
-            double uu1 = 0;
-            double uu2 = 0;
-            //System.out.println("Beam theory = " + w);
+            double uu = 0;
+            double vv = 0;
+            double ww = 0;
+            double tt = 0;
+
+            System.out.println("Beam theory = " + w);
+
+            Vector stressVec = Vector.getVector(3);
+            stressVec.clear();
+            Vector dispVec = Vector.getVector(4);
+            dispVec.clear();
+
+            int[] ind = {0, 1, 2, 3};
 
             for (int i = 0; i < nTerms; i++) {
-                uu1 += u.get((i * 4)) * Y.getFunctionValue(modelLength / 2.0, i + 1);
+                uu = u.get((i * 4)) * Y.getFunctionValue(modelLength / 2.0, i + 1);
+                vv = u.get((i * 4) + 1 * nTerms) * Y.getFirstDerivativeValue(modelLength / 2.0, i + 1);
+                ww = u.get((i * 4) + 2 * nTerms) * Y.getFunctionValue(modelLength / 2.0, i + 1);
+                tt = u.get((i * 4) + 3 * nTerms) * Y.getFunctionValue(modelLength / 2.0, i + 1);
+
+                dispVec.set(uu, 0);
+                dispVec.set(vv, 1);
+                dispVec.set(ww, 2);
+                dispVec.set(tt, 3);
+                
+               // stressVec.add(myStrip.getPropertyMatrix().multiply(myStrip.getStrainMatrix(0, modelLength / 2.0, i+1)).multiply(dispVec));
+               // myStrip.getPropertyMatrix().printf("Prop");
+                
+               // myStrip.getStrainMatrix(0, modelLength / 2.0, i+1).printf("Strain");
 
             }
+
             
-            for (int i = 0; i < nTerms; i++) {
-                uu2 += u.get((i * 4)+4*nTerms) * Y.getFunctionValue(modelLength / 2.0, i + 1);
 
-            }
+           
+            stressVec.printf("Stress");
 
-            System.out.print("Node1 " + uu1);
-            System.out.println("   Node2 " + uu2);
-            double error = 100 * (w - uu1) / w;
-            //System.out.println("Error: " + error);
-               // System.out.println(myStrip.getStripWidth());
-        
-            }
-        
+            System.out.print("Node1 " + uu);
+           
+            double error = 100 * (w - uu) / w;
+            System.out.println("Error: " + error);
+            // System.out.println(myStrip.getStripWidth());
+
+        }
+
         //THREADING EXAMPLE
         /*
          double time1 = System.currentTimeMillis();

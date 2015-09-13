@@ -62,11 +62,12 @@ public class Series_SS extends Series {
         return Math.cos(m * Math.PI * y / a) * m * Math.PI / a;
     }
 
-//
-//    @Override
-//    public double getSecondDerivativeValue(double y, int m) {
-//        return -Math.sin(m * Math.PI * y / a) * (m * Math.PI / a) * (m * Math.PI/ a);
-//    }
+
+    @Override
+    public double getSecondDerivativeValue(double y, int m) {
+        return -Math.sin(m * Math.PI * y / a) * (m * Math.PI / a) * (m * Math.PI/ a);
+    }
+    
     @Override
     public double getMu_m(int m) {
         return m * Math.PI;
@@ -129,5 +130,7 @@ public class Series_SS extends Series {
     public void computeAllIntegrals(int nTerms) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+   
 
 }

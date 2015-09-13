@@ -67,7 +67,7 @@ public abstract class Series {
 
     public abstract double getFirstDerivativeValue(double y, int m);
 
-    //public abstract double getSecondDerivativeValue(double y, int m);
+    public abstract double getSecondDerivativeValue(double y, int m);
     
     public abstract double getFirstDerivativeIntegral(int m);
     

@@ -31,6 +31,8 @@ public class SystemEquation {
     List<Node> nodes = new ArrayList<>();
     int[][] localToGlobalConfNumbering;
     private Vector[] Uarr = new Vector[101];
+    public Vector[][] fourierTermContributionUarr;
+
     private double[] xData = new double[101];
     private double[] yData = new double[101];
 
@@ -82,10 +84,23 @@ public class SystemEquation {
 
     public Vector[] getDisplacementVector() {
 
+        fourierTermContributionUarr = new Vector[ModelProperties.getFourierTerms()][101];
+
         for (int i = 0; i < 101; i++) {
+
             Uarr[i] = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
             Uarr[i].clear();
+            
+            for (int j = 0; j < ModelProperties.getFourierTerms(); j++) 
+            {
+                fourierTermContributionUarr[j][i] =  Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+                fourierTermContributionUarr[j][i].clear();
+                                
+            }
+            
         }
+        
+        
 
         Cholesky c = new Cholesky();
 
@@ -101,17 +116,16 @@ public class SystemEquation {
 
                 Vector temp = c.getX(a.getK(i), a.getF(i));
 
-               
 //                a.getK(i).printf("Global K " + i);
 //                a.getF(i).printf("Global P " + i);
-
                 for (int j = 0; j < 101; j++) {
                     Vector temp2 = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
                     temp2.add(temp);
-                    
+
                     temp2.scale(Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i));
-                   
+
                     Uarr[j].add(temp2);
+                    fourierTermContributionUarr[i-1][j].add(temp2);
                     temp2.release();
 
                 }
@@ -122,8 +136,7 @@ public class SystemEquation {
 
             }
 
-        }
-        else {
+        } else {
 
             CoupledMatrix_1 cK = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
             CoupledVector_1 fK = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
@@ -166,6 +179,15 @@ public class SystemEquation {
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 3) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 3);
+
+                        fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1)) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1));
+                        fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
+                        fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
+                        fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 3) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 3);
+                        
+                        
+                        
+
                     }
                 }
             }
@@ -177,6 +199,21 @@ public class SystemEquation {
         for (int i = 0; i < 101; i++) {
             xData[i] = strips.get(0).getStripLength() * (i / 100.0);
             yData[i] = Uarr[i].get(2);
+
+            int[] indices = {0, 1, 2, 3};
+            for (Node n : nodes) {
+
+                for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+                    
+                
+                n.setDisplacementVector(fourierTermContributionUarr[m][i].getSubVector(indices), m,i);
+                }
+
+                for (int y = 0; y < 4; y++) {
+                    indices[y] = indices[y] + 4;
+                }
+
+            }
         }
 
         return Uarr;

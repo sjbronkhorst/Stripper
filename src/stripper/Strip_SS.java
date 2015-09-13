@@ -80,13 +80,13 @@ public class Strip_SS extends Strip {
             double vy = mat.getVy();
             double G = mat.getG();
 
-            double Dx = (Ex * t * t * t) / (12 * (1 - vx * vy));
+            double Dx = (Ex * t * t * t) / (12.0 * (1 - vx * vy));
 
-            double Dy = (Ey * t * t * t) / (12 * (1 - vx * vy));
+            double Dy = (Ey * t * t * t) / (12.0 * (1 - vx * vy));
 
-            double D1 = (vx * Ey * t * t * t) / (12 * (1 - vx * vy));
+            double D1 = (vx * Ey * t * t * t) / (12.0 * (1 - vx * vy));
 
-            double Dxy = G * t * t * t / 12;
+            double Dxy = G * t * t * t / 12.0;
 
             S.set((13 * a * b * k * k * k * k * Dy / 70) + ((12 * a * k * k * Dxy) / (5 * b)) + (6 * a * k * k * D1 / (5 * b)) + (6 * a * Dx / (b * b * b)), 0, 0);
             S.set(S.get(0, 0), 2, 2);

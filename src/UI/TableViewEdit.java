@@ -28,7 +28,7 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 import stripper.Strip;
-import stripper.Strip_SS;
+
 
 
 public class TableViewEdit extends Application {
@@ -201,7 +201,13 @@ public class TableViewEdit extends Application {
                         
                         
                         draw();
-
+                        
+                        ModelProperties.getStripList().get(0).getNode1().getDisplacementContributionVectorAt(0,50).printf(ModelProperties.getStripList().get(0).getNode1().toString() +" U m = 1 at 50%");
+                        ModelProperties.getStripList().get(0).getNode1().getDisplacementContributionVectorAt(1,50).printf(ModelProperties.getStripList().get(0).getNode1().toString() +" U m = 2 at 50%");
+                        ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
+                        
+                        
+                       
                     //    return null;
                    // }
               //  };

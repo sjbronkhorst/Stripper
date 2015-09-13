@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.ModelProperties;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
@@ -43,8 +44,7 @@ public abstract class Strip {
 
     protected Node node1;
     protected Node node2;
-    
-    
+
     protected boolean hasNode1, hasNode2;
 
     public static void clearNumbering() {
@@ -219,13 +219,12 @@ public abstract class Strip {
         // In plane udl
         Vector fp = Vector.getVector(8);
 
-        fp.set(udlX.doubleValue() * Y.getYmIntegral(m, a), 0);
+        double b = getStripWidth();
+
+        fp.set((b / 2.0) * udlX.doubleValue() * Y.getYmIntegral(m, a), 0);
         fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 1);
-        fp.set(udlX.doubleValue() * Y.getYmIntegral(m, a), 4);
+        fp.set((b / 2.0) * udlX.doubleValue() * Y.getYmIntegral(m, a), 4);
         fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 5);
-        
-      
-        fp.scale(getStripWidth() / 2.0);
 
         F.add(fp);
 
@@ -252,6 +251,135 @@ public abstract class Strip {
         return F;
     }
 
+    public Matrix getBendingStrainMatrix(double x, double y, int m) {
+        Matrix B = Matrix.getMatrix(3, 4);
+        B.clear();
+
+        double b = getStripWidth();
+
+        double s = Y.getFunctionValue(y, m);
+        double s1 = Y.getFirstDerivativeValue(y, m);
+        double s2 = Y.getSecondDerivativeValue(y, m);
+        double xb = x / b;
+
+        B.set((6.0 / (b * b)) * (1 - 2 * xb) * s, 0, 0);
+        B.set((2.0 / b) * (2 - 3 * xb) * s, 0, 1);
+        B.set((6.0 / (b * b)) * (-1 + 2 * xb) * s, 0, 2);
+        B.set((2.0 / b) * (-3 * xb + 1) * s, 0, 3);
+
+        B.set(-(1 - 3 * xb * xb - 2 * xb * xb * xb) * s2, 1, 0);
+        B.set(-x * (1 - 2 * xb + xb * xb) * s2, 1, 1);
+        B.set(-(3 * xb * xb - 2 * xb * xb * xb) * s2, 1, 2);
+        B.set(-x * (xb * xb - xb) * s2, 1, 3);
+
+        B.set((2.0 / b) * (-6.0 * xb + 6.0 * xb * xb) * s1, 2, 0);
+        B.set(2.0 * (1 - 4 * xb + 3 * xb * xb) * s1, 2, 1);
+        B.set((2.0 / b) * (6.0 * xb - 6.0 * xb * xb) * s1, 2, 2);
+        B.set(2.0 * (3.0 * xb * xb - 2.0 * xb) * s1, 2, 3);
+
+        return B;
+    }
+
+    public Matrix getPlaneStrainMatrix(double x, double y, int m) {
+        Matrix B = Matrix.getMatrix(3, 4);
+        B.clear();
+
+        double b = getStripWidth();
+
+        double s = Y.getFunctionValue(y, m);
+        double s1 = Y.getFirstDerivativeValue(y, m);
+        double s2 = Y.getSecondDerivativeValue(y, m);
+        x = x / b;
+
+        B.set((-1.0 / b) * s, 0, 0);
+        B.set((1.0 / b) * s, 0, 2);
+        B.set((1 - x) * (a / Y.getMu_m(m)) * s2, 1, 1);
+        B.set(x * (a / Y.getMu_m(m)) * s2, 1, 3);
+        B.set((1 - x) * s2, 2, 0);
+        B.set((-1.0 / b) * (a / Y.getMu_m(m)) * s1, 2, 1);
+        B.set(x * s1, 2, 2);
+        B.set((1.0 / b) * (a / Y.getMu_m(m)) * s1, 2, 3);
+
+        return B;
+    }
+
+    public Matrix getPlanePropertyMatrix() {
+
+        Matrix D = Matrix.getMatrix(3, 3);
+        D.clear();
+
+        double Ex = mat.getEx();
+        double Ey = mat.getEy();
+        double vx = mat.getVx();
+        double vy = mat.getVy();
+        double G = mat.getG();
+
+        double E1 = Ex / (1 - vx * vy);
+        double E2 = Ey / (1 - vx * vy);
+
+        D.set(E1, 0, 0);
+        D.set(vx * E2, 0, 1);
+        D.set(vx * E2, 1, 0);
+        D.set(E2, 1, 1);
+        D.set(G, 2, 2);
+
+        return D;
+
+    }
+
+    public Matrix getBendingPropertyMatrix() {
+        Matrix D = Matrix.getMatrix(3, 3);
+        D.clear();
+
+        double Ex = mat.getEx();
+        double Ey = mat.getEy();
+        double vx = mat.getVx();
+        double vy = mat.getVy();
+        double G = mat.getG();
+
+        double Dx = (Ex * t * t * t) / (12.0 * (1 - vx * vy));
+        double Dy = (Ey * t * t * t) / (12.0 * (1 - vx * vy));
+        double D1 = (vx * Ey * t * t * t) / (12.0 * (1 - vx * vy));
+        double Dxy = G * t * t * t / 12.0;
+
+        D.set(Dx,0,0);
+        D.set(D1,0,1);
+        
+        D.set(D1,1,0);
+        D.set(Dy,1,1);
+        
+        D.set(Dxy,2,2);
+        
+        return D;
+    }
+    
+    public Vector getDisplacementVectorAt(int yPecentage)
+    {
+        Vector U = Vector.getVector(8);
+        
+        int [] ind1 = {0,1,2,3};
+        int [] ind2 = {4,5,6,7};
+        
+        U.add(node1.getDisplacementVectorAt(yPecentage), ind1);
+        U.add(node2.getDisplacementVectorAt(yPecentage), ind2);
+               
+        return U;
+    }
+    
+    public Vector getDisplacementContributionVectorAt(int m, int yPecentage)
+    {
+        Vector U = Vector.getVector(8);
+        
+        int [] ind1 = {0,1,2,3};
+        int [] ind2 = {4,5,6,7};
+        
+        U.add(node1.getDisplacementContributionVectorAt(m,yPecentage), ind1);
+        U.add(node2.getDisplacementContributionVectorAt(m,yPecentage), ind2);
+               
+        return U;
+    }
+    
+    
     
 
     public abstract Matrix getStiffnessMatrix(int n, int m);

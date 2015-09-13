@@ -5,10 +5,12 @@
  */
 package stripper;
 
+import UI.ModelProperties;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import linalg.Vector;
 
 /**
  *
@@ -26,14 +28,54 @@ public class Node {
     
     private double displacedXCoord = 0 ;
     private double displacedZCoord = 0 ;
+    
+    private Vector [][] displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
 
     public Node(double xCoord ,double zCoord) 
     {
         
         this.xCoord.set(xCoord);
         this.zCoord.set(zCoord);
-        
+        //displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
     }
+    
+    /**
+     * 
+     * @param u displacement vector @ i% of length
+     * @param i longitudinal distance %
+     * 
+     */
+    public void setDisplacementVector(Vector u, int m , int yPercentage)
+    {
+        displacementVectors[m][yPercentage] = u;
+    }
+    
+    public Vector getDisplacementContributionVectorAt(int m , int yPercentage) 
+    {
+        return displacementVectors[m][yPercentage];
+    }
+    
+    public Vector getDisplacementVectorAt(int yPercentage) 
+    {
+        Vector u = Vector.getVector(4);
+        u.clear();
+        
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) 
+        {
+            u.add(getDisplacementContributionVectorAt(m , yPercentage) );
+        }
+        
+        
+        return u;
+    }
+
+    public Vector[][] getDisplacementVectors() 
+    {
+        
+        return displacementVectors;
+    }
+    
+    
 
     public double getDisplacedXCoord() {
         return displacedXCoord;
@@ -91,6 +133,12 @@ public class Node {
     public void setZCoord(Double zCoord)
     {
         zCoordProperty().set(zCoord);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Node " + getNodeId();
     }
     
     

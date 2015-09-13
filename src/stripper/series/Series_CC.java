@@ -318,8 +318,14 @@ public class Series_CC extends Series {
 
     @Override
     public double getFirstDerivativeValue(double y, int m) {
-        return 0.0;
+       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+     @Override
+    public double getSecondDerivativeValue(double y, int m) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
     @Override
     public double getMu_m(int m) {
@@ -517,4 +523,5 @@ public class Series_CC extends Series {
 
     }
 
+   
 }
