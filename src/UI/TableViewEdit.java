@@ -29,20 +29,16 @@ import javafx.util.converter.IntegerStringConverter;
 
 import stripper.Strip;
 
-
-
 public class TableViewEdit extends Application {
 
     ModelViewPane mvp = new ModelViewPane();
-    
-    
-    
+
     Boolean disCalced = false;
-   
+
     LoadPane lp = new LoadPane(this);
 
     TextField modelLengthField = new TextField();
-    
+
     TextField thicknessField = new TextField();
 
     private double biggestX = 0;
@@ -69,11 +65,7 @@ public class TableViewEdit extends Application {
     @Override
     public void start(Stage stage) {
 
-       
         progInd.setStyle("-fx-progress-color: blue;");
-        
-        
-        
 
         //progInd.setMinSize(50, 50);
         //String filePath = "C:/Users/SJ/Desktop/file.txt";
@@ -107,8 +99,6 @@ public class TableViewEdit extends Application {
         Button stripRemoveBtn = new Button("Remove");
         Button stripPropertyBtn = new Button("Properties");
 
-        
-
         Slider slider = new Slider(0, 100, 50);
 
         slider.setMajorTickUnit(10);
@@ -135,24 +125,20 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                
-                if(disCalced)
-                {
 
-                XYChartDataUtil.addSeries(s.getxData(), s.getyData(), "Displacement");
+                if (disCalced) {
 
-                LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
+                    XYChartDataUtil.addSeries(s.getxData(), s.getyData(), "Displacement");
 
-                Stage s = new Stage();
+                    LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
 
-                s.getIcons().add(ic);
-                chart.start(s);
-                }
-                else
-                {
+                    Stage s = new Stage();
+
+                    s.getIcons().add(ic);
+                    chart.start(s);
+                } else {
                     System.out.println("Nothing to plot");
                 }
-                
 
             }
         });
@@ -162,13 +148,10 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                
                 ModelProperties.getStripList().clear();
-                for (UIStrip s : StripTableUtil.getStripList()) 
-                {
+                for (UIStrip s : StripTableUtil.getStripList()) {
                     ModelProperties.addStrip(s);
                 }
-               
 
                 for (Strip s : ModelProperties.getStripList()) {
 
@@ -179,57 +162,43 @@ public class TableViewEdit extends Application {
                     // s.getRotationMatrix().printf("R");
                     //s.getRotatedLoadVector(1).printf("P"+Integer.toString(s.getStripId()));
                 }
-                
+
                 ModelProperties.getFourierSeries().setLength(ModelProperties.getModelLength());
 
                 s = new SystemEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
              // Task<Void> task = new Task<Void>() {
-
                 //    @Override
                 //    protected Void call() throws Exception {
+                progInd.progressProperty().bind(s.progressProperty());
 
-                        progInd.progressProperty().bind(s.progressProperty());
+                s.getDisplacementVector()[50].printf("U ");
 
-                        s.getDisplacementVector()[50].printf("U ");
+                s.setDisplacedState((int) slider.getValue());
+                System.out.println((int) slider.getValue());
 
-                        s.setDisplacedState((int) slider.getValue());
-                        System.out.println((int) slider.getValue());
-                        
-                        disCalced = true;
-                        
-                        
-                        
-                        draw();
-                        
-                        ModelProperties.getStripList().get(0).getNode1().getDisplacementContributionVectorAt(0,50).printf(ModelProperties.getStripList().get(0).getNode1().toString() +" U m = 1 at 50%");
-                        ModelProperties.getStripList().get(0).getNode1().getDisplacementContributionVectorAt(1,50).printf(ModelProperties.getStripList().get(0).getNode1().toString() +" U m = 2 at 50%");
-                        ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
-                        
-                        
-                       
+                disCalced = true;
+
+                draw();
+
+                ModelProperties.getStripList().get(0).getNode1().getDisplacementContributionVectorAt(0, 50).printf(ModelProperties.getStripList().get(0).getNode1().toString() + " U m = 1 at 50%");
+
+                ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
+
+                for (int i = 0; i < 101; i++) {
+                    System.out.println(ModelProperties.getStripList().get(0).getBendingStressVectorAt(60, i).get(1));
+                }
+
+//                        
+//                        ModelProperties.getStripList().get(0).getBendingStressVectorAt( 0 , 50).printf("Stress at 0");
+//                        ModelProperties.getStripList().get(0).getBendingStressVectorAt( 45 , 50).printf("Stress at 45");
+//                        ModelProperties.getStripList().get(0).getBendingStressVectorAt( 90 , 50).printf("Stress at 90");
+//                        
                     //    return null;
-                   // }
-              //  };
-
+                // }
+                //  };
                // Thread t = new Thread(task);
-              //  t.start();
-                
-                
-                   
-                
-                        
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                        
-
+                //  t.start();
             }
         });
 
@@ -267,8 +236,7 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                
-                
+
                 UIStrip s = new UIStrip();
                 //////////////////////////////////////////////////////////
                 StripTableUtil.addStrip(s);

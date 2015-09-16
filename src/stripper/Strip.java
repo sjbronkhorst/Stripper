@@ -267,7 +267,7 @@ public abstract class Strip {
         B.set((6.0 / (b * b)) * (-1 + 2 * xb) * s, 0, 2);
         B.set((2.0 / b) * (-3 * xb + 1) * s, 0, 3);
 
-        B.set(-(1 - 3 * xb * xb - 2 * xb * xb * xb) * s2, 1, 0);
+        B.set(-(1 - 3 * xb * xb + 2 * xb * xb * xb) * s2, 1, 0);
         B.set(-x * (1 - 2 * xb + xb * xb) * s2, 1, 1);
         B.set(-(3 * xb * xb - 2 * xb * xb * xb) * s2, 1, 2);
         B.set(-x * (xb * xb - xb) * s2, 1, 3);
@@ -379,6 +379,71 @@ public abstract class Strip {
         return U;
     }
     
+    /**
+     * 
+     * @param localXCoordinate
+     * @param yPercentage
+     * @return the bending stress vector, in local coordinates at a given point in the strip. 
+     */
+    public Vector getBendingStressVectorAt(double localXCoordinate , int yPercentage)
+    {
+     Vector ub = Vector.getVector(4);
+     
+     Vector strain = Vector.getVector(3);
+     strain.clear();
+     
+     
+     
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++)
+        {
+            ub.clear();
+            
+            
+            
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(2),0);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(3),1);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(6),2);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(7),3);
+            
+            Matrix B = getBendingStrainMatrix(localXCoordinate, (yPercentage/100.0)*a, m+1);
+            
+            strain.add(B.multiply(ub));
+            
+//            System.out.println("");
+//            
+//            for (int i = 0; i < 3; i++)
+//            {
+//                
+//                for (int j = 0; j < 4; j++)
+//                {
+//                    System.out.print(B.get(i,j) + " ");   
+//                }
+//                System.out.println("");
+//            
+//        }
+            
+           // System.out.println("");
+            
+           // System.out.println("B 0,0 = " + B.get(0,0));
+            
+//            System.out.println("ub 0 = "+ub.get(0));
+//            System.out.println("ub 1 = "+ub.get(1));
+//            System.out.println("ub 2 = "+ub.get(2));
+//            System.out.println("ub 3 = "+ub.get(3));
+            
+          //  System.out.println("w = " + getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(2));
+            
+//            getBendingPropertyMatrix().printf("D");
+            
+          //  ub.printf("ub");
+          //  strain.printf("strain");
+           
+            B.release();
+        }
+            
+        ub.release();
+        return getBendingPropertyMatrix().multiply(strain);
+    }
     
     
 

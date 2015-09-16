@@ -122,7 +122,7 @@ public class SystemEquation {
                     Vector temp2 = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
                     temp2.add(temp);
 
-                    temp2.scale(Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i));
+                    temp2.scale(Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i)); // this needs to change because in plane y displacement is scaled with dY
 
                     Uarr[j].add(temp2);
                     fourierTermContributionUarr[i-1][j].add(temp2);
@@ -174,7 +174,8 @@ public class SystemEquation {
                 for (int i = 0; i < ModelProperties.getFourierTerms(); i++) {
 
                     for (int j = 0; j < 101; j++) {
-
+                            
+                            // this needs to change because in plane y displacement is scaled with dY
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1)) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1));
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
