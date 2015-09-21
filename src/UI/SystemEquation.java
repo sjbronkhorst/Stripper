@@ -90,17 +90,14 @@ public class SystemEquation {
 
             Uarr[i] = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
             Uarr[i].clear();
-            
-            for (int j = 0; j < ModelProperties.getFourierTerms(); j++) 
-            {
-                fourierTermContributionUarr[j][i] =  Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+
+            for (int j = 0; j < ModelProperties.getFourierTerms(); j++) {
+                fourierTermContributionUarr[j][i] = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
                 fourierTermContributionUarr[j][i].clear();
-                                
+
             }
-            
+
         }
-        
-        
 
         Cholesky c = new Cholesky();
 
@@ -112,7 +109,7 @@ public class SystemEquation {
 
             Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
 
-            for (int i = 1; i < ModelProperties.getFourierTerms(); i++) {
+            for (int i = 1; i <= ModelProperties.getFourierTerms(); i++) {
 
                 Vector temp = c.getX(a.getK(i), a.getF(i));
 
@@ -122,10 +119,11 @@ public class SystemEquation {
                     Vector temp2 = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
                     temp2.add(temp);
 
+                    fourierTermContributionUarr[i - 1][j].add(temp2);
                     temp2.scale(Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i)); // this needs to change because in plane y displacement is scaled with dY
 
                     Uarr[j].add(temp2);
-                    fourierTermContributionUarr[i-1][j].add(temp2);
+
                     temp2.release();
 
                 }
@@ -174,8 +172,8 @@ public class SystemEquation {
                 for (int i = 0; i < ModelProperties.getFourierTerms(); i++) {
 
                     for (int j = 0; j < 101; j++) {
-                            
-                            // this needs to change because in plane y displacement is scaled with dY
+
+                        // this needs to change because in plane y displacement is scaled with dY
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1)) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1));
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
                         Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
@@ -185,9 +183,6 @@ public class SystemEquation {
                         fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
                         fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
                         fourierTermContributionUarr[i][j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 3) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 3);
-                        
-                        
-                        
 
                     }
                 }
@@ -205,9 +200,8 @@ public class SystemEquation {
             for (Node n : nodes) {
 
                 for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
-                    
-                
-                n.setDisplacementVector(fourierTermContributionUarr[m][i].getSubVector(indices), m,i);
+
+                    n.setDisplacementVector(fourierTermContributionUarr[m][i].getSubVector(indices), m, i);
                 }
 
                 for (int y = 0; y < 4; y++) {
