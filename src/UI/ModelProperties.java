@@ -21,8 +21,8 @@ public class ModelProperties
 {
     
   private static Material modelMaterial = new Material_Steel();
-  private static double modelLength = 4000;
-  private static int fourierTerms = 1;
+  private static double modelLength = 100;
+  private static int fourierTerms = 10;
   private static Series fourierSeries = Series.getSerieslList().get(0);
   private static ArrayList<Strip> strips = new ArrayList<>();
   

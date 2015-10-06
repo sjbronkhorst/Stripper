@@ -87,6 +87,7 @@ public class FileHandler {
 
             Node.clearNumbering();
             Strip.clearNumbering();
+            UIStrip.clearNumbering();
 
             FileReader fr = new FileReader(file);
 

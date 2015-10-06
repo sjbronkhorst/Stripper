@@ -185,14 +185,22 @@ public class TableViewEdit extends Application {
 
                 ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
 
-                for (int i = 0; i < 101; i++) {
-                    System.out.println(ModelProperties.getStripList().get(0).getBendingStressVectorAt(60, i).get(1));
+                for (Strip s : ModelProperties.getStripList())
+                {
+                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth()/2.0 ,50).get(1));
+//                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth(), 50).get(1));
+                    
+//                    for (int y = 0; y < 101; y++) {
+//                        System.out.println(s.getBendingStressVectorAt( s.getStripWidth()/2.0 , y).get(1));
+//                    }
+                
                 }
+                    
+                
 
 //                        
-//                        ModelProperties.getStripList().get(0).getBendingStressVectorAt( 0 , 50).printf("Stress at 0");
-//                        ModelProperties.getStripList().get(0).getBendingStressVectorAt( 45 , 50).printf("Stress at 45");
-//                        ModelProperties.getStripList().get(0).getBendingStressVectorAt( 90 , 50).printf("Stress at 90");
+                        
+
 //                        
                     //    return null;
                 // }

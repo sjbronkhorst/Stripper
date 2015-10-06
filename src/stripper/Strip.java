@@ -409,40 +409,50 @@ public abstract class Strip {
             
             strain.add(B.multiply(ub));
             
-//            System.out.println("");
-//            
-//            for (int i = 0; i < 3; i++)
-//            {
-//                
-//                for (int j = 0; j < 4; j++)
-//                {
-//                    System.out.print(B.get(i,j) + " ");   
-//                }
-//                System.out.println("");
-//            
-//        }
-            
-           // System.out.println("");
-            
-           // System.out.println("B 0,0 = " + B.get(0,0));
-            
-//            System.out.println("ub 0 = "+ub.get(0));
-//            System.out.println("ub 1 = "+ub.get(1));
-//            System.out.println("ub 2 = "+ub.get(2));
-//            System.out.println("ub 3 = "+ub.get(3));
-            
-          //  System.out.println("w = " + getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(2));
-            
-//            getBendingPropertyMatrix().printf("D");
-            
-          //  ub.printf("ub");
-          //  strain.printf("strain");
            
             B.release();
         }
             
         ub.release();
         return getBendingPropertyMatrix().multiply(strain);
+    }
+    
+    /**
+     * 
+     * @param localXCoordinate
+     * @param yPercentage
+     * @return the plane stress vector, in local coordinates at a given point in the strip. 
+     */
+    public Vector getPlaneStressVectorAt(double localXCoordinate , int yPercentage)
+    {
+     Vector ub = Vector.getVector(4);
+     
+     Vector strain = Vector.getVector(3);
+     strain.clear();
+     
+     
+     
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++)
+        {
+            ub.clear();
+            
+            
+            
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(0),0);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(1),1);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(4),2);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(5),3);
+            
+            Matrix B = getPlaneStrainMatrix(localXCoordinate, (yPercentage/100.0)*a, m+1);
+            
+            strain.add(B.multiply(ub));
+            
+           
+            B.release();
+        }
+            
+        ub.release();
+        return getPlanePropertyMatrix().multiply(strain);
     }
     
     

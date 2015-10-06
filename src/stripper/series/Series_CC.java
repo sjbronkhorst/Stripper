@@ -22,44 +22,41 @@ import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussInteg
  * @author SJ
  */
 public class Series_CC extends Series {
-    
+
     public Matrix I1Mat;
     public Matrix I2Mat;
     public Matrix I3Mat;
     public Matrix I4Mat;
     public Matrix I5Mat;
     boolean integralsCalculated = false;
-    
+
     @Override
-    public void computeAllIntegrals(int nTerms)
-    {
-        I1Mat = Matrix.getMatrix(nTerms,nTerms);
-        I2Mat = Matrix.getMatrix(nTerms,nTerms);
-        I3Mat = Matrix.getMatrix(nTerms,nTerms);
-        I4Mat = Matrix.getMatrix(nTerms,nTerms);
-        I5Mat = Matrix.getMatrix(nTerms,nTerms);
-        
-        double [] I = new double[5];
-        
-        for (int i = 1; i < nTerms+1; i++)
-        {
-            for (int j = i; j < nTerms+1; j++)
-            {
-                
+    public void computeAllIntegrals(int nTerms) {
+        I1Mat = Matrix.getMatrix(nTerms, nTerms);
+        I2Mat = Matrix.getMatrix(nTerms, nTerms);
+        I3Mat = Matrix.getMatrix(nTerms, nTerms);
+        I4Mat = Matrix.getMatrix(nTerms, nTerms);
+        I5Mat = Matrix.getMatrix(nTerms, nTerms);
+
+        double[] I = new double[5];
+
+        for (int i = 1; i < nTerms + 1; i++) {
+            for (int j = i; j < nTerms + 1; j++) {
+
                 I = getIntegralValues(i, j);
-                
-                I1Mat.set(I[0], i-1, j-1);
-                
-                I2Mat.set(I[1], i-1, j-1);
-                
-                I3Mat.set(I[2], i-1, j-1);
-                
-                I4Mat.set(I[3], i-1, j-1);
-                I5Mat.set(I[4], i-1, j-1);
+
+                I1Mat.set(I[0], i - 1, j - 1);
+
+                I2Mat.set(I[1], i - 1, j - 1);
+
+                I3Mat.set(I[2], i - 1, j - 1);
+
+                I4Mat.set(I[3], i - 1, j - 1);
+                I5Mat.set(I[4], i - 1, j - 1);
             }
-            
+
         }
-        
+
         integralsCalculated = true;
     }
 
@@ -70,7 +67,6 @@ public class Series_CC extends Series {
 
     @Override
     public strictfp double getFunctionValue(double y, int m) {
-       
 
         double um = getMu_m(m);
 
@@ -84,8 +80,6 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-sinh(km * y));
         BigDecimal sin = new BigDecimal(sin(km * y));
         BigDecimal cos = new BigDecimal(-alphaM * cos(km * y));
-        
-       
 
         Ym = (cos.add(sin).add(sinh).add(cosh));
 
@@ -93,20 +87,17 @@ public class Series_CC extends Series {
     }
 
     public strictfp double getF1Value(double y, int m, int n) {
-        
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-        
+
 //        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
 //
 //        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
-        
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
-        
-        
+
         double km = um / a;
         double kn = un / a;
 
@@ -117,7 +108,6 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-sinh(km * y));
         BigDecimal sin = new BigDecimal(sin(km * y));
         BigDecimal cos = new BigDecimal(-alphaM * cos(km * y));
-       
 
         Ym = (cos.add(sin).add(sinh).add(cosh));
 
@@ -125,8 +115,6 @@ public class Series_CC extends Series {
         BigDecimal sinhN = new BigDecimal(-sinh(kn * y));
         BigDecimal sinN = new BigDecimal(sin(kn * y));
         BigDecimal cosN = new BigDecimal(-alphaN * cos(kn * y));
-        
-       
 
         Yn = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -147,11 +135,11 @@ public class Series_CC extends Series {
 //        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
 //
 //        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
-        
+
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
-        
+
         double km = um / a;
         double kn = un / a;
 
@@ -163,15 +151,13 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-km * km * sinh(km * y));
         BigDecimal sin = new BigDecimal(-km * km * sin(km * y));
         BigDecimal cos = new BigDecimal(alphaM * km * km * cos(km * y));
-       
+
         Ymd2 = (cos.add(sin).add(sinh).add(cosh));
 
         BigDecimal coshN = new BigDecimal(-alphaN * -cosh(kn * y));
         BigDecimal sinhN = new BigDecimal(-sinh(kn * y));
         BigDecimal sinN = new BigDecimal(sin(kn * y));
         BigDecimal cosN = new BigDecimal(-alphaN * cos(kn * y));
-        
-       
 
         Yn = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -184,19 +170,16 @@ public class Series_CC extends Series {
         // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
 
         //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
-        
-
         double um = getMu_m(m);
         double un = getMu_m(n);
 //        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
 //
 //        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
-        
-       double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
-        
-        
+
         double km = um / a;
         double kn = un / a;
 
@@ -208,7 +191,6 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(-km * km * sinh(km * y));
         BigDecimal sin = new BigDecimal(-km * km * sin(km * y));
         BigDecimal cos = new BigDecimal(alphaM * km * km * cos(km * y));
-        
 
         Ymd2 = (cos.add(sin).add(sinh).add(cosh));
 
@@ -217,8 +199,6 @@ public class Series_CC extends Series {
         BigDecimal sinhN = new BigDecimal(-kn * kn * sinh(kn * y));
         BigDecimal sinN = new BigDecimal(-kn * kn * sin(kn * y));
         BigDecimal cosN = new BigDecimal(alphaN * kn * kn * cos(kn * y));
-        
-       
 
         Ynd2 = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -231,19 +211,16 @@ public class Series_CC extends Series {
         //Ymd1 = alphaM*(km*sin(km*y) + km*sinh(km*y)) + km*cos(km*y) - km*cosh(km*y)
         //Ynd1 = alphaN*(kn*sin(kn*y) + kn*sinh(kn*y)) + kn*cos(kn*y) - kn*cosh(kn*y)
 
-        
-
         double um = getMu_m(m);
         double un = getMu_m(n);
 //        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
 //
 //        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
-        
+
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
-        
-        
+
         double km = um / a;
         double kn = un / a;
 
@@ -255,7 +232,7 @@ public class Series_CC extends Series {
         BigDecimal sinh = new BigDecimal(alphaM * km * sinh(km * y));
         BigDecimal sin = new BigDecimal(alphaM * km * sin(km * y));
         BigDecimal cos = new BigDecimal(km * cos(km * y));
-       
+
         Ymd1 = (cos.add(sin).add(sinh).add(cosh));
 
         BigDecimal coshN = new BigDecimal(-kn * cosh(kn * y));
@@ -263,8 +240,6 @@ public class Series_CC extends Series {
         BigDecimal sinhN = new BigDecimal(alphaN * kn * sinh(kn * y));
         BigDecimal sinN = new BigDecimal(alphaN * kn * sin(kn * y));
         BigDecimal cosN = new BigDecimal(kn * cos(kn * y));
-        
-       
 
         Ynd1 = cosN.add(sinN).add(sinhN).add(coshN);
 
@@ -275,8 +250,7 @@ public class Series_CC extends Series {
 
     @Override
     public double getYmIntegral(int m, double a) {
-        
-        
+
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getFunction(m), 0, a);
     }
@@ -318,28 +292,60 @@ public class Series_CC extends Series {
 
     @Override
     public double getFirstDerivativeValue(double y, int m) {
-       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-     @Override
-    public double getSecondDerivativeValue(double y, int m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        dY = alphaM*(km*sin(km*y) + km*sinh(km*y)) + km*cos(km*y) - km*cosh(km*y)
+
+        double um = getMu_m(m);
+
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+
+        double km = um / a;
+
+        BigDecimal dYm;
+
+        BigDecimal cosh = new BigDecimal(-km * cosh(km * y));
+        BigDecimal sinh = new BigDecimal(alphaM * km * sinh(km * y));
+        BigDecimal sin = new BigDecimal(alphaM * km * sin(km * y));
+        BigDecimal cos = new BigDecimal(km * cos(km * y));
+
+        dYm = (cos.add(sin).add(sinh).add(cosh));
+
+        return dYm.doubleValue();
+
     }
 
+    @Override
+    public double getSecondDerivativeValue(double y, int m) {
+
+        // d2Y =alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
+        double um = getMu_m(m);
+
+        double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
+
+        double km = um / a;
+
+        BigDecimal d2Ym;
+
+        BigDecimal cosh = new BigDecimal(km*km*alphaM * cosh(km * y));
+        BigDecimal sinh = new BigDecimal(-km*km*sinh(km * y));
+        BigDecimal sin = new BigDecimal(-km*km*sin(km * y));
+        BigDecimal cos = new BigDecimal(km*km*alphaM * cos(km * y));
+
+        d2Ym = (cos.add(sin).add(sinh).add(cosh));
+
+        return d2Ym.doubleValue();
+
+    }
 
     @Override
     public double getMu_m(int m) {
         double Pi = Math.PI;
-        if(m == 1)
-        {
+        if (m == 1) {
             return 4.730;
         }
-        if(m == 2)
-        {
+        if (m == 2) {
             return 7.8532;
         }
-        if(m == 3)
-        {
+        if (m == 3) {
             return 10.9960;
         }
 
@@ -358,8 +364,6 @@ public class Series_CC extends Series {
     }
 
     public double getI2(int m, int n) {
-        
-        
 
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, this.getF2(m, n), 0, a);
@@ -389,94 +393,85 @@ public class Series_CC extends Series {
 
     /**
      * Computes the 5 integrals simultaneously for increased performance.
-     * 
-     * @param m Fourier term row 
-     * @param n Fourier term column 
-     * @return double array of size 5 with indexes corresponding to integral number (1-5)
+     *
+     * @param m Fourier term row
+     * @param n Fourier term column
+     * @return double array of size 5 with indexes corresponding to integral
+     * number (1-5)
      */
-    
     @Override
     public double[] getIntegralValues(int m, int n) {
 
         double[] I = new double[5];
-        
-        if(!integralsCalculated)
-        {
-        
 
-        Callable<Double> tsk1 = () -> getI1(m, n);
+        if (!integralsCalculated) {
 
-        Callable<Double> tsk2 = () -> getI2(m, n);
+            Callable<Double> tsk1 = () -> getI1(m, n);
 
-        Callable<Double> tsk3 = () -> getI3(m, n);
+            Callable<Double> tsk2 = () -> getI2(m, n);
 
-        Callable<Double> tsk4 = () -> getI4(m, n);
+            Callable<Double> tsk3 = () -> getI3(m, n);
 
-        Callable<Double> tsk5 = () -> getI5(m, n);
+            Callable<Double> tsk4 = () -> getI4(m, n);
 
-        ExecutorService service;
-        final Future<Double> thread1, thread2, thread3, thread4, thread5;
+            Callable<Double> tsk5 = () -> getI5(m, n);
 
-        service = Executors.newFixedThreadPool(5);
-        thread1 = service.submit(tsk1);
-        thread2 = service.submit(tsk2);
-        thread3 = service.submit(tsk3);
-        thread4 = service.submit(tsk4);
-        thread5 = service.submit(tsk5);
+            ExecutorService service;
+            final Future<Double> thread1, thread2, thread3, thread4, thread5;
 
-        try {
-            I[0] = thread1.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            I[1] = thread2.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            I[2] = thread3.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            I[3] = thread4.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            service = Executors.newFixedThreadPool(5);
+            thread1 = service.submit(tsk1);
+            thread2 = service.submit(tsk2);
+            thread3 = service.submit(tsk3);
+            thread4 = service.submit(tsk4);
+            thread5 = service.submit(tsk5);
 
-        try {
-            I[4] = thread5.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        service.shutdownNow();
-        }
-        else
-        {
-            if(n>=m)
-            {
-            I[0] = I1Mat.get(m-1, n-1);
-            I[1] = I2Mat.get(m-1, n-1);
-            I[2] = I3Mat.get(m-1, n-1);
-            I[3] = I4Mat.get(m-1, n-1);
-            I[4] = I5Mat.get(m-1, n-1);
+            try {
+                I[0] = thread1.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
             }
-            else
-            {
-            I[0] = I1Mat.get(n-1, m-1);
-            I[1] = I3Mat.get(n-1, m-1);
-            I[2] = I2Mat.get(n-1, m-1);
-            I[3] = I4Mat.get(n-1, m-1);
-            I[4] = I5Mat.get(n-1, m-1);
+            try {
+                I[1] = thread2.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                I[2] = thread3.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                I[3] = thread4.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                I[4] = thread5.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(Series_CC.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            service.shutdownNow();
+        } else {
+            if (n >= m) {
+                I[0] = I1Mat.get(m - 1, n - 1);
+                I[1] = I2Mat.get(m - 1, n - 1);
+                I[2] = I3Mat.get(m - 1, n - 1);
+                I[3] = I4Mat.get(m - 1, n - 1);
+                I[4] = I5Mat.get(m - 1, n - 1);
+            } else {
+                I[0] = I1Mat.get(n - 1, m - 1);
+                I[1] = I3Mat.get(n - 1, m - 1);
+                I[2] = I2Mat.get(n - 1, m - 1);
+                I[3] = I4Mat.get(n - 1, m - 1);
+                I[4] = I5Mat.get(n - 1, m - 1);
             }
         }
 
         return I;
     }
-
-   
 
     @Override
     public double getFirstDerivativeIntegral(int m) {
@@ -488,10 +483,7 @@ public class Series_CC extends Series {
         return "C-C";
     }
 
-    
-    
-     public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
 //        int n = 240;
 //        double a = 2000;
 //        double y = 1000;
@@ -523,5 +515,4 @@ public class Series_CC extends Series {
 
     }
 
-   
 }

@@ -47,6 +47,11 @@ public class UIStrip {
         hasNode1 = false;
         hasNode2 = false;
     }
+    
+    public static void clearNumbering()
+    {
+        stripSequence.set(0);
+    }
 
     public boolean hasBothNodes() {
         return (hasNode1 && hasNode2);
