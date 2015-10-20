@@ -1,5 +1,8 @@
 package UI;
 
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import stripper.Node;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -26,6 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import stripper.BucklingEquation;
 
 import stripper.Strip;
 
@@ -46,6 +50,7 @@ public class TableViewEdit extends Application {
 
     Button calcBtn = new Button("Calculate");
     Button plotBtn = new Button("Plot");
+    Button buckleBtn = new Button("Buckle");
 
     ProgressBar progInd = new ProgressBar(0);
 
@@ -59,6 +64,7 @@ public class TableViewEdit extends Application {
 
     public static void main(String[] args) {
 
+        System.out.println("bla bla");
         Application.launch(args);
     }
 
@@ -94,6 +100,7 @@ public class TableViewEdit extends Application {
 
         Button addBtn = new Button("Add");
         Button removeBtn = new Button("Remove");
+        Button nodeDofBtn = new Button("DOF");
 
         Button stripAddBtn = new Button("Add");
         Button stripRemoveBtn = new Button("Remove");
@@ -167,7 +174,7 @@ public class TableViewEdit extends Application {
 
                 s = new SystemEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
-             // Task<Void> task = new Task<Void>() {
+                // Task<Void> task = new Task<Void>() {
                 //    @Override
                 //    protected Void call() throws Exception {
                 progInd.progressProperty().bind(s.progressProperty());
@@ -185,28 +192,64 @@ public class TableViewEdit extends Application {
 
                 ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
 
-                for (Strip s : ModelProperties.getStripList())
-                {
-                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth()/2.0 ,50).get(1));
+                for (Strip s : ModelProperties.getStripList()) {
+                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
 //                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth(), 50).get(1));
-                    
+
 //                    for (int y = 0; y < 101; y++) {
 //                        System.out.println(s.getBendingStressVectorAt( s.getStripWidth()/2.0 , y).get(1));
 //                    }
-                
                 }
-                    
-                
 
 //                        
-                        
-
 //                        
-                    //    return null;
+                //    return null;
                 // }
                 //  };
-               // Thread t = new Thread(task);
+                // Thread t = new Thread(task);
                 //  t.start();
+            }
+        });
+
+        buckleBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
+
+                ModelProperties.getStripList().clear();
+                for (UIStrip s : StripTableUtil.getStripList()) {
+                    ModelProperties.addStrip(s);
+                }
+
+                for (Strip s : ModelProperties.getStripList()) {
+
+                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
+                    s.setEdgeTraction(0.001, 0.001);
+                }
+                
+                //NodeTableUtil.getNodeList().get(0).setStatus(new boolean [] {true, false, true, true});
+               // System.out.println(NodeTableUtil.getNodeList().get(0));
+                //System.out.println(Arrays.toString(NodeTableUtil.getNodeList().get(0).getStatus()));
+                
+                
+                
+                
+                //NodeTableUtil.getNodeList().get(4).setStatus(new boolean [] {true, false, true, false});
+                //System.out.println(NodeTableUtil.getNodeList().get(4));
+                //System.out.println(Arrays.toString(NodeTableUtil.getNodeList().get(4).getStatus()));
+
+                BucklingEquation b = new BucklingEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
+
+                System.out.println();
+
+                double[] loads = b.getBucklingCurve(100);
+
+                for (int i = 0; i < 100; i++) {
+                    System.out.println(loads[i]);
+                }
+
             }
         });
 
@@ -283,6 +326,35 @@ public class TableViewEdit extends Application {
 
             }
         });
+        
+        nodeDofBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+                Node n = table.getSelectionModel().getSelectedItem();
+
+                if (n != null) {
+                    dofPicker d = new dofPicker();
+                    d.setNode(n);
+                Stage s =new Stage();
+                try {
+                    d.start(s);
+                } catch (Exception ex) {
+                    Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                    System.out.println("Editing "+n.toString() + " DOF");
+                
+                
+                } else {
+                    System.out.println("ERROR : No nodes selected !");
+                }
+                
+                
+                
+            }
+        });
 
         loadTab.setContent(lp.getPane());
 
@@ -295,7 +367,7 @@ public class TableViewEdit extends Application {
 
         VBox rightBox = new VBox();
 
-        rightBox.getChildren().addAll(mvp.getPane(), modelLengthField, thicknessField, calcBtn, progInd, plotBtn, slider);
+        rightBox.getChildren().addAll(mvp.getPane(), modelLengthField, thicknessField, calcBtn, buckleBtn, progInd, plotBtn, slider);
 
         rightBox.setStyle("-fx-padding: 0;"
                 + "-fx-border-style: solid inside;"
@@ -308,8 +380,9 @@ public class TableViewEdit extends Application {
         nodeBox.getChildren().addAll(table, nodeControlBox);
         addBtn.setMinWidth(130);
         removeBtn.setMinWidth(130);
+        nodeDofBtn.setMinWidth(130);
 
-        nodeControlBox.getChildren().addAll(addBtn, removeBtn);
+        nodeControlBox.getChildren().addAll(addBtn, removeBtn, nodeDofBtn);
 
         stripControlBox.getChildren().addAll(stripAddBtn, stripRemoveBtn, stripPropertyBtn);
 

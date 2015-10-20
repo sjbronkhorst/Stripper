@@ -28,6 +28,7 @@ public class Node {
     
     private double displacedXCoord = 0 ;
     private double displacedZCoord = 0 ;
+    private boolean [] dofPrescribedStatus = {false, false, false, false}; // u v w theta
     
     private Vector [][] displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
 
@@ -45,9 +46,19 @@ public class Node {
      * @param i longitudinal distance %
      * 
      */
-    public void setDisplacementVector(Vector u, int m , int yPercentage)
+    public void setDisplacementVector(Vector u, int m , int yPercentage) // needs rename, "displacement" is misleading
     {
         displacementVectors[m][yPercentage] = u;
+    }
+    
+    public boolean [] getStatus()
+    {
+        return dofPrescribedStatus;
+    }
+    
+    public void setStatus(boolean [] status)
+    {
+        this.dofPrescribedStatus = status;
     }
     
     public Vector getDisplacementContributionVectorAt(int m , int yPercentage) 

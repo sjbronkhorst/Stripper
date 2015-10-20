@@ -44,6 +44,9 @@ public abstract class Strip {
 
     protected Node node1;
     protected Node node2;
+    protected double f1,f2; // Edge load size at node.
+    
+    
 
     protected boolean hasNode1, hasNode2;
 
@@ -342,123 +345,221 @@ public abstract class Strip {
         double D1 = (vx * Ey * t * t * t) / (12.0 * (1 - vx * vy));
         double Dxy = G * t * t * t / 12.0;
 
-        D.set(Dx,0,0);
-        D.set(D1,0,1);
-        
-        D.set(D1,1,0);
-        D.set(Dy,1,1);
-        
-        D.set(Dxy,2,2);
-        
+        D.set(Dx, 0, 0);
+        D.set(D1, 0, 1);
+
+        D.set(D1, 1, 0);
+        D.set(Dy, 1, 1);
+
+        D.set(Dxy, 2, 2);
+
         return D;
     }
-    
-    public Vector getDisplacementVectorAt(int yPecentage)
-    {
+
+    public Vector getDisplacementVectorAt(int yPecentage) {
         Vector U = Vector.getVector(8);
-        
-        int [] ind1 = {0,1,2,3};
-        int [] ind2 = {4,5,6,7};
-        
+
+        int[] ind1 = {0, 1, 2, 3};
+        int[] ind2 = {4, 5, 6, 7};
+
         U.add(node1.getDisplacementVectorAt(yPecentage), ind1);
         U.add(node2.getDisplacementVectorAt(yPecentage), ind2);
-               
+
         return U;
     }
-    
-    public Vector getDisplacementContributionVectorAt(int m, int yPecentage)
-    {
+
+    public Vector getDisplacementContributionVectorAt(int m, int yPecentage) {
         Vector U = Vector.getVector(8);
-        
-        int [] ind1 = {0,1,2,3};
-        int [] ind2 = {4,5,6,7};
-        
-        U.add(node1.getDisplacementContributionVectorAt(m,yPecentage), ind1);
-        U.add(node2.getDisplacementContributionVectorAt(m,yPecentage), ind2);
-               
+
+        int[] ind1 = {0, 1, 2, 3};
+        int[] ind2 = {4, 5, 6, 7};
+
+        U.add(node1.getDisplacementContributionVectorAt(m, yPecentage), ind1);
+        U.add(node2.getDisplacementContributionVectorAt(m, yPecentage), ind2);
+
         return U;
     }
-    
+
     /**
-     * 
+     *
      * @param localXCoordinate
      * @param yPercentage
-     * @return the bending stress vector, in local coordinates at a given point in the strip. 
+     * @return the bending stress vector, in local coordinates at a given point
+     * in the strip.
      */
-    public Vector getBendingStressVectorAt(double localXCoordinate , int yPercentage)
-    {
-     Vector ub = Vector.getVector(4);
-     
-     Vector strain = Vector.getVector(3);
-     strain.clear();
-     
-     
-     
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++)
-        {
+    public Vector getBendingStressVectorAt(double localXCoordinate, int yPercentage) {
+        Vector ub = Vector.getVector(4);
+
+        Vector strain = Vector.getVector(3);
+        strain.clear();
+
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
             ub.clear();
-            
-            
-            
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(2),0);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(3),1);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(6),2);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(7),3);
-            
-            Matrix B = getBendingStrainMatrix(localXCoordinate, (yPercentage/100.0)*a, m+1);
-            
+
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(2), 0);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(3), 1);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(6), 2);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(7), 3);
+
+            Matrix B = getBendingStrainMatrix(localXCoordinate, (yPercentage / 100.0) * a, m + 1);
+
             strain.add(B.multiply(ub));
-            
-           
+
             B.release();
         }
-            
+
         ub.release();
         return getBendingPropertyMatrix().multiply(strain);
     }
-    
+
     /**
-     * 
+     *
      * @param localXCoordinate
      * @param yPercentage
-     * @return the plane stress vector, in local coordinates at a given point in the strip. 
+     * @return the plane stress vector, in local coordinates at a given point in
+     * the strip.
      */
-    public Vector getPlaneStressVectorAt(double localXCoordinate , int yPercentage)
-    {
-     Vector ub = Vector.getVector(4);
-     
-     Vector strain = Vector.getVector(3);
-     strain.clear();
-     
-     
-     
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++)
-        {
+    public Vector getPlaneStressVectorAt(double localXCoordinate, int yPercentage) {
+        Vector ub = Vector.getVector(4);
+
+        Vector strain = Vector.getVector(3);
+        strain.clear();
+
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
             ub.clear();
-            
-            
-            
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(0),0);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(1),1);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(4),2);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(5),3);
-            
-            Matrix B = getPlaneStrainMatrix(localXCoordinate, (yPercentage/100.0)*a, m+1);
-            
+
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(0), 0);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(1), 1);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(4), 2);
+            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(5), 3);
+
+            Matrix B = getPlaneStrainMatrix(localXCoordinate, (yPercentage / 100.0) * a, m + 1);
+
             strain.add(B.multiply(ub));
-            
-           
+
             B.release();
         }
-            
+
         ub.release();
         return getPlanePropertyMatrix().multiply(strain);
     }
+
+    public Matrix getMembraneGeometricStiffnessMatrix(int m, int n) {
+        double T1 = f1 * getStripThickness();
+        double T2 = f2 * getStripThickness();
+        double b = getStripWidth();
+
+        double[] I = Y.getIntegralValues(m, n);
+        double I4 = I[3];
+        double I5 = I[4];
+
+        double um = Y.getMu_m(m);
+        double un = Y.getMu_m(n);
+
+        Matrix Kgm = Matrix.getMatrix(4, 4);
+
+        Kgm.set((3 * T1 + T2) * b * I5 / 12.0, 0, 0);
+        Kgm.set(0, 0, 1);
+        Kgm.set((T1 + T2) * b * I5 / 12.0, 0, 2);
+        Kgm.set(0, 0, 3);
+
+        Kgm.set(((3 * T1 + T2) * b * a * a * I4) / (12.0 * um * un), 1, 1);
+        Kgm.set(0, 1, 2);
+        Kgm.set(((T1 + T2) * b * a * a * I4) / (12.0 * um * un), 1, 3);
+
+        Kgm.set((T1 + 3 * T2) * b * I5 / 12.0, 2, 2);
+        Kgm.set(0, 2, 3);
+
+        Kgm.set(((T1 + 3 * T2) * b * a * a * I4) / (12.0 * um * un), 3, 3);
+
+        Kgm.set(Kgm.get(0, 1), 1, 0);
+
+        Kgm.set(Kgm.get(0, 2), 2, 0);
+        Kgm.set(Kgm.get(1, 2), 2, 1);
+
+        Kgm.set(Kgm.get(0, 3), 3, 0);
+        Kgm.set(Kgm.get(1, 3), 3, 1);
+        Kgm.set(Kgm.get(2, 3), 3, 2);
+
+        return Kgm;
+
+    }
+
+    public Matrix getBendingGeometricStiffnessMatrix(int m, int n) {
+        double T1 = f1 * getStripThickness();
+        double T2 = f2 * getStripThickness();
+        double b = getStripWidth();
+
+        double[] I = Y.getIntegralValues(m, n);
+        double I5 = I[4];
+
+        Matrix Kgb = Matrix.getMatrix(4, 4);
+        
+        Kgb.set((10*T1+3*T2)*b*I5/35.0,0,0);
+        Kgb.set((15*T1+7*T2)*b*b*I5/420.0,0,1);
+        Kgb.set(9*(T1+T2)*b*I5/140.0,0,2);
+        Kgb.set(-(7*T1+6*T2)*b*b*I5/420.0,0,3);
+        
+        Kgb.set((5*T1+3*T2)*b*b*b*I5/840.0,1,1);
+        Kgb.set((6*T1 + 7*T2)*b*b*I5/420.0,1,2);
+        Kgb.set(-(T1+T2)*b*b*b*I5/280.0,1,3);
+        
+        Kgb.set((3*T1+10*T2)*b*I5/35.0,2,2);
+        Kgb.set(-(7*T1+15*T2)*b*b*I5/420.0,2,3);
+        
+        Kgb.set((3*T1+5*T2)*b*b*b*I5/840.0,3,3);
+        
+        
+        Kgb.set(Kgb.get(0, 1), 1, 0);
+
+        Kgb.set(Kgb.get(0, 2), 2, 0);
+        Kgb.set(Kgb.get(1, 2), 2, 1);
+
+        Kgb.set(Kgb.get(0, 3), 3, 0);
+        Kgb.set(Kgb.get(1, 3), 3, 1);
+        Kgb.set(Kgb.get(2, 3), 3, 2);
+
+        return Kgb;
+
+    }
     
+   
+    public Matrix getGeometricMatrix(int m, int n) {
+        Matrix K = Matrix.getMatrix(8, 8);
+
+        K.clear();
+
+        int[] bendingIndices = {2, 3, 6, 7};
+
+        K.addSubmatrix(getBendingGeometricStiffnessMatrix(m, n), bendingIndices);
+
+        int[] membraneIndices = {0, 1, 4, 5};
+
+        K.addSubmatrix(getMembraneGeometricStiffnessMatrix(m, n), membraneIndices);
+
+        return K;
+    }
     
+    public Matrix getRotatedGeometricMatrix(int m, int n) 
+    {
+         Matrix S = getGeometricMatrix(m,n);
+        Matrix R = getRotationMatrix();
+        Matrix RT = R.transpose();
+
+        Matrix RS = R.multiply(S);
+
+        return RS.multiply(RT);
+    }
 
     public abstract Matrix getStiffnessMatrix(int n, int m);
 
     public abstract void setProperties(Material mat, double thickness, double a, Series Y);
+    
+    
+    public void setEdgeTraction(double f1, double f2)
+    {
+        this.f1 = f1;
+        this.f2 = f2;
+    }
 
 }

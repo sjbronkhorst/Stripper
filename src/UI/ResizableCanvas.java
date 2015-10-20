@@ -1,6 +1,7 @@
 package UI;
 
 
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -14,6 +15,9 @@ import javafx.stage.Stage;
  */
 
  public class ResizableCanvas extends Canvas {
+     
+     
+     Group group = new Group();
  
         public ResizableCanvas() {
             // Redraw canvas when size changes.
@@ -37,6 +41,8 @@ import javafx.stage.Stage;
         public boolean isResizable() {
             return true;
         }
+        
+       
  
         @Override
         public double prefWidth(double height) {
@@ -54,7 +60,7 @@ import javafx.stage.Stage;
         ResizableCanvas canvas = new ResizableCanvas();
  
         StackPane stackPane = new StackPane();
-        stackPane.getChildren().add(canvas);
+        stackPane.getChildren().addAll(canvas);
  
         // Bind canvas size to stack pane size.
         canvas.widthProperty().bind(

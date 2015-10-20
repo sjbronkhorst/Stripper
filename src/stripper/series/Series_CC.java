@@ -404,7 +404,7 @@ public class Series_CC extends Series {
 
         double[] I = new double[5];
 
-        if (!integralsCalculated) {
+        //if (!integralsCalculated) {
 
             Callable<Double> tsk1 = () -> getI1(m, n);
 
@@ -454,21 +454,21 @@ public class Series_CC extends Series {
             }
 
             service.shutdownNow();
-        } else {
-            if (n >= m) {
-                I[0] = I1Mat.get(m - 1, n - 1);
-                I[1] = I2Mat.get(m - 1, n - 1);
-                I[2] = I3Mat.get(m - 1, n - 1);
-                I[3] = I4Mat.get(m - 1, n - 1);
-                I[4] = I5Mat.get(m - 1, n - 1);
-            } else {
-                I[0] = I1Mat.get(n - 1, m - 1);
-                I[1] = I3Mat.get(n - 1, m - 1);
-                I[2] = I2Mat.get(n - 1, m - 1);
-                I[3] = I4Mat.get(n - 1, m - 1);
-                I[4] = I5Mat.get(n - 1, m - 1);
-            }
-        }
+//        } else {
+//            if (n >= m) {
+//                I[0] = I1Mat.get(m - 1, n - 1);
+//                I[1] = I2Mat.get(m - 1, n - 1);
+//                I[2] = I3Mat.get(m - 1, n - 1);
+//                I[3] = I4Mat.get(m - 1, n - 1);
+//                I[4] = I5Mat.get(m - 1, n - 1);
+//            } else {
+//                I[0] = I1Mat.get(n - 1, m - 1);
+//                I[1] = I3Mat.get(n - 1, m - 1);
+//                I[2] = I2Mat.get(n - 1, m - 1);
+//                I[3] = I4Mat.get(n - 1, m - 1);
+//                I[4] = I5Mat.get(n - 1, m - 1);
+//            }
+//        }
 
         return I;
     }

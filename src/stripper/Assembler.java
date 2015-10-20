@@ -57,6 +57,25 @@ public class Assembler {
 
         return K;
     }
+    
+     public Matrix getKg(int m) {
+        Matrix Kt = Matrix.getMatrix(localDOF, localDOF);
+        Kt.clear();
+
+        for (int i = 0; i < nrOfElements; i++) {
+
+            int[] indices = new int[strips.get(i).getGeometricMatrix(m, m).cols()];
+            for (int j = 0; j < indices.length; j++) {
+                indices[j] = i * indices.length + j;
+            }
+
+            Kt.addSubmatrix(strips.get(i).getRotatedGeometricMatrix(m, m), indices);
+        }
+
+        Matrix K = T.transpose().multiply(Kt).multiply(T);
+
+        return K;
+    }
 
     public Vector getF(int m) 
     {

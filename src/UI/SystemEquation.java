@@ -81,6 +81,8 @@ public class SystemEquation {
         }
 
     }
+    
+   
 
     public Vector[] getDisplacementVector() {
 

@@ -19,7 +19,6 @@ import linalg.Matrix;
 import stripper.materials.Material;
 import stripper.series.Series;
 
-
 /**
  *
  * @author SJ
@@ -28,8 +27,6 @@ public class Strip_General extends Strip {
 
     private int mLastComputed = 0;
     private int nLastComputed = 0;
-    
-    
 
     private double[] integralArray = new double[5];
 
@@ -39,8 +36,8 @@ public class Strip_General extends Strip {
         setNode2(node2);
 
     }
-    
-     public Strip_General(UIStrip uiStrip) {
+
+    public Strip_General(UIStrip uiStrip) {
         if (!uiStrip.hasBothNodes()) {
 
             hasNode1 = false;
@@ -50,19 +47,21 @@ public class Strip_General extends Strip {
         } else {
             setNode1(uiStrip.getNode1());
             setNode2(uiStrip.getNode2());
-            
+
             setUdlX(uiStrip.getUdlX());
             setUdlY(uiStrip.getUdlY());
             setUdlZ(uiStrip.getUdlZ());
-            
+
             this.stripId.set(uiStrip.getStripId());
-            
+
             this.pointLoads = uiStrip.getPointLoadList();
         }
     }
 
     public boolean integralLastComputed(int m, int n) {
-        return ((m == mLastComputed) && (n == nLastComputed));
+
+        return false;
+//return ((m == mLastComputed) && (n == nLastComputed));
 
     }
 
@@ -90,8 +89,6 @@ public class Strip_General extends Strip {
         super.a = length;
         super.Y = Y;
     }
-
-   
 
     public Matrix getBendingStiffnessMatrix(int m, int n, double[] integralArray) {
 
@@ -219,8 +216,8 @@ public class Strip_General extends Strip {
         BigDecimal K14B = K141.add(K142).add(K143).add(K144).add(K145);
         K14B = K14B.multiply(c);
         double K14 = K14B.doubleValue();
-        
-         BigDecimal K211 = _2520.multiply(b).multiply(Dx).multiply(I[0]);
+
+        BigDecimal K211 = _2520.multiply(b).multiply(Dx).multiply(I[0]);
         BigDecimal K212 = _neg1.multiply(_462).multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
         BigDecimal K213 = _neg1.multiply(_42).multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
         BigDecimal K214 = _22.multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
@@ -229,8 +226,6 @@ public class Strip_General extends Strip {
         BigDecimal K21B = K211.add(K212).add(K213).add(K214).add(K215);
         K21B = K21B.multiply(c);
         double K21 = K21B.doubleValue();
-
-        
 
 //        double K22 = c * (1680 * b * b * Dx * I[0]
 //                - 56 * b * b * b * b * D1 * I[1]
@@ -264,7 +259,7 @@ public class Strip_General extends Strip {
         K24B = K24B.multiply(c);
         double K24 = K24B.doubleValue();
 
-       BigDecimal K311 = _neg1.multiply(_5040).multiply(Dx).multiply(I[0]);
+        BigDecimal K311 = _neg1.multiply(_5040).multiply(Dx).multiply(I[0]);
         BigDecimal K312 = _504.multiply(b).multiply(b).multiply(D1).multiply(I[1]);
         BigDecimal K313 = _504.multiply(b).multiply(b).multiply(D1).multiply(I[2]);
         BigDecimal K314 = _54.multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
@@ -273,10 +268,8 @@ public class Strip_General extends Strip {
         BigDecimal K31B = K311.add(K312).add(K313).add(K314).add(K315);
         K31B = K31B.multiply(c);
         double K31 = K31B.doubleValue();
-        
-        
-        
-         BigDecimal K321 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
+
+        BigDecimal K321 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
         BigDecimal K322 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
         BigDecimal K323 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
         BigDecimal K324 = _13.multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
@@ -285,11 +278,10 @@ public class Strip_General extends Strip {
         BigDecimal K32B = K321.add(K322).add(K323).add(K324).add(K325);
         K32B = K32B.multiply(c);
         double K32 = K32B.doubleValue();
-        
-        
+
         double K33 = K11;
-        
-         BigDecimal K341 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
+
+        BigDecimal K341 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
         BigDecimal K342 = _462.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
         BigDecimal K343 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
         BigDecimal K344 = _neg1.multiply(_22).multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
@@ -301,8 +293,8 @@ public class Strip_General extends Strip {
 
         double K41 = K14;
         double K42 = K24;
-        
-         BigDecimal K431 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
+
+        BigDecimal K431 = _neg1.multiply(_2520).multiply(b).multiply(Dx).multiply(I[0]);
         BigDecimal K432 = _462.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[2]);
         BigDecimal K433 = _42.multiply(b).multiply(b).multiply(b).multiply(D1).multiply(I[1]);
         BigDecimal K434 = _neg1.multiply(_22).multiply(b).multiply(b).multiply(b).multiply(b).multiply(b).multiply(Dy).multiply(I[3]);
@@ -311,7 +303,7 @@ public class Strip_General extends Strip {
         BigDecimal K43B = K431.add(K432).add(K433).add(K434).add(K435);
         K43B = K43B.multiply(c);
         double K43 = K43B.doubleValue();
-        
+
         double K44 = K22;
 
         S.set(K11, 0, 0);
@@ -689,24 +681,23 @@ public class Strip_General extends Strip {
         int[] bendingIndices = {2, 3, 6, 7};
         int[] membraneIndices = {0, 1, 4, 5};
 
-         Callable<Void> tsk1 = () -> {
-        K.addSubmatrix(getBendingStiffnessMatrix(m, n, integralArray), bendingIndices);
+        Callable<Void> tsk1 = () -> {
+            K.addSubmatrix(getBendingStiffnessMatrix(m, n, integralArray), bendingIndices);
             return null;
-         };
+        };
 
         Callable<Void> tsk2 = () -> {
-        K.addSubmatrix(getMembraneStiffnessMatrix(m, n, integralArray), membraneIndices);
+            K.addSubmatrix(getMembraneStiffnessMatrix(m, n, integralArray), membraneIndices);
 
-             return null;
-         };
+            return null;
+        };
         ExecutorService service;
         final Future<Void> thread1, thread2;
 
         service = Executors.newFixedThreadPool(2);
         thread1 = service.submit(tsk1);
         thread2 = service.submit(tsk2);
-        
-        
+
         try {
             thread1.get();
         } catch (InterruptedException ex) {
@@ -721,7 +712,7 @@ public class Strip_General extends Strip {
         } catch (ExecutionException ex) {
             Logger.getLogger(Strip_General.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
+
         service.shutdownNow();
         return K;
     }
@@ -741,6 +732,4 @@ public class Strip_General extends Strip {
 //
 //        return K;
 //    }
-    
-
 }
