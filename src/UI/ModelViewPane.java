@@ -5,6 +5,7 @@
  */
 package UI;
 
+import com.sun.javafx.sg.prism.NGPhongMaterial;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import javafx.event.ActionEvent;
@@ -13,6 +14,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -24,6 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
@@ -192,9 +196,9 @@ public class ModelViewPane {
 
         zoomBox.getChildren().addAll(zoomBtn, dezoomBtn, leftBtn, rightBtn, upBtn, downBtn, nodeLabelCheck, stripLabelCheck);
 
-        Group threeDGroup = new Group(nodeGroup, stripGroup);
+        Group threeDGroup = new Group(stripGroup,nodeGroup);
 
-        scene3d = new SubScene(threeDGroup, 100, 100);
+        scene3d = new SubScene(threeDGroup, 100,100,true,SceneAntialiasing.BALANCED);
         scene3d.setCamera(camera);
 
         viewBox.addEventHandler(ScrollEvent.SCROLL, (ScrollEvent e) -> {
@@ -211,13 +215,11 @@ public class ModelViewPane {
 
             double dx = e.getX() - camera.getTranslateX();
             double dy = e.getY() - camera.getTranslateY();
-            
-            double dist = Math.sqrt(dx*dx + dy*dy);
-            
-            
-            camera.setTranslateX(camera.getTranslateX() + dx/5);
-            camera.setTranslateY(camera.getTranslateX() + dy/5);
-            
+
+            double dist = Math.sqrt(dx * dx + dy * dy);
+
+            camera.setTranslateX(camera.getTranslateX() + dx / 5);
+            camera.setTranslateY(camera.getTranslateX() + dy / 5);
 
             camera.setNearClip(0.1);
             camera.setFarClip(camera.getTranslateZ() * 2);
@@ -248,6 +250,7 @@ public class ModelViewPane {
 
         scene3d.widthProperty().addListener(evt -> draw());
         scene3d.heightProperty().addListener(evt -> draw());
+        
 
         draw();
 
@@ -277,32 +280,7 @@ public class ModelViewPane {
         gc.strokeRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
         gc.setStroke(Color.BLACK);
 
-        nodeGroup.getChildren().clear();
-        for (Node n : NodeTableUtil.getNodeList()) {
-
-//            gc.setFill(Color.DARKGRAY);
-//
-//            gc.fillOval(n.getXCoord() + n.getDisplacedXCoord() - (4.0 / xScale), n.getZCoord() + n.getDisplacedZCoord() - (4.0 / yScale), 8.0 / xScale, 8.0 / yScale);
-//            gc.setLineWidth(1 / xScale);
-//            gc.setFill(Color.BLACK);
-//
-//            gc.fillOval(n.getXCoord() - (4.0 / xScale), n.getZCoord() - (4.0 / yScale), 8.0 / xScale, 8.0 / yScale);
-//            gc.setLineWidth(1 / xScale);
-//
-//            if (nodeLabelCheck.isSelected()) {
-//                gc.setFont(Font.font("Calibri", FontWeight.BOLD, 30 / xScale));
-//
-//                gc.setStroke(Color.CRIMSON);
-//                gc.strokeText(Integer.toString(n.getNodeId()), n.getXCoord() - 15 / xScale, n.getZCoord() + 15 / xScale);
-//                gc.setStroke(Color.BLACK);
-//            }
-            Sphere s = new Sphere(10);
-            s.translateXProperty().set(n.getXCoord());
-            s.translateYProperty().set(n.getZCoord());
-
-            nodeGroup.getChildren().add(s);
-
-        }
+       
 
         double x3 = 0;
         double y3 = 0;
@@ -363,6 +341,13 @@ public class ModelViewPane {
             double theta = 180 * s.getStripAngle() / Math.PI;
 
             Box b = new Box(s.getStripWidth(), 10, 1);
+            PhongMaterial redStuff = new PhongMaterial();
+            redStuff.setDiffuseColor(Color.RED);
+            redStuff.setSpecularColor(Color.GRAY);
+            
+            
+
+            b.setMaterial(redStuff);
 
             b.setRotate(theta);
 
@@ -370,6 +355,43 @@ public class ModelViewPane {
             b.setTranslateY((y1 + y2) / 2.0);
 
             stripGroup.getChildren().add(b);
+
+        }
+        
+        
+        
+         nodeGroup.getChildren().clear();
+        for (Node n : NodeTableUtil.getNodeList()) {
+
+//            gc.setFill(Color.DARKGRAY);
+//
+//            gc.fillOval(n.getXCoord() + n.getDisplacedXCoord() - (4.0 / xScale), n.getZCoord() + n.getDisplacedZCoord() - (4.0 / yScale), 8.0 / xScale, 8.0 / yScale);
+//            gc.setLineWidth(1 / xScale);
+//            gc.setFill(Color.BLACK);
+//
+//            gc.fillOval(n.getXCoord() - (4.0 / xScale), n.getZCoord() - (4.0 / yScale), 8.0 / xScale, 8.0 / yScale);
+//            gc.setLineWidth(1 / xScale);
+//
+//            if (nodeLabelCheck.isSelected()) {
+//                gc.setFont(Font.font("Calibri", FontWeight.BOLD, 30 / xScale));
+//
+//                gc.setStroke(Color.CRIMSON);
+//                gc.strokeText(Integer.toString(n.getNodeId()), n.getXCoord() - 15 / xScale, n.getZCoord() + 15 / xScale);
+//                gc.setStroke(Color.BLACK);
+//            }
+            
+            PhongMaterial blueStuff = new PhongMaterial();
+            blueStuff.setDiffuseColor(Color.BLUE);
+            blueStuff.setSpecularColor(Color.BLACK);
+            
+            
+            Sphere s = new Sphere(10);
+            s.translateXProperty().set(n.getXCoord());
+            s.translateYProperty().set(n.getZCoord());
+            
+            s.setMaterial(blueStuff);
+
+            nodeGroup.getChildren().add(s);
 
         }
 
