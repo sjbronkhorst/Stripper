@@ -17,6 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
+import linalg.Vector;
+import stripper.Converter;
 import stripper.Node;
 
 /**
@@ -45,7 +47,13 @@ public class dofPicker extends Application {
     public void start(Stage primaryStage) throws Exception {
         
         
-        boolean[] status = nodeToEdit.getStatus();
+       boolean [] status = nodeToEdit.getStatus();
+       
+       
+        
+       
+       
+       
         
         VBox root = new VBox(5);
         

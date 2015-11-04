@@ -5,21 +5,31 @@
  */
 package UI;
 
+import com.sun.javafx.geom.BaseBounds;
+import com.sun.javafx.geom.PickRay;
+import com.sun.javafx.scene.input.PickResultChooser;
 import com.sun.javafx.sg.prism.NGPhongMaterial;
+import com.sun.javafx.sg.prism.NGTriangleMesh;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Line2D;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.HBox;
@@ -29,10 +39,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import linalg.Matrix;
+import linalg.Vector;
 
 import stripper.Node;
 import stripper.Strip;
@@ -51,6 +69,24 @@ public class ModelViewPane {
     Button downBtn = new Button("v");
     Button upBtn = new Button("^");
 
+    Button leftRotateBtn = new Button("<R");
+    Button rightRotateBtn = new Button("R>");
+    Button downRotateBtn = new Button("Rv");
+    Button upRotateBtn = new Button("R^");
+
+    double xRotation = 0;
+    double yRotation = 0;
+    double zRotation = 0;
+
+    double pressedX;
+    double pressedY;
+    Point3D pressedPoint;
+
+    Point3D origin = new Point3D(0, 0, 0);
+    Point3D xAxis = new Point3D(1, 0, 0);
+    Point3D yAxis = new Point3D(0, 1, 0);
+    Point3D zAxis = new Point3D(0, 0, 1);
+
     CheckBox nodeLabelCheck;
     CheckBox stripLabelCheck;
 
@@ -63,10 +99,12 @@ public class ModelViewPane {
 
     Group nodeGroup = new Group();
     Group stripGroup = new Group();
+    Group axisGroup = new Group();
 
     VBox threeDBox = new VBox(10);
 
     SubScene scene3d;
+    Group threeDGroup;
 
     PerspectiveCamera camera = new PerspectiveCamera(true);
 
@@ -75,6 +113,8 @@ public class ModelViewPane {
         camera.setTranslateX(0);
         camera.setTranslateY(0);
         camera.setTranslateZ(-1000);
+        camera.setNearClip(0.1);
+        camera.setFarClip(2000);
 
         canvas = new ResizableCanvas();
 
@@ -107,7 +147,7 @@ public class ModelViewPane {
 
                 camera.setTranslateZ(camera.getTranslateZ() + 100);
                 camera.setNearClip(0.1);
-                camera.setFarClip(camera.getTranslateZ() * 2);
+                camera.setFarClip(Math.abs(camera.getTranslateZ() * 4));
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
 
@@ -126,7 +166,7 @@ public class ModelViewPane {
 
                 camera.setTranslateZ(camera.getTranslateZ() - 100);
                 camera.setNearClip(0.1);
-                camera.setFarClip(camera.getTranslateZ() * 2);
+                camera.setFarClip(Math.abs(camera.getTranslateZ() * 4));
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
 
@@ -194,11 +234,102 @@ public class ModelViewPane {
             }
         });
 
-        zoomBox.getChildren().addAll(zoomBtn, dezoomBtn, leftBtn, rightBtn, upBtn, downBtn, nodeLabelCheck, stripLabelCheck);
+        leftRotateBtn.setOnAction(new EventHandler<ActionEvent>() {
 
-        Group threeDGroup = new Group(stripGroup,nodeGroup);
+            @Override
+            public void handle(ActionEvent event) {
 
-        scene3d = new SubScene(threeDGroup, 100,100,true,SceneAntialiasing.BALANCED);
+                threeDGroup.getTransforms().add(new Rotate(5, yAxis));
+                yRotation += 5;
+
+                draw();
+            }
+        });
+
+        rightRotateBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                threeDGroup.getTransforms().add(new Rotate(-5, yAxis));
+                yRotation += -5;
+
+                draw();
+            }
+        });
+
+        upRotateBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                threeDGroup.getTransforms().add(new Rotate(5, xAxis));
+                xRotation += 5;
+
+            }
+        });
+
+        downRotateBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                threeDGroup.getTransforms().add(new Rotate(-5, xAxis));
+
+                xRotation += -5;
+
+                draw();
+            }
+        });
+
+        viewBox.setOnMouseEntered(new EventHandler() {
+
+            @Override
+            public void handle(Event event) {
+                System.out.println("Mouse entered");
+            }
+        });
+
+        viewBox.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("Mouse pressed at x = " + event.getSceneX() + " y = " + event.getSceneY());
+                pressedX = event.getSceneX();
+                pressedY = event.getSceneY();
+                pressedPoint = new Point3D(pressedX, pressedY, camera.getTranslateZ());
+            }
+        });
+
+        viewBox.setOnMouseDragged(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+
+                Point3D newPoint = new Point3D(event.getSceneX(), event.getSceneY(), camera.getTranslateZ());
+
+                double dx = pressedPoint.getX() / newPoint.getX();
+                double dy = pressedPoint.getY() / newPoint.getY();
+
+                Point3D pivot = pressedPoint.crossProduct(newPoint);
+                threeDGroup.getTransforms().add(new Rotate(0.8 * dy / dx, pivot));
+                pressedPoint = newPoint;
+            }
+        });
+
+        viewBox.setOnMouseReleased(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("Mouse released at x = " + event.getSceneX() + " y = " + event.getSceneY());
+            }
+        });
+
+        zoomBox.getChildren().addAll(zoomBtn, dezoomBtn, leftBtn, rightBtn, upBtn, downBtn, leftRotateBtn, rightRotateBtn, upRotateBtn, downRotateBtn, nodeLabelCheck, stripLabelCheck);
+
+        threeDGroup = new Group(stripGroup, nodeGroup, axisGroup);
+
+        scene3d = new SubScene(threeDGroup, 100, 100, true, SceneAntialiasing.BALANCED);
         scene3d.setCamera(camera);
 
         viewBox.addEventHandler(ScrollEvent.SCROLL, (ScrollEvent e) -> {
@@ -213,18 +344,19 @@ public class ModelViewPane {
 
             }
 
-            double dx = e.getX() - camera.getTranslateX();
-            double dy = e.getY() - camera.getTranslateY();
-
-            double dist = Math.sqrt(dx * dx + dy * dy);
-
-            camera.setTranslateX(camera.getTranslateX() + dx / 5);
-            camera.setTranslateY(camera.getTranslateX() + dy / 5);
+//            double dx = e.getX() - camera.getTranslateX();
+//            double dy = e.getY() - camera.getTranslateY();
+//
+//            double dist = Math.sqrt(dx * dx + dy * dy);
+//
+//            camera.setTranslateX(camera.getTranslateX() + dx / 5);
+//            camera.setTranslateY(camera.getTranslateX() + dy / 5);
 
             camera.setNearClip(0.1);
             camera.setFarClip(camera.getTranslateZ() * 2);
             camera.setFieldOfView(35);
             scene3d.setCamera(camera);
+
         });
 
         viewBox.getChildren().addAll(/*canvas*/scene3d);
@@ -235,7 +367,7 @@ public class ModelViewPane {
         viewBox.setMinHeight(0);
         viewBox.setMinWidth(0);
 
-        viewBox.setPrefWidth(1200);
+        viewBox.setPrefWidth(1500);
         viewBox.setPrefHeight(2000);
 
         DropShadow dropShadow = new DropShadow();
@@ -250,8 +382,48 @@ public class ModelViewPane {
 
         scene3d.widthProperty().addListener(evt -> draw());
         scene3d.heightProperty().addListener(evt -> draw());
-        
 
+        axisGroup.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
+        axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
+        axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
+        Text xText = new Text("X");
+        xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+        xText.translateXProperty().set(110);
+        axisGroup.getChildren().add(xText);
+        
+        Text yText = new Text("Z");
+        yText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+        yText.translateYProperty().set(110);
+        axisGroup.getChildren().add(yText);
+        
+        Text zText = new Text("Y");
+        zText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+        zText.translateZProperty().set(110);
+        axisGroup.getChildren().add(zText);
+
+        
+        PhongMaterial yellowStuff = new PhongMaterial();
+                yellowStuff.setDiffuseColor(Color.YELLOW);
+                yellowStuff.setSpecularColor(Color.GRAY);
+                
+         Box arrowHeadX = new Box(10, 10,10);       
+         arrowHeadX.setMaterial(yellowStuff);
+         Box arrowHeadY = new Box(10, 10,10);    
+         arrowHeadY.setMaterial(yellowStuff);
+         Box arrowHeadZ = new Box(10, 10,10);       
+         arrowHeadZ.setMaterial(yellowStuff);
+         
+         arrowHeadX.setTranslateX(100);
+         arrowHeadY.setTranslateY(100);
+         arrowHeadZ.setTranslateZ(100);
+         
+        axisGroup.getChildren().addAll(arrowHeadX,arrowHeadY,arrowHeadZ);
+        
+        
+        MeshView ding = new MeshView(null);
+        
+        
+        
         draw();
 
     }
@@ -279,8 +451,6 @@ public class ModelViewPane {
 
         gc.strokeRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
         gc.setStroke(Color.BLACK);
-
-       
 
         double x3 = 0;
         double y3 = 0;
@@ -328,6 +498,13 @@ public class ModelViewPane {
 
             for (PointLoad p : s.getPointLoadList()) {
                 gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
+
+                Box b = new Box(2, 20, 2);
+                PhongMaterial greenStuff = new PhongMaterial();
+                greenStuff.setDiffuseColor(Color.GREEN);
+                greenStuff.setSpecularColor(Color.GRAY);
+                b.setMaterial(greenStuff);
+
             }
 
             gc.setStroke(Color.DARKGRAY);
@@ -340,12 +517,25 @@ public class ModelViewPane {
 
             double theta = 180 * s.getStripAngle() / Math.PI;
 
-            Box b = new Box(s.getStripWidth(), 10, 1);
+            Box b = new Box(s.getStripWidth(), 10, ModelProperties.getModelLength());
             PhongMaterial redStuff = new PhongMaterial();
             redStuff.setDiffuseColor(Color.RED);
             redStuff.setSpecularColor(Color.GRAY);
-            
-            
+
+            if (stripLabelCheck.isSelected()) {
+                Text t = new Text(s.toString());
+                t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+
+                t.translateXProperty().set(((x1 + x2) / 2.0) - 5 - 1);
+                t.translateYProperty().set(((y1 + y2) / 2.0) - 5 - 1);
+
+                t.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
+
+                t.getTransforms().add(new Rotate(-90 + theta, new Point3D(1, 0, 0)));
+
+                //t.getTransforms().add(new Rotate(90,new Point3D(0, 0, 1)));
+                stripGroup.getChildren().add(t);
+            }
 
             b.setMaterial(redStuff);
 
@@ -357,10 +547,8 @@ public class ModelViewPane {
             stripGroup.getChildren().add(b);
 
         }
-        
-        
-        
-         nodeGroup.getChildren().clear();
+
+        nodeGroup.getChildren().clear();
         for (Node n : NodeTableUtil.getNodeList()) {
 
 //            gc.setFill(Color.DARKGRAY);
@@ -379,22 +567,53 @@ public class ModelViewPane {
 //                gc.strokeText(Integer.toString(n.getNodeId()), n.getXCoord() - 15 / xScale, n.getZCoord() + 15 / xScale);
 //                gc.setStroke(Color.BLACK);
 //            }
-            
             PhongMaterial blueStuff = new PhongMaterial();
             blueStuff.setDiffuseColor(Color.BLUE);
             blueStuff.setSpecularColor(Color.BLACK);
-            
-            
+
             Sphere s = new Sphere(10);
             s.translateXProperty().set(n.getXCoord());
             s.translateYProperty().set(n.getZCoord());
-            
+
+            if (nodeLabelCheck.isSelected()) {
+                Text t = new Text(n.toString());
+                t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+
+                t.translateXProperty().set(n.getXCoord() + 10);
+                t.translateYProperty().set(n.getZCoord() + 10);
+
+                nodeGroup.getChildren().add(t);
+            }
+
             s.setMaterial(blueStuff);
 
             nodeGroup.getChildren().add(s);
 
         }
 
+    }
+
+    public Cylinder createConnection(Point3D origin, Point3D target) {
+        Point3D yAxis = new Point3D(0, 1, 0);
+        Point3D diff = target.subtract(origin);
+        double height = diff.magnitude();
+
+        Point3D mid = target.midpoint(origin);
+        Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(), mid.getZ());
+
+        Point3D axisOfRotation = diff.crossProduct(yAxis);
+        double angle = Math.acos(diff.normalize().dotProduct(yAxis));
+        Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
+
+        PhongMaterial blackStuff = new PhongMaterial();
+        blackStuff.setDiffuseColor(Color.BLACK);
+        blackStuff.setSpecularColor(Color.BLACK);
+        Cylinder line = new Cylinder(1, height);
+        line.setMaterial(blackStuff);
+
+        line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
+
+        return line;
     }
 
 }

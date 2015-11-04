@@ -31,15 +31,17 @@ public class Stripper {
         int b = 100;
 
         
-        for (modelLength = 5; modelLength < 300; modelLength = modelLength+10) {
+        for (modelLength = 5; modelLength < 100; modelLength = modelLength+10) {
                     
         Material usrMat = new Material_Steel();
 
         Node n1 = new Node(0, 0);
         Node n2 = new Node(0, b);
 
+
         //Loaded edges
-        Series_SS Y = new Series_SS(modelLength);
+       
+        Series_CC Y = new Series_CC(modelLength);
 
         Strip_General myStrip = new Strip_General(n1, n2);
         myStrip.setProperties(usrMat, 10, modelLength, Y);
@@ -142,7 +144,8 @@ public class Stripper {
         
         //Longitudinal edges
         //                    u        v       w     t        u      v      w        t
-        boolean [] status = {true, false, true, true,      true, false, true, false};
+        boolean [] status = {false,  false,  false,  false,   false,   false, false,   false};
+        
         
         SystemSolver se =new SystemSolver(myStrip.getStiffnessMatrix(1, 1), status);
         SystemSolver sg =new SystemSolver(myStrip.getGeometricMatrix(1,1), status);
@@ -152,7 +155,7 @@ public class Stripper {
         
         
         //Ke.printf("Ke");
-        //Kg.printf("Kg");
+       // Kg.printf("Kg");
         
         
         Matrix K = Ke.multiply(Kg.inverse());
@@ -236,14 +239,6 @@ public class Stripper {
          */
     }
 
-    public static double round(double value, int places) {
-        if (places < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
+   
 
 }

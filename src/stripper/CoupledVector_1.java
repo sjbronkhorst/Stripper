@@ -46,7 +46,7 @@ public class CoupledVector_1
     {
         int [] ind1 = {0,1,2,3};
         int [] ind2 = {4,5,6,7};
-        int [] zeroInd = {0,0,0,0};
+        
         
         Vector S11 = force.getSubVector(ind1);
         Vector S22 = force.getSubVector(ind2);

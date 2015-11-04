@@ -30,6 +30,7 @@ public abstract class Series {
         seriesList.add(new Series_SS(0));
         seriesList.add(new Series_CC(0));
         seriesList.add(new Series_CF(0));
+       
         
         
         listIsSet = true;

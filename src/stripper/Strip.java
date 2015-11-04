@@ -53,6 +53,21 @@ public abstract class Strip {
     public static void clearNumbering() {
         stripSequence.set(0);
     }
+    
+    public Vector getStatusVector()
+    {
+        Vector status = Vector.getVector(8);
+        
+        for (int i = 0; i < 4; i++)
+        {
+         status.set(Converter.boolToVec(node1.getStatus()).get(i), i);
+         status.set(Converter.boolToVec(node2.getStatus()).get(i), i+4);
+        }
+        
+        
+        
+        return status;
+        }
 
     public ObservableList<UI.PointLoad> getPointLoadList() {
         return pointLoads;

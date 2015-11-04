@@ -32,6 +32,7 @@ import javafx.util.converter.IntegerStringConverter;
 import stripper.BucklingEquation;
 
 import stripper.Strip;
+import stripper.series.BucklingSeries_CC;
 
 public class TableViewEdit extends Application {
 
@@ -217,7 +218,7 @@ public class TableViewEdit extends Application {
             public void handle(ActionEvent event) {
 
                 ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
-
+               
                 ModelProperties.getStripList().clear();
                 for (UIStrip s : StripTableUtil.getStripList()) {
                     ModelProperties.addStrip(s);
@@ -242,13 +243,18 @@ public class TableViewEdit extends Application {
 
                 BucklingEquation b = new BucklingEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
+                
                 System.out.println();
 
-                double[] loads = b.getBucklingCurve(100);
+                double[][] loads = b.getBucklingCurve(100);
 
-                for (int i = 0; i < 100; i++) {
-                    System.out.println(loads[i]);
+                
+                    for (int i = 0; i < 100; i++) {
+                    System.out.println(loads[i][5]);
                 }
+                
+                
+                
 
             }
         });
@@ -368,6 +374,7 @@ public class TableViewEdit extends Application {
         VBox rightBox = new VBox();
 
         rightBox.getChildren().addAll(mvp.getPane(), modelLengthField, thicknessField, calcBtn, buckleBtn, progInd, plotBtn, slider);
+        
 
         rightBox.setStyle("-fx-padding: 0;"
                 + "-fx-border-style: solid inside;"
@@ -428,11 +435,12 @@ public class TableViewEdit extends Application {
 //                + "-fx-border-insets: 5;"
 //                + "-fx-border-radius: 5;"
 //                + "-fx-border-color: blue;");
-        root.setPrefSize(800, 600);
+        root.setPrefSize(1200, 600);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Stripper - FSM by SJ Bronkhorst");
         stage.show();
+        draw();
     }
 
     public void addIdColumn(TableView<Node> table) {

@@ -10,6 +10,7 @@ import UI.NodeTableUtil;
 import java.util.ArrayList;
 import java.util.List;
 import linalg.Matrix;
+import linalg.Vector;
 import stripper.series.Series;
 import stripper.series.Series_SS;
 
@@ -52,30 +53,91 @@ public class BucklingEquation {
 
     }
 
-    public double[] getBucklingCurve(int steps) {
-        double Lmax = ModelProperties.getModelLength();
+    /**
+     *
+     * @param steps total sampling points along model length
+     * @return an array containing raw data for buckling curves for buckling
+     * modes 1 to total number of Fourier terms set in ModelProperties. The last
+     * column of the array contains the signature curve.
+     */
+    public double[][] getBucklingCurve(int steps) {
 
-        double Lincrement = Lmax / ((double) steps);
+        if (ModelProperties.getFourierSeries().isSimplySupported()) {
+            double[][] bucklingLoads = new double[steps][ModelProperties.getFourierTerms() + 1];
 
-        double hwl = Lincrement; // Half-Wave Length
+            boolean[] status = new boolean[nodes.size() * 4];
 
-        double[] bucklingLoads = new double[steps];
+            for (Node n : nodes) {
+                status[(n.getNodeId() - 1) * 4] = n.getStatus()[0];
+                status[(n.getNodeId() - 1) * 4 + 1] = n.getStatus()[1];
+                status[(n.getNodeId() - 1) * 4 + 2] = n.getStatus()[2];
+                status[(n.getNodeId() - 1) * 4 + 3] = n.getStatus()[3];
 
-        boolean[] status = new boolean[nodes.size() * 4]; // r is always = 1 for buckling
-        
-        for (Node n : nodes)
-        {
-         status[(n.getNodeId() - 1)*4] = n.getStatus()[0]; 
-         status[(n.getNodeId() - 1)*4 +1] = n.getStatus()[1]; 
-         status[(n.getNodeId() - 1)*4 +2] = n.getStatus()[2]; 
-         status[(n.getNodeId() - 1)*4 +3] = n.getStatus()[3]; 
+            }
+
+            for (int r = 1; r <= ModelProperties.getFourierTerms(); r++) { // r = mode shape
+
+                int index = 0;
+                double Lmax = ModelProperties.getModelLength();
+                double Lincrement = Lmax / ((double) steps);
+                double hwl = Lincrement; // Half-Wave Length
+
+                while (hwl <= Lmax) {
+                    //ModelProperties.setModelLength(hwl);
+
+                    Series Y = ModelProperties.getFourierSeries();
+                    Y.setLength(hwl);
+
+                    for (Strip s : strips) {
+                        s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
+
+                        // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
+                        // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");
+                    }
+
+                    Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
+
+                    SystemSolver se = new SystemSolver(a.getK(r), status);
+                    SystemSolver sg = new SystemSolver(a.getKg(r), status);
+
+                    Matrix Ke = se.getKff();
+                    Matrix Kg = sg.getKff();
+
+                    bucklingLoads[index][r - 1] = getBucklingLoad(Ke, Kg);
+
+                    hwl += Lincrement;
+                    index++;
+                }
+
+            }
+
+            for (int i = 0; i < steps; i++) {
+                double minBucklingLoad = bucklingLoads[i][0];
+
+                for (int j = 1; j < ModelProperties.getFourierTerms(); j++) {
+                    if (bucklingLoads[i][j] < minBucklingLoad) {
+                        minBucklingLoad = bucklingLoads[i][j];
+                    }
+                }
+
+                bucklingLoads[i][ModelProperties.getFourierTerms()] = minBucklingLoad;
+            }
+
+            return bucklingLoads;
         }
+
         
+        
+        // ELSE ----------------------------------------------------------------
+        System.out.println("Series not SS , commencing full solution");
+        double[][] bucklingLoads = new double[steps][1];
 
         int index = 0;
+        double Lmax = ModelProperties.getModelLength();
+        double Lincrement = Lmax / ((double) steps);
+        double hwl = Lincrement; // Half-Wave Length
 
         while (hwl <= Lmax) {
-            //ModelProperties.setModelLength(hwl);
 
             Series Y = ModelProperties.getFourierSeries();
             Y.setLength(hwl);
@@ -83,30 +145,61 @@ public class BucklingEquation {
             for (Strip s : strips) {
                 s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
 
-                // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
+                    // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
                 // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");
             }
+            
+            
+            CoupledMatrix_1 cKe = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
+            CoupledMatrix_1 cKg = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
+            CoupledVector_1 fK = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
 
-            Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
+//       Vector fK = Vector.getVector(8*nTerms);
+//       fK.clear();
+            for (int i = 1; i < ModelProperties.getFourierTerms() + 1; i++) {
 
-            SystemSolver se = new SystemSolver(a.getK(1), status);
-            SystemSolver sg = new SystemSolver(a.getKg(1), status);
+                for (int j = 1; j < ModelProperties.getFourierTerms() + 1; j++) {
+
+                    for (Strip myStrip : strips) {
+                        cKe.addStiffnessMatrix(myStrip.getRotatedStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
+                        cKg.addStiffnessMatrix(myStrip.getRotatedGeometricMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
+                    }
+
+                }
+
+                for (Strip myStrip : strips) {
+
+                    fK.addForceVector(myStrip.getStatusVector(), myStrip.getNode1(), myStrip.getNode2(), i);
+
+                }
+
+            }
+             
+            
+
+            SystemSolver se = new SystemSolver(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
+
+            SystemSolver sg = new SystemSolver(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
 
             Matrix Ke = se.getKff();
             Matrix Kg = sg.getKff();
 
-            bucklingLoads[index] = getBucklingLoad(Ke, Kg);
+            bucklingLoads[index][0] = getBucklingLoad(Ke, Kg);
 
             hwl += Lincrement;
             index++;
         }
 
         return bucklingLoads;
+
     }
 
     public double getBucklingLoad(Matrix Keff, Matrix Kgff) {
         Matrix Ke = Keff;
         Matrix Kg = Kgff;
+        
+//        Ke.printf("Ke");
+//        Kg.printf("Kg");
 
         Matrix K = Ke.multiply(Kg.inverse());
         Matrix eig = K.eigenMatrix();

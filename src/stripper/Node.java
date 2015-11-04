@@ -28,7 +28,7 @@ public class Node {
     
     private double displacedXCoord = 0 ;
     private double displacedZCoord = 0 ;
-    private boolean [] dofPrescribedStatus = {false, false, false, false}; // u v w theta
+    private boolean [] dofPrescribedStatus = {false,false,false,false}; // u v w theta
     
     private Vector [][] displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
 
@@ -37,6 +37,7 @@ public class Node {
         
         this.xCoord.set(xCoord);
         this.zCoord.set(zCoord);
+        
         //displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
     }
     
