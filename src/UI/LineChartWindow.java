@@ -10,8 +10,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 //
 
-
-
 public class LineChartWindow extends Application {
 
     private String windowTitle = "WindowTitle";
@@ -19,8 +17,11 @@ public class LineChartWindow extends Application {
     private String xLabel = "xLabel";
     private String yLabel = "yLabel";
     private boolean autorange = false;
-    private double lowerBound = 0;
-    private double upperBound = 0;
+    private boolean yHasBounds = false;
+    private double xLowerBound = 0;
+    private double xUpperBound = 0;
+    private double yLowerBound = 0;
+    private double yUpperBound = 0;
     private double tickUnit = 0;
     ObservableList<XYChart.Series<Number, Number>> chartData;
 
@@ -29,15 +30,32 @@ public class LineChartWindow extends Application {
 //Application.launch(args);
     }
 
-    public LineChartWindow(String windowTitle , String chartTitle, String xLabel, String yLabel, double lowerBound, double upperBound, ObservableList<XYChart.Series<Number, Number>> chartData) {
-        
+    public LineChartWindow(String windowTitle, String chartTitle, String xLabel, String yLabel, double lowerBound, double upperBound, ObservableList<XYChart.Series<Number, Number>> chartData) {
+
         this.windowTitle = windowTitle;
         this.chartTitle = chartTitle;
         this.xLabel = xLabel;
         this.yLabel = yLabel;
 
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
+        this.xLowerBound = lowerBound;
+        this.xUpperBound = upperBound;
+
+        this.chartData = chartData;
+
+    }
+
+    public LineChartWindow(String windowTitle, String chartTitle, String xLabel, String yLabel, double xLowerBound, double xUpperBound, double yLowerBound, double yUpperBound, ObservableList<XYChart.Series<Number, Number>> chartData) {
+
+        this.windowTitle = windowTitle;
+        this.chartTitle = chartTitle;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+
+        this.xLowerBound = xLowerBound;
+        this.xUpperBound = xUpperBound;
+        yHasBounds = true;
+        this.yLowerBound = yLowerBound;
+        this.yUpperBound = yUpperBound;
 
         this.chartData = chartData;
 
@@ -50,12 +68,21 @@ public class LineChartWindow extends Application {
 
 // Customize the x-axis, so points are scattred uniformly
         xAxis.setAutoRanging(autorange);
-        xAxis.setLowerBound(lowerBound);
-        xAxis.setUpperBound(upperBound);
+        xAxis.setLowerBound(xLowerBound);
+        xAxis.setUpperBound(xUpperBound);
 
-        xAxis.setTickUnit((upperBound - lowerBound)/10.0);
+        xAxis.setTickUnit((xUpperBound - xLowerBound) / 10.0);
 
         NumberAxis yAxis = new NumberAxis();
+
+        if (yHasBounds) {
+            yAxis.setAutoRanging(autorange);
+            yAxis.setLowerBound(yLowerBound);
+            yAxis.setUpperBound(yUpperBound);
+
+            yAxis.setTickUnit((yUpperBound - yLowerBound) / 10.0);
+        }
+
         yAxis.setLabel(yLabel);
         LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setTitle(chartTitle);

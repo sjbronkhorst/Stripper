@@ -23,27 +23,26 @@ import javafx.stage.FileChooser.ExtensionFilter;
 /**
  *
  * @author SJ
- * 
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
+ *
  */
 public class FileHandler {
 
-    
     private Map<Integer, Node> nodeMap = new HashMap<>();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
     private ObservableList<UIStrip> strips = FXCollections.<UIStrip>observableArrayList();
     private FileChooser fileDialog = new FileChooser();
 
     public FileHandler() {
-        fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
+
     }
 
     public void writeFile(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
-
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showSaveDialog(null);
 
         if (file != null) {
@@ -66,7 +65,7 @@ public class FileHandler {
             bw.close();
             fw.close();
         }
-
+        fileDialog.getExtensionFilters().clear();
     }
 
     public ObservableList<Node> getNodeList() {
@@ -78,11 +77,9 @@ public class FileHandler {
     }
 
     public void ReadFile() throws FileNotFoundException, IOException, IllegalStateException {
-        
-        
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showOpenDialog(null);
-       
-        
+
         if (file != null) {
 
             Node.clearNumbering();
@@ -145,25 +142,43 @@ public class FileHandler {
             br2.close();
             fr2.close();
         }
-
+        fileDialog.getExtensionFilters().clear();
     }
 
-    public static void main(String[] args) throws IOException {
+    public void writeCSV(String[][] data) throws IOException {
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Comma Separated Values", "*.csv"));
+        int cols = data[0].length;
+        int rows = data.length;
 
-        FileHandler f = new FileHandler();
-        f.ReadFile();
+        File file = fileDialog.showSaveDialog(null);
 
-        f.writeFile(null, null);
+        if (file != null) {
 
-//        
-//        for (int i = 0; i < s.length; i++)
-//        {
-//            System.out.println(s[i]);
-//            
-//        }
-        System.out.println(f.nodes.toString());
-        System.out.println(f.strips.toString());
+            try {
 
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < cols; j++) {
+                        bw.append(data[i][j] + ";");
+
+                    }
+                    bw.newLine();
+                }
+
+                bw.close();
+                fw.close();
+
+            } catch (Exception e) {
+
+                System.out.println("File not found/available, close it and try again");
+                return;
+
+            }
+
+            fileDialog.getExtensionFilters().clear();
+        }
     }
 
 }

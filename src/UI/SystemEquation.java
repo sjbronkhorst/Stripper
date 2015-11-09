@@ -218,9 +218,19 @@ public class SystemEquation {
 
     public void setDisplacedState(int distPercentage) {
 
-        for (int i = 0; i < NodeTableUtil.getNodeList().size(); i++) {
-            NodeTableUtil.getNodeList().get(i).setDisplacedXCoord(Uarr[distPercentage].get((i * 4)));
-            NodeTableUtil.getNodeList().get(i).setDisplacedZCoord(Uarr[distPercentage].get((i * 4 + 2)));
+//        for (int i = 0; i < NodeTableUtil.getNodeList().size(); i++) {
+//            
+//            
+//            
+//            NodeTableUtil.getNodeList().get(i).setDisplacedXCoord(Uarr[distPercentage].get((i * 4)));
+//            NodeTableUtil.getNodeList().get(i).setDisplacedZCoord(Uarr[distPercentage].get((i * 4 + 2)));
+//        }
+        
+        
+        for (Node n : NodeTableUtil.getNodeList())
+        {
+         n.setDisplacedXCoord(n.getDisplacementVectorAt(distPercentage).get(0));
+         n.setDisplacedZCoord(n.getDisplacementVectorAt(distPercentage).get(2));
         }
 
     }

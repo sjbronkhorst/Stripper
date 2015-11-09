@@ -5,24 +5,15 @@
  */
 package UI;
 
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.PickRay;
-import com.sun.javafx.scene.input.PickResultChooser;
-import com.sun.javafx.sg.prism.NGPhongMaterial;
-import com.sun.javafx.sg.prism.NGTriangleMesh;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Line2D;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
-import javafx.scene.Camera;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.canvas.GraphicsContext;
@@ -31,17 +22,15 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.ZoomEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Mesh;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
@@ -49,11 +38,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import linalg.Matrix;
-import linalg.Vector;
 
 import stripper.Node;
-import stripper.Strip;
 
 /**
  *
@@ -62,12 +48,16 @@ import stripper.Strip;
 public class ModelViewPane {
 
     ResizableCanvas canvas;
+
     Button zoomBtn = new Button("+");
     Button dezoomBtn = new Button("- ");
     Button leftBtn = new Button("<");
     Button rightBtn = new Button(">");
     Button downBtn = new Button("v");
     Button upBtn = new Button("^");
+
+    List<Button> btnList = new ArrayList<Button>();
+    List<CheckBox> checkList = new ArrayList<CheckBox>();
 
     Button leftRotateBtn = new Button("<R");
     Button rightRotateBtn = new Button("R>");
@@ -108,7 +98,22 @@ public class ModelViewPane {
 
     PerspectiveCamera camera = new PerspectiveCamera(true);
 
+    PhongMaterial yellowStuff = new PhongMaterial();
+    PhongMaterial greenStuff = new PhongMaterial();
+    PhongMaterial redStuff = new PhongMaterial();
+
     public ModelViewPane() {
+
+        
+        
+        yellowStuff.setDiffuseColor(Color.YELLOW);
+        yellowStuff.setSpecularColor(Color.GRAY);
+
+        greenStuff.setDiffuseColor(Color.GREEN);
+        greenStuff.setSpecularColor(Color.GRAY);
+
+        redStuff.setDiffuseColor(Color.RED);
+        redStuff.setSpecularColor(Color.GRAY);
 
         camera.setTranslateX(0);
         camera.setTranslateY(0);
@@ -117,7 +122,7 @@ public class ModelViewPane {
         camera.setFarClip(2000);
 
         canvas = new ResizableCanvas();
-
+        
         nodeLabelCheck = new CheckBox("Node labels");
         nodeLabelCheck.selectedProperty().set(true);
 
@@ -282,19 +287,11 @@ public class ModelViewPane {
             }
         });
 
-        viewBox.setOnMouseEntered(new EventHandler() {
-
-            @Override
-            public void handle(Event event) {
-                System.out.println("Mouse entered");
-            }
-        });
-
         viewBox.setOnMousePressed(new EventHandler<MouseEvent>() {
 
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("Mouse pressed at x = " + event.getSceneX() + " y = " + event.getSceneY());
+
                 pressedX = event.getSceneX();
                 pressedY = event.getSceneY();
                 pressedPoint = new Point3D(pressedX, pressedY, camera.getTranslateZ());
@@ -317,15 +314,21 @@ public class ModelViewPane {
             }
         });
 
-        viewBox.setOnMouseReleased(new EventHandler<MouseEvent>() {
+        btnList.add(zoomBtn);
+        btnList.add(dezoomBtn);
+        btnList.add(upBtn);
+        btnList.add(downBtn);
+        btnList.add(leftBtn);
+        btnList.add(rightBtn);//zoomBtn,dezoomBtn, leftBtn,rightBtn,upBtn,downBtn,leftRotateBtn, rightRotateBtn, upRotateBtn, downRotateBtn, nodeLabelCheck, stripLabelCheck
+        btnList.add(leftRotateBtn);
+        btnList.add(rightRotateBtn);
+        btnList.add(upRotateBtn);
+        btnList.add(downRotateBtn);
+        checkList.add(nodeLabelCheck);
+        checkList.add(stripLabelCheck);
 
-            @Override
-            public void handle(MouseEvent event) {
-                System.out.println("Mouse released at x = " + event.getSceneX() + " y = " + event.getSceneY());
-            }
-        });
-
-        zoomBox.getChildren().addAll(zoomBtn, dezoomBtn, leftBtn, rightBtn, upBtn, downBtn, leftRotateBtn, rightRotateBtn, upRotateBtn, downRotateBtn, nodeLabelCheck, stripLabelCheck);
+        zoomBox.getChildren().addAll(btnList);
+        zoomBox.getChildren().addAll(checkList);
 
         threeDGroup = new Group(stripGroup, nodeGroup, axisGroup);
 
@@ -343,14 +346,6 @@ public class ModelViewPane {
                 camera.setTranslateZ(camera.getTranslateZ() - 50);
 
             }
-
-//            double dx = e.getX() - camera.getTranslateX();
-//            double dy = e.getY() - camera.getTranslateY();
-//
-//            double dist = Math.sqrt(dx * dx + dy * dy);
-//
-//            camera.setTranslateX(camera.getTranslateX() + dx / 5);
-//            camera.setTranslateY(camera.getTranslateX() + dy / 5);
 
             camera.setNearClip(0.1);
             camera.setFarClip(camera.getTranslateZ() * 2);
@@ -390,39 +385,30 @@ public class ModelViewPane {
         xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
         xText.translateXProperty().set(110);
         axisGroup.getChildren().add(xText);
-        
+
         Text yText = new Text("Z");
         yText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
         yText.translateYProperty().set(110);
         axisGroup.getChildren().add(yText);
-        
+
         Text zText = new Text("Y");
         zText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
         zText.translateZProperty().set(110);
         axisGroup.getChildren().add(zText);
 
-        
-        PhongMaterial yellowStuff = new PhongMaterial();
-                yellowStuff.setDiffuseColor(Color.YELLOW);
-                yellowStuff.setSpecularColor(Color.GRAY);
-                
-         Box arrowHeadX = new Box(10, 10,10);       
-         arrowHeadX.setMaterial(yellowStuff);
-         Box arrowHeadY = new Box(10, 10,10);    
-         arrowHeadY.setMaterial(yellowStuff);
-         Box arrowHeadZ = new Box(10, 10,10);       
-         arrowHeadZ.setMaterial(yellowStuff);
-         
-         arrowHeadX.setTranslateX(100);
-         arrowHeadY.setTranslateY(100);
-         arrowHeadZ.setTranslateZ(100);
-         
-        axisGroup.getChildren().addAll(arrowHeadX,arrowHeadY,arrowHeadZ);
-        
-        
-        MeshView ding = new MeshView(null);
-        
-        
+        Box arrowHeadX = new Box(10, 10, 10);
+        arrowHeadX.setMaterial(yellowStuff);
+        Box arrowHeadY = new Box(10, 10, 10);
+        arrowHeadY.setMaterial(yellowStuff);
+        Box arrowHeadZ = new Box(10, 10, 10);
+        arrowHeadZ.setMaterial(yellowStuff);
+
+        arrowHeadX.setTranslateX(100);
+        arrowHeadY.setTranslateY(100);
+        arrowHeadZ.setTranslateZ(100);
+
+        axisGroup.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
+
         
         draw();
 
@@ -430,7 +416,28 @@ public class ModelViewPane {
 
     public VBox getPane() {
         VBox pane = new VBox(10);
+        pane.getStylesheets().add("Style.css");
         pane.getChildren().addAll(viewBox, zoomBox);
+        viewBox.getStyleClass().addAll("vbox");
+       
+
+//        viewBox.setStyle("-fx-padding: 0;"
+//                + "-fx-border-style: solid;"
+//                + "-fx-border-width: 2;"
+//                + "-fx-border-insets: -1;"
+//                + "-fx-border-radius: 0;"
+//                + "-fx-border-color: black;");
+//        viewBox.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+//
+//        zoomBox.setStyle("-fx-padding: 5;"
+//                + "-fx-border-style: solid;"
+//                + "-fx-border-width: 2;"
+//                + "-fx-border-insets: -1;"
+//                + "-fx-border-radius: 0;"
+//                + "-fx-border-color: black;");
+
+        
+
         return pane;
     }
 
@@ -500,9 +507,6 @@ public class ModelViewPane {
                 gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
 
                 Box b = new Box(2, 20, 2);
-                PhongMaterial greenStuff = new PhongMaterial();
-                greenStuff.setDiffuseColor(Color.GREEN);
-                greenStuff.setSpecularColor(Color.GRAY);
                 b.setMaterial(greenStuff);
 
             }
@@ -518,23 +522,31 @@ public class ModelViewPane {
             double theta = 180 * s.getStripAngle() / Math.PI;
 
             Box b = new Box(s.getStripWidth(), 10, ModelProperties.getModelLength());
-            PhongMaterial redStuff = new PhongMaterial();
-            redStuff.setDiffuseColor(Color.RED);
-            redStuff.setSpecularColor(Color.GRAY);
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
                 t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                t.translateXProperty().set(((x1 + x2) / 2.0) - 5 - 1);
-                t.translateYProperty().set(((y1 + y2) / 2.0) - 5 - 1);
+                t.translateXProperty().set(((x1 + x2) / 2.0) + 5 + 1 +1 );
+                t.translateYProperty().set(((y1 + y2) / 2.0) - 5 - 1 -1);
 
                 t.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 
-                t.getTransforms().add(new Rotate(-90 + theta, new Point3D(1, 0, 0)));
+                t.getTransforms().add(new Rotate(-90 - theta, new Point3D(1, 0, 0)));
+                
+                
+           Text t2 = new Text(s.toString());
+                t2.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                //t.getTransforms().add(new Rotate(90,new Point3D(0, 0, 1)));
+                t2.translateXProperty().set(((x1 + x2) / 2.0) - 5 - 1 -1);
+                t2.translateYProperty().set(((y1 + y2) / 2.0) + 5 + 1 +1);
+
+                t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
+
+                t2.getTransforms().add(new Rotate(90 - theta, new Point3D(1, 0, 0)));
+
                 stripGroup.getChildren().add(t);
+                stripGroup.getChildren().add(t2);
             }
 
             b.setMaterial(redStuff);

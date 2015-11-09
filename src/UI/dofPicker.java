@@ -49,11 +49,6 @@ public class dofPicker extends Application {
         
        boolean [] status = nodeToEdit.getStatus();
        
-       
-        
-       
-       
-       
         
         VBox root = new VBox(5);
         

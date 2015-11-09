@@ -1,5 +1,7 @@
 package UI;
 
+import com.sun.javafx.css.Style;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +18,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -25,11 +29,17 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import stripper.BucklingEquation;
+import stripper.FileHandler;
+import stripper.Path;
 
 import stripper.Strip;
 import stripper.series.BucklingSeries_CC;
@@ -49,9 +59,9 @@ public class TableViewEdit extends Application {
     private double biggestX = 0;
     private double biggestY = 0;
 
-    Button calcBtn = new Button("Calculate");
+    Button calcBtn = new Button("Calculate Stresses");
     Button plotBtn = new Button("Plot");
-    Button buckleBtn = new Button("Buckle");
+    Button buckleBtn = new Button("Calculate Buckling data");
 
     ProgressBar progInd = new ProgressBar(0);
 
@@ -71,7 +81,7 @@ public class TableViewEdit extends Application {
 
     @Override
     public void start(Stage stage) {
-
+        
         progInd.setStyle("-fx-progress-color: blue;");
 
         //progInd.setMinSize(50, 50);
@@ -171,6 +181,7 @@ public class TableViewEdit extends Application {
                     //s.getRotatedLoadVector(1).printf("P"+Integer.toString(s.getStripId()));
                 }
 
+                ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
                 ModelProperties.getFourierSeries().setLength(ModelProperties.getModelLength());
 
                 s = new SystemEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
@@ -194,13 +205,20 @@ public class TableViewEdit extends Application {
                 ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
 
                 for (Strip s : ModelProperties.getStripList()) {
-                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
+                    //System.out.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
+                  
 //                    System.out.println(s.getPlaneStressVectorAt(s.getStripWidth(), 50).get(1));
 
-//                    for (int y = 0; y < 101; y++) {
-//                        System.out.println(s.getBendingStressVectorAt( s.getStripWidth()/2.0 , y).get(1));
-//                    }
+                    for (int y = 0; y < 101; y++) {
+                        System.out.println(s.getBendingStressVectorAt( s.getStripWidth()/2.0 , y).get(1));
+                    }
+                    
+                    
+                    Path p = new Path(new Point2D(50,0), new Point2D(50,1000), 101, s);
                 }
+                
+                
+                
 
 //                        
 //                        
@@ -216,9 +234,10 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                
 
                 ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
-               
+
                 ModelProperties.getStripList().clear();
                 for (UIStrip s : StripTableUtil.getStripList()) {
                     ModelProperties.addStrip(s);
@@ -229,32 +248,50 @@ public class TableViewEdit extends Application {
                     s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
                     s.setEdgeTraction(0.001, 0.001);
                 }
-                
-                //NodeTableUtil.getNodeList().get(0).setStatus(new boolean [] {true, false, true, true});
-               // System.out.println(NodeTableUtil.getNodeList().get(0));
-                //System.out.println(Arrays.toString(NodeTableUtil.getNodeList().get(0).getStatus()));
-                
-                
-                
-                
-                //NodeTableUtil.getNodeList().get(4).setStatus(new boolean [] {true, false, true, false});
-                //System.out.println(NodeTableUtil.getNodeList().get(4));
-                //System.out.println(Arrays.toString(NodeTableUtil.getNodeList().get(4).getStatus()));
 
                 BucklingEquation b = new BucklingEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
+                double[][] buckleData = b.getBucklingCurve(100);
+                String[][] stringData = new String[buckleData.length + 1][buckleData[0].length];
                 
-                System.out.println();
-
-                double[][] loads = b.getBucklingCurve(100);
-
                 
-                    for (int i = 0; i < 100; i++) {
-                    System.out.println(loads[i][5]);
+
+                stringData[0][0] = "Length";
+                stringData[0][stringData[0].length - 1] = "Minimum stress (Signature curve)";
+
+                double[] xData = new double[buckleData.length];
+                double[] yData = new double[buckleData.length];
+
+                for (int i = 1; i < stringData[0].length - 1; i++) {
+                    stringData[0][i] = "Buckling stress for half wave";
                 }
-                
-                
-                
+
+                for (int i = 0; i < buckleData.length; i++) {
+                    for (int j = 0; j < buckleData[0].length; j++) {
+                        stringData[i + 1][j] = Double.toString(buckleData[i][j]);
+
+                        
+                    }
+                    
+                    xData[i] = buckleData[i][0];
+                    yData[i] = buckleData[i][buckleData[0].length-1];
+                    
+                }
+
+                FileHandler f = new FileHandler();
+                try {
+                    f.writeCSV(stringData);
+                } catch (IOException ex) {
+                    Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                XYChartDataUtil.addSeries(xData, yData, "Signature curve");
+                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "","Length","Stress",ModelProperties.getModelLength()/10,ModelProperties.getModelLength(),0,(yData[0]+ yData[yData.length-1])/100,XYChartDataUtil.getDataList());
+
+                Stage s = new Stage();
+
+                s.getIcons().add(ic);
+                chart.start(s);
 
             }
         });
@@ -332,33 +369,30 @@ public class TableViewEdit extends Application {
 
             }
         });
-        
+
         nodeDofBtn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                
+
                 Node n = table.getSelectionModel().getSelectedItem();
 
                 if (n != null) {
                     dofPicker d = new dofPicker();
                     d.setNode(n);
-                Stage s =new Stage();
-                try {
-                    d.start(s);
-                } catch (Exception ex) {
-                    Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
-                    System.out.println("Editing "+n.toString() + " DOF");
-                
-                
+                    Stage s = new Stage();
+                    try {
+                        d.start(s);
+                    } catch (Exception ex) {
+                        Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    System.out.println("Editing " + n.toString() + " DOF");
+
                 } else {
                     System.out.println("ERROR : No nodes selected !");
                 }
-                
-                
-                
+
             }
         });
 
@@ -371,19 +405,22 @@ public class TableViewEdit extends Application {
         VBox nodeControlBox = new VBox(10);
         VBox stripControlBox = new VBox(10);
 
-        VBox rightBox = new VBox();
+        VBox rightBox = new VBox(10);
 
-        rightBox.getChildren().addAll(mvp.getPane(), modelLengthField, thicknessField, calcBtn, buckleBtn, progInd, plotBtn, slider);
+        rightBox.getChildren().addAll(mvp.getPane(), calcBtn, buckleBtn, progInd, plotBtn /*, slider*/);
         
 
+        
         rightBox.setStyle("-fx-padding: 0;"
                 + "-fx-border-style: solid inside;"
                 + "-fx-border-width: 0;"
                 + "-fx-border-insets: 5;"
                 + "-fx-border-radius: 5;"
                 + "-fx-border-color: black;");
+        
+        //rightBox.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        //progInd.setPrefWidth(2000);
+   
         nodeBox.getChildren().addAll(table, nodeControlBox);
         addBtn.setMinWidth(130);
         removeBtn.setMinWidth(130);
@@ -400,18 +437,19 @@ public class TableViewEdit extends Application {
 
         Label nodeLabel = new Label("Nodes :");
         Label stripLabel = new Label("Strips :");
+        Label lengthLabel = new Label("Model length :");
+        Label thicknessLabel = new Label("Plate thickness :");
 
-        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox);
+        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox,lengthLabel, modelLengthField,thicknessLabel,thicknessField);
 
         geometryTab.setContent(tableBox);
-        //loadTab.setContent(loadTable);
-
+     
         tabPane.getTabs().addAll(geometryTab, loadTab);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-
-        //tableBox.setMinHeight(1200);
-        //tableBox.setMinWidth(400);
+      
+    
         SplitPane sp = new SplitPane();
+        sp.setDividerPosition(0, 0.3);
 
         sp.getItems().addAll(tabPane, rightBox);
 
@@ -422,19 +460,14 @@ public class TableViewEdit extends Application {
                 + "-fx-border-insets: 5;"
                 + "-fx-border-radius: 5;"
                 + "-fx-border-color: blue;");
+        
+        root.getStylesheets().add("Style.css");
 
         root.setTop(menuBar.getMenuBar());
-        //root.setLeft(tabPane);
+        
+        tabPane.prefHeightProperty().bind(root.heightProperty());
 
-        tableBox.prefHeightProperty().bind(root.heightProperty());
-
-        //root.getChildren().addAll(menuBar, tableBox, rightBox);
-//        root.setStyle("-fx-padding: 10;"
-//                + "-fx-border-style: solid inside;"
-//                + "-fx-border-width: 2;"
-//                + "-fx-border-insets: 5;"
-//                + "-fx-border-radius: 5;"
-//                + "-fx-border-color: blue;");
+     
         root.setPrefSize(1200, 600);
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -511,6 +544,8 @@ public class TableViewEdit extends Application {
         });
 
         fNameCol.setOnEditCommit(e -> {
+            
+            try{
             int row = e.getTablePosition().getRow();
 
             UIStrip strip = e.getRowValue();
@@ -522,6 +557,13 @@ public class TableViewEdit extends Application {
             System.out.println("New node id " + NodeTableUtil.getNodeMap().get(e.getNewValue()).getNodeId());
 
             draw();
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Node not found, create it and try again");
+            }
+            
+            
         });
 
         table.getColumns().add(fNameCol);
@@ -539,6 +581,7 @@ public class TableViewEdit extends Application {
         });
 
         fNameCol.setOnEditCommit(e -> {
+            try{
             int row = e.getTablePosition().getRow();
             UIStrip strip = e.getRowValue();
 
@@ -548,6 +591,13 @@ public class TableViewEdit extends Application {
             StripTableUtil.getStripList().get(row).setNode2(NodeTableUtil.getNodeMap().get(e.getNewValue()));
 
             draw();
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Node not found, create it and try again");
+            }
+            
+            
         });
 
         table.getColumns().add(fNameCol);
@@ -557,60 +607,5 @@ public class TableViewEdit extends Application {
         mvp.draw();
     }
 
-//    public void addLastNameColumn(TableView<Node> table) {
-//// Last Name is a String, editable column
-//        TableColumn<Node, String> lNameCol = NodeTableUtil.getLastNameColumn();
-//// Use a TextFieldTableCell, so it can be edited
-//        lNameCol.setCellFactory(TextFieldTableCell.<Node>forTableColumn());
-//        table.getColumns().add(lNameCol);
-//    }
-//
-//    public void addBirthDateColumn(TableView<Node> table) {
-//// Birth Date is a LocalDate, editable column
-//        TableColumn<Node, LocalDate> birthDateCol
-//                = NodeTableUtil.getBirthDateColumn();
-//// Use a TextFieldTableCell, so it can be edited
-//        LocalDateStringConverter converter = new LocalDateStringConverter();
-//        birthDateCol.setCellFactory(
-//                TextFieldTableCell.<Node, LocalDate>forTableColumn(converter));
-//        table.getColumns().add(birthDateCol);
-//    }
-//
-//    public void addBabyColumn(TableView<Node> table) {
-//// Baby? is a Boolean, non-editable column
-//        TableColumn<Node, Boolean> babyCol = new TableColumn<>("Baby?");
-//        babyCol.setEditable(false);
-//// Set a cell value factory
-//        babyCol.setCellValueFactory(cellData -> {
-//            Node p = cellData.getValue();
-//            Boolean v = (p.getAgeCategory() == Node.AgeCategory.BABY);
-//            return new ReadOnlyBooleanWrapper(v);
-//        });
-//// Use a CheckBoxTableCell to display the boolean value
-//        babyCol.setCellFactory(
-//                CheckBoxTableCell.<Node>forTableColumn(babyCol));
-//        table.getColumns().add(babyCol);
-//    }
-//
-//    public void addGenderColumn(TableView<Node> table) {
-//// Gender is a String, editable, ComboBox column
-//        TableColumn<Node, String> genderCol = new TableColumn<>("Gender");
-//        genderCol.setMinWidth(80);
-//// By default, all cells are have null values
-//        genderCol.setCellValueFactory(
-//                cellData -> new ReadOnlyStringWrapper(null));
-//// Set a ComboBoxTableCell, so you can selects a value from a list
-//        genderCol.setCellFactory(
-//                ComboBoxTableCell.<Node, String>forTableColumn("Male", "Female"));
-//// Add an event handler to handle the edit commit event.
-//// It displays the selected value on the standard output
-//        genderCol.setOnEditCommit(e -> {
-//            int row = e.getTablePosition().getRow();
-//            Node person = e.getRowValue();
-//            System.out.println("Gender changed for "
-//                    + person.getFirstName() + " " + person.getLastName()
-//                    + " at row " + (row + 1) + " to " + e.getNewValue());
-//        });
-//        table.getColumns().add(genderCol);
-//    }
+
 }

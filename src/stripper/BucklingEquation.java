@@ -63,7 +63,7 @@ public class BucklingEquation {
     public double[][] getBucklingCurve(int steps) {
 
         if (ModelProperties.getFourierSeries().isSimplySupported()) {
-            double[][] bucklingLoads = new double[steps][ModelProperties.getFourierTerms() + 1];
+            double[][] bucklingLoads = new double[steps][ModelProperties.getFourierTerms() + 2];
 
             boolean[] status = new boolean[nodes.size() * 4];
 
@@ -74,12 +74,12 @@ public class BucklingEquation {
                 status[(n.getNodeId() - 1) * 4 + 3] = n.getStatus()[3];
 
             }
-
+            double Lmax = ModelProperties.getModelLength();
+            double Lincrement = Lmax / ((double) steps);
+            
             for (int r = 1; r <= ModelProperties.getFourierTerms(); r++) { // r = mode shape
 
                 int index = 0;
-                double Lmax = ModelProperties.getModelLength();
-                double Lincrement = Lmax / ((double) steps);
                 double hwl = Lincrement; // Half-Wave Length
 
                 while (hwl <= Lmax) {
@@ -103,7 +103,7 @@ public class BucklingEquation {
                     Matrix Ke = se.getKff();
                     Matrix Kg = sg.getKff();
 
-                    bucklingLoads[index][r - 1] = getBucklingLoad(Ke, Kg);
+                    bucklingLoads[index][r] = getBucklingLoad(Ke, Kg);
 
                     hwl += Lincrement;
                     index++;
@@ -112,25 +112,24 @@ public class BucklingEquation {
             }
 
             for (int i = 0; i < steps; i++) {
-                double minBucklingLoad = bucklingLoads[i][0];
+                double minBucklingLoad = bucklingLoads[i][1];
 
-                for (int j = 1; j < ModelProperties.getFourierTerms(); j++) {
+                for (int j = 2; j <= ModelProperties.getFourierTerms(); j++) {
                     if (bucklingLoads[i][j] < minBucklingLoad) {
                         minBucklingLoad = bucklingLoads[i][j];
                     }
                 }
 
-                bucklingLoads[i][ModelProperties.getFourierTerms()] = minBucklingLoad;
+                bucklingLoads[i][ModelProperties.getFourierTerms() + 1] = minBucklingLoad;
+                bucklingLoads[i][0] = (i + 1) * Lincrement;
             }
 
             return bucklingLoads;
         }
 
-        
-        
         // ELSE ----------------------------------------------------------------
         System.out.println("Series not SS , commencing full solution");
-        double[][] bucklingLoads = new double[steps][1];
+        double[][] bucklingLoads = new double[steps][2];
 
         int index = 0;
         double Lmax = ModelProperties.getModelLength();
@@ -145,11 +144,10 @@ public class BucklingEquation {
             for (Strip s : strips) {
                 s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
 
-                    // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
+                // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
                 // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");
             }
-            
-            
+
             CoupledMatrix_1 cKe = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
             CoupledMatrix_1 cKg = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
             CoupledVector_1 fK = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
@@ -174,8 +172,6 @@ public class BucklingEquation {
                 }
 
             }
-             
-            
 
             SystemSolver se = new SystemSolver(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
 
@@ -184,7 +180,8 @@ public class BucklingEquation {
             Matrix Ke = se.getKff();
             Matrix Kg = sg.getKff();
 
-            bucklingLoads[index][0] = getBucklingLoad(Ke, Kg);
+            bucklingLoads[index][0] = (index+1)*Lincrement;
+            bucklingLoads[index][1] = getBucklingLoad(Ke, Kg);
 
             hwl += Lincrement;
             index++;
@@ -197,10 +194,9 @@ public class BucklingEquation {
     public double getBucklingLoad(Matrix Keff, Matrix Kgff) {
         Matrix Ke = Keff;
         Matrix Kg = Kgff;
-        
+
 //        Ke.printf("Ke");
 //        Kg.printf("Kg");
-
         Matrix K = Ke.multiply(Kg.inverse());
         Matrix eig = K.eigenMatrix();
 
