@@ -40,11 +40,12 @@ public class HomeMenuBar {
     private MenuItem fileWrite = new MenuItem("Save As...");
     private MenuItem materialEdit = new MenuItem("Material");
     private MenuItem setBC = new MenuItem("Fourier series");
+    private MenuItem makePath = new MenuItem("Path");
 
     public HomeMenuBar(TableViewEdit viewer) {
 
         fileMenu.getItems().addAll(fileRead, fileWrite);
-        editMenu.getItems().addAll(materialEdit , setBC);
+        editMenu.getItems().addAll(materialEdit , setBC , makePath);
         
         
         menuBar.getMenus().add(fileMenu);
@@ -112,6 +113,19 @@ public class HomeMenuBar {
                 FourierEditor fEdit = new FourierEditor();
                 fEdit.start(new Stage());
                
+            }
+        });
+        
+        makePath.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                PathMaker pathM = new PathMaker();
+                try {
+                    pathM.start(new Stage());
+                } catch (Exception ex) {
+                    Logger.getLogger(HomeMenuBar.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 

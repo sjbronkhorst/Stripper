@@ -214,7 +214,7 @@ public class TableViewEdit extends Application {
                     }
                     
                     
-                    Path p = new Path(new Point2D(50,0), new Point2D(50,1000), 101, s);
+                    
                 }
                 
                 

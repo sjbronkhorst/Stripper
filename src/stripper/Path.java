@@ -5,8 +5,9 @@
  */
 package stripper;
 
+
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
+
 import linalg.Vector;
 
 /**
@@ -20,12 +21,9 @@ import linalg.Vector;
 public class Path {
 
     private Point2D start, end;
-    private double xIncrement, yIncrement;
     private Strip strip;
     private double[] xData, yData;
     private Vector [][] queryData;
-    private double length;
-    private double incrementLength;
     private int numOfDataPoints;
 
     
@@ -92,6 +90,25 @@ public class Path {
         }
 
     }
+    
+    public Vector [][] getQueryData()
+    {
+        return queryData;
+    }
+
+    public double[] getxData() {
+        return xData;
+    }
+
+    public double[] getyData() {
+        return yData;
+    }
+
+    public int getNumOfDataPoints() {
+        return numOfDataPoints;
+    }
+    
+    
     
     
 

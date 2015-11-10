@@ -5,7 +5,9 @@
  */
 package UI;
 
-import java.util.ArrayList;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import stripper.Strip;
 import stripper.Strip_General;
 import stripper.Strip_SS;
@@ -25,7 +27,7 @@ public class ModelProperties
   private static int fourierTerms = 2;
   private static Series fourierSeries = Series.getSerieslList().get(0);
   
-  private static ArrayList<Strip> strips = new ArrayList<>();
+  private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
   
 
     public static Material getModelMaterial() {
@@ -65,7 +67,7 @@ public class ModelProperties
     }
 
     
-    public static ArrayList<Strip> getStripList()
+    public static ObservableList<Strip> getStripList()
     {
         return strips;
     }
