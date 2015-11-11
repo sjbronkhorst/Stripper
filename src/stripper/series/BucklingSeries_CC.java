@@ -30,22 +30,26 @@ public class BucklingSeries_CC extends Series{
 
     @Override
     public double getYmIntegral(int m, double a) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Not suppported yet !");
+        return Double.NaN;
     }
 
     @Override
     public double getFirstDerivativeValue(double y, int m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       System.out.println("Not suppported yet !");
+        return Double.NaN;
     }
 
     @Override
     public double getSecondDerivativeValue(double y, int m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+     System.out.println("Not suppported yet !");
+        return Double.NaN;
     }
 
     @Override
     public double getFirstDerivativeIntegral(int m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      System.out.println("Not suppported yet !");
+        return Double.NaN;
     }
 
     @Override
@@ -78,7 +82,7 @@ public class BucklingSeries_CC extends Series{
     {
         if((m == 1) && (n == 1))
         {
-            return 3*a/8.0;
+            return 3.0*a/8.0;
         }
         else if(m==n)
         {
@@ -90,7 +94,7 @@ public class BucklingSeries_CC extends Series{
         }
         else
         {
-            return 0;
+            return 0.0;
         }
         
     }
