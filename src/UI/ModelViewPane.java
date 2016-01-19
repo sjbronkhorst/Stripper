@@ -419,22 +419,7 @@ public class ModelViewPane {
         pane.getStylesheets().add("Style.css");
         pane.getChildren().addAll(viewBox, zoomBox);
         viewBox.getStyleClass().addAll("vbox");
-       
-
-//        viewBox.setStyle("-fx-padding: 0;"
-//                + "-fx-border-style: solid;"
-//                + "-fx-border-width: 2;"
-//                + "-fx-border-insets: -1;"
-//                + "-fx-border-radius: 0;"
-//                + "-fx-border-color: black;");
-//        viewBox.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-//
-//        zoomBox.setStyle("-fx-padding: 5;"
-//                + "-fx-border-style: solid;"
-//                + "-fx-border-width: 2;"
-//                + "-fx-border-insets: -1;"
-//                + "-fx-border-radius: 0;"
-//                + "-fx-border-color: black;");
+  
 
         
 
@@ -521,14 +506,14 @@ public class ModelViewPane {
 
             double theta = 180 * s.getStripAngle() / Math.PI;
 
-            Box b = new Box(s.getStripWidth(), 10, ModelProperties.getModelLength());
+            Box b = new Box(s.getStripWidth(), s.getStripThickness(), ModelProperties.getModelLength());
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
                 t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                t.translateXProperty().set(((x1 + x2) / 2.0) + 5 + 1 +1 );
-                t.translateYProperty().set(((y1 + y2) / 2.0) - 5 - 1 -1);
+                t.translateXProperty().set(((x1 + x2) / 2.0) + s.getStripThickness()/2.0 + 1 +1 );
+                t.translateYProperty().set(((y1 + y2) / 2.0) - s.getStripThickness()/2.0 - 1 -1);
 
                 t.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 
@@ -538,8 +523,8 @@ public class ModelViewPane {
            Text t2 = new Text(s.toString());
                 t2.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                t2.translateXProperty().set(((x1 + x2) / 2.0) - 5 - 1 -1);
-                t2.translateYProperty().set(((y1 + y2) / 2.0) + 5 + 1 +1);
+                t2.translateXProperty().set(((x1 + x2) / 2.0) - s.getStripThickness()/2.0 - 1 -1);
+                t2.translateYProperty().set(((y1 + y2) / 2.0) + s.getStripThickness()/2.0 + 1 +1);
 
                 t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 

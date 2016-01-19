@@ -36,22 +36,22 @@ public class HomeMenuBar {
     
     
     
-    private MenuItem fileRead = new MenuItem("Open File...");
-    private MenuItem fileWrite = new MenuItem("Save As...");
+    private MenuItem geomFileRead = new MenuItem("Open Geometry File...");
+    private MenuItem geomFileWrite = new MenuItem("Save Geometry As...");
     private MenuItem materialEdit = new MenuItem("Material");
     private MenuItem setBC = new MenuItem("Fourier series");
     private MenuItem makePath = new MenuItem("Path");
 
     public HomeMenuBar(TableViewEdit viewer) {
 
-        fileMenu.getItems().addAll(fileRead, fileWrite);
+        fileMenu.getItems().addAll(geomFileRead, geomFileWrite);
         editMenu.getItems().addAll(materialEdit , setBC , makePath);
         
         
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(editMenu);
         
-        fileWrite.setOnAction(new EventHandler<ActionEvent>() {
+        geomFileWrite.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -59,14 +59,14 @@ public class HomeMenuBar {
                 FileHandler f = new FileHandler();
 
                 try {
-                    f.writeFile(NodeTableUtil.getNodeList(), StripTableUtil.getStripList());
+                    f.writeGeom(NodeTableUtil.getNodeList(), StripTableUtil.getStripList());
                 } catch (IOException ex) {
                     Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
 
-        fileRead.setOnAction(new EventHandler<ActionEvent>() {
+        geomFileRead.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -75,7 +75,7 @@ public class HomeMenuBar {
 
                 try {
 
-                    f.ReadFile();
+                    f.readGeom();
                 } catch (IOException ex) {
                     Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                 }

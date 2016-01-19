@@ -7,6 +7,7 @@ package stripper;
 
 import UI.ModelProperties;
 import java.util.concurrent.atomic.AtomicInteger;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -22,7 +23,7 @@ import stripper.series.Series;
  */
 public abstract class Strip {
 
-    protected double a, t, beta; // length , thickness , angle
+    protected double a,t, beta; // length , thickness , angle
     protected Material mat;
     // protected Set<Node> nodes; 
 
@@ -41,7 +42,7 @@ public abstract class Strip {
     protected final ReadOnlyDoubleWrapper udlX = new ReadOnlyDoubleWrapper(this, "udlX", 0.0);
     protected final ReadOnlyDoubleWrapper udlY = new ReadOnlyDoubleWrapper(this, "udlY", 0.0);
     protected final ReadOnlyDoubleWrapper udlZ = new ReadOnlyDoubleWrapper(this, "udlZ", 0.0);
-
+ 
     protected Node node1;
     protected Node node2;
     protected double f1,f2; // Edge load size at node.
@@ -93,6 +94,7 @@ public abstract class Strip {
     public IntegerProperty node2IdProperty() {
         return node2Id;
     }
+    
 
     public Node getNode1() {
         return node1;
@@ -349,6 +351,7 @@ public abstract class Strip {
         Matrix D = Matrix.getMatrix(3, 3);
         D.clear();
 
+        
         double Ex = mat.getEx();
         double Ey = mat.getEy();
         double vx = mat.getVx();

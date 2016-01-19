@@ -65,6 +65,8 @@ public class SystemEquation {
 
             for (Strip s : strips) {
 
+                
+                                
                 localToGlobalConfNumbering[count * 8][1] = (s.getNode1Id() - 1) * 4;
                 localToGlobalConfNumbering[count * 8 + 1][1] = (s.getNode1Id() - 1) * 4 + 1;
                 localToGlobalConfNumbering[count * 8 + 2][1] = (s.getNode1Id() - 1) * 4 + 2;

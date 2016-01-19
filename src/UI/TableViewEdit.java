@@ -62,6 +62,8 @@ public class TableViewEdit extends Application {
     Button calcBtn = new Button("Calculate Stresses");
     Button plotBtn = new Button("Plot");
     Button buckleBtn = new Button("Calculate Buckling data");
+    Button setLengthBtn = new Button("set");
+    Button setThicknessBtn = new Button("set");
 
     ProgressBar progInd = new ProgressBar(0);
 
@@ -106,6 +108,7 @@ public class TableViewEdit extends Application {
         addStripIdColumn(stripTable);
         addNode1Column(stripTable);
         addNode2Column(stripTable);
+        addThicknessColumn(stripTable);
 
         stripTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -138,6 +141,36 @@ public class TableViewEdit extends Application {
                 }
             }
         });
+        
+        setLengthBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+                
+                ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
+                ModelProperties.getFourierSeries().setLength(ModelProperties.getModelLength());
+               
+                draw();
+                
+                System.out.println("Length has been set");
+            }
+        });
+        
+        setThicknessBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+                for (UIStrip s : StripTableUtil.getStripList())
+                {
+                 s.setStripThickness(Double.parseDouble(thicknessField.textProperty().get()));
+                }
+                
+                draw();
+                System.out.println("Thickness has been set");
+            }
+        });
 
         plotBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -167,22 +200,22 @@ public class TableViewEdit extends Application {
             public void handle(ActionEvent event) {
 
                 ModelProperties.getStripList().clear();
-                for (UIStrip s : StripTableUtil.getStripList()) {
+                
+                 for (UIStrip s : StripTableUtil.getStripList()) {
+                   
                     ModelProperties.addStrip(s);
                 }
-
+                
                 for (Strip s : ModelProperties.getStripList()) {
 
-                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
+                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
 
                     //s.getStiffnessMatrix(1, 1).printf("k" + Integer.toString(s.getStripId()));
                     //s.getMembraneStiffnessMatrix(1, 1).printf("M");
                     // s.getRotationMatrix().printf("R");
                     //s.getRotatedLoadVector(1).printf("P"+Integer.toString(s.getStripId()));
                 }
-
-                ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
-                ModelProperties.getFourierSeries().setLength(ModelProperties.getModelLength());
+               
 
                 s = new SystemEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
@@ -305,6 +338,7 @@ public class TableViewEdit extends Application {
 
                 System.out.println("Strip " + s.getStripId() + " properties :");
                 System.out.println("width = " + s.getStripWidth());
+                System.out.println("thickness = " + s.getStripThickness());
 
             }
         });
@@ -440,7 +474,7 @@ public class TableViewEdit extends Application {
         Label lengthLabel = new Label("Model length :");
         Label thicknessLabel = new Label("Plate thickness :");
 
-        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox,lengthLabel, modelLengthField,thicknessLabel,thicknessField);
+        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox,lengthLabel, modelLengthField,setLengthBtn,thicknessLabel,thicknessField,setThicknessBtn);
 
         geometryTab.setContent(tableBox);
      
@@ -602,6 +636,46 @@ public class TableViewEdit extends Application {
 
         table.getColumns().add(fNameCol);
     }
+    
+    
+      public void addThicknessColumn(TableView<UIStrip> table) {
+
+        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getStripThicknessColumn();
+
+        DoubleStringConverter converter = new DoubleStringConverter();
+        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+
+        table.getColumns().add(fNameCol);
+        
+        fNameCol.setOnEditStart(e -> {
+            System.out.println("Press Enter to save changes, Esc to cancel");
+        });
+
+        fNameCol.setOnEditCommit(e -> {
+            try{
+            int row = e.getTablePosition().getRow();
+            UIStrip strip = e.getRowValue();
+
+            System.out.println("Thickness changed for Strip "
+                    + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
+
+            StripTableUtil.getStripList().get(row).setStripThickness(e.getNewValue());
+
+            draw();
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Node not found, create it and try again");
+            }
+            
+            
+        });
+
+    }
+    
+    
+    
+    
 
     public void draw() {
         mvp.draw();
