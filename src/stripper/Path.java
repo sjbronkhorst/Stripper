@@ -67,10 +67,10 @@ public class Path {
         yData = new double[numOfDataPoints];
         queryData = new Vector[numOfDataPoints][2];
         
-        System.out.println("######################################");
-        System.out.println("Path start = " + start.toString());
-        System.out.println("Path end = " + end.toString());
-        System.out.println("######################################");
+//        System.out.println("######################################");
+//        System.out.println("Path start = " + start.toString());
+//        System.out.println("Path end = " + end.toString());
+//        System.out.println("######################################");
         
         for (int i = 0; i < numOfDataPoints; i++)
         {
@@ -80,11 +80,11 @@ public class Path {
             queryData[i][1] = strip.getPlaneStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
             //queryData[i][2] = strip.getDisplacementVectorAt(i)
             
-            System.out.println("-----------------------------------");
-            System.out.println("X = " + xData[i] + " Y = " + yData[i]);
-            System.out.println("-----------------------------------");
-            queryData[i][0].printf("Bending stress vector");
-            queryData[i][1].printf("Plane stress vector");
+//            System.out.println("-----------------------------------");
+//            System.out.println("X = " + xData[i] + " Y = " + yData[i]);
+//            System.out.println("-----------------------------------");
+//            queryData[i][0].printf("Bending stress vector");
+//            queryData[i][1].printf("Plane stress vector");
             
             
         }

@@ -185,6 +185,47 @@ public class FileHandler {
         }
     }
     
+    public void writeCSV(String[][][] data) throws IOException {
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Comma Separated Values", "*.csv"));
+        int cols = data[0][0].length;
+        int rows = data[0].length;
+
+        File file = fileDialog.showSaveDialog(null);
+
+        if (file != null) {
+
+            try {
+
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                for (int k = 0; k < data.length; k++) 
+                {
+                    
+                
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < cols; j++) {
+                        bw.append(data[k][i][j] + ";");
+
+                    }
+                    bw.newLine();
+                }
+                
+                }
+
+                bw.close();
+                fw.close();
+
+            } catch (Exception e) {
+
+                System.out.println("File not found/available, close it and try again");
+                return;
+
+            }
+
+            fileDialog.getExtensionFilters().clear();
+        }
+    }
+    
     public void writeMaterial(Material mat)
     {
          fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
