@@ -31,6 +31,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
@@ -38,6 +39,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import linalg.Vector;
 
 import stripper.Node;
 
@@ -104,8 +106,6 @@ public class ModelViewPane {
 
     public ModelViewPane() {
 
-        
-        
         yellowStuff.setDiffuseColor(Color.YELLOW);
         yellowStuff.setSpecularColor(Color.GRAY);
 
@@ -122,7 +122,7 @@ public class ModelViewPane {
         camera.setFarClip(2000);
 
         canvas = new ResizableCanvas();
-        
+
         nodeLabelCheck = new CheckBox("Node labels");
         nodeLabelCheck.selectedProperty().set(true);
 
@@ -409,7 +409,6 @@ public class ModelViewPane {
 
         axisGroup.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
 
-        
         draw();
 
     }
@@ -419,9 +418,6 @@ public class ModelViewPane {
         pane.getStylesheets().add("Style.css");
         pane.getChildren().addAll(viewBox, zoomBox);
         viewBox.getStyleClass().addAll("vbox");
-  
-
-        
 
         return pane;
     }
@@ -488,14 +484,6 @@ public class ModelViewPane {
 
             }
 
-            for (PointLoad p : s.getPointLoadList()) {
-                gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
-
-                Box b = new Box(2, 20, 2);
-                b.setMaterial(greenStuff);
-
-            }
-
             gc.setStroke(Color.DARKGRAY);
             gc.strokeLine(x3, y3, x4, y4);
             gc.setStroke(Color.BLACK);
@@ -506,25 +494,25 @@ public class ModelViewPane {
 
             double theta = 180 * s.getStripAngle() / Math.PI;
 
+            Group stripAndLoads = new Group();
             Box b = new Box(s.getStripWidth(), s.getStripThickness(), ModelProperties.getModelLength());
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
                 t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                t.translateXProperty().set(((x1 + x2) / 2.0) + s.getStripThickness()/2.0 + 1 +1 );
-                t.translateYProperty().set(((y1 + y2) / 2.0) - s.getStripThickness()/2.0 - 1 -1);
+                t.translateXProperty().set(((x1 + x2) / 2.0) + s.getStripThickness() / 2.0 + 1 + 1);
+                t.translateYProperty().set(((y1 + y2) / 2.0) - s.getStripThickness() / 2.0 - 1 - 1);
 
                 t.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 
                 t.getTransforms().add(new Rotate(-90 - theta, new Point3D(1, 0, 0)));
-                
-                
-           Text t2 = new Text(s.toString());
+
+                Text t2 = new Text(s.toString());
                 t2.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                t2.translateXProperty().set(((x1 + x2) / 2.0) - s.getStripThickness()/2.0 - 1 -1);
-                t2.translateYProperty().set(((y1 + y2) / 2.0) + s.getStripThickness()/2.0 + 1 +1);
+                t2.translateXProperty().set(((x1 + x2) / 2.0) - s.getStripThickness() / 2.0 - 1 - 1);
+                t2.translateYProperty().set(((y1 + y2) / 2.0) + s.getStripThickness() / 2.0 + 1 + 1);
 
                 t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 
@@ -537,6 +525,27 @@ public class ModelViewPane {
             b.setMaterial(redStuff);
 
             b.setRotate(theta);
+            b.setDrawMode(DrawMode.LINE);
+            double L = s.getStripWidth() / 2.0;
+            double F = Math.sqrt(100 * 100 + L * L);
+            double alpha = Math.atan(100.0 / L);
+
+            for (PointLoad p : s.getPointLoadList()) {
+                gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
+
+                Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+                                
+                
+                pointLoad.setDrawMode(DrawMode.LINE);
+                pointLoad.setTranslateX(x1);
+                pointLoad.setTranslateY(y1);
+                pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0 );
+                pointLoad.setRotate(theta);
+                
+                pointLoad.setMaterial(greenStuff);
+
+                stripGroup.getChildren().addAll(pointLoad);
+            }
 
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
