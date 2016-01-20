@@ -107,7 +107,7 @@ public class SystemEquation {
 
         Series Y = ModelProperties.getFourierSeries();
 
-        System.out.println("Series simply suppported : " + Y.isSimplySupported());
+        TableViewEdit.println("Series simply suppported : " + Y.isSimplySupported());
 
         if (Y.isSimplySupported()) {
 
@@ -133,7 +133,7 @@ public class SystemEquation {
                 }
 
                 progress.set((double) (i + 1) / (double) ModelProperties.getFourierTerms());
-                //System.out.println(i+1/ModelProperties.getFourierTerms());
+                //TableViewEdit.println(i+1/ModelProperties.getFourierTerms());
                 temp.release();
 
             }
@@ -164,12 +164,12 @@ public class SystemEquation {
                 }
 
             }
-            System.out.println("Assembly done, commencing cholesky");
+            TableViewEdit.println("Assembly done, commencing cholesky");
 
             Cholesky chol = new Cholesky();
             Vector u = chol.getX(cK.getMatrix(), fK.getVector());
 
-            System.out.println("Displacements calculated");
+            TableViewEdit.println("Displacements calculated");
 
             for (Node n : nodes) {
 
@@ -192,7 +192,7 @@ public class SystemEquation {
                 }
             }
 
-            System.out.println("Done ...");
+            TableViewEdit.println("Done ...");
 
         }
 

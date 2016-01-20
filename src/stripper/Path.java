@@ -67,10 +67,10 @@ public class Path {
         yData = new double[numOfDataPoints];
         queryData = new Vector[numOfDataPoints][2];
         
-//        System.out.println("######################################");
-//        System.out.println("Path start = " + start.toString());
-//        System.out.println("Path end = " + end.toString());
-//        System.out.println("######################################");
+//        TableViewEdit.println("######################################");
+//        TableViewEdit.println("Path start = " + start.toString());
+//        TableViewEdit.println("Path end = " + end.toString());
+//        TableViewEdit.println("######################################");
         
         for (int i = 0; i < numOfDataPoints; i++)
         {
@@ -80,9 +80,9 @@ public class Path {
             queryData[i][1] = strip.getPlaneStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
             //queryData[i][2] = strip.getDisplacementVectorAt(i)
             
-//            System.out.println("-----------------------------------");
-//            System.out.println("X = " + xData[i] + " Y = " + yData[i]);
-//            System.out.println("-----------------------------------");
+//            TableViewEdit.println("-----------------------------------");
+//            TableViewEdit.println("X = " + xData[i] + " Y = " + yData[i]);
+//            TableViewEdit.println("-----------------------------------");
 //            queryData[i][0].printf("Bending stress vector");
 //            queryData[i][1].printf("Plane stress vector");
             

@@ -139,7 +139,7 @@ public class PathMaker extends Application {
                 try {
                     fh.writeCSV(fileData);
                 } catch (IOException ex) {
-                    System.out.println("File not found/available");
+                    TableViewEdit.println("File not found/available");
                 }
 
             }

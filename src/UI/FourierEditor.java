@@ -14,9 +14,13 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import stripper.series.Series;
@@ -28,8 +32,10 @@ import stripper.series.Series;
 public class FourierEditor extends Application {
     
     Label seriesLabel = new Label("Selected Fourier series : ");
-    Label termsLabel = new Label("Number of longitudinal terms : " + ModelProperties.getFourierTerms());
+    Label termsLabel = new Label("Number of longitudinal terms : ");
+    TextField termsField = new TextField(Double.toString(ModelProperties.getFourierTerms()));
     private ChoiceBox<Series> seriesChoice = new ChoiceBox<>(Series.getSerieslList());
+    Button saveBtn = new Button("SAVE");
 
      
     
@@ -48,7 +54,7 @@ public class FourierEditor extends Application {
                 { 
             ModelProperties.setFourierSeries(seriesChoice.getItems().get((int)newValue));
             
-                    System.out.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
+                    TableViewEdit.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
                 }
               
               
@@ -66,10 +72,19 @@ public class FourierEditor extends Application {
             }
         });
        
+       saveBtn.setOnAction(new EventHandler<ActionEvent>() 
+       {
+
+            @Override
+            public void handle(ActionEvent event) {
+                ModelProperties.setFourierTerms(Integer.parseInt(termsField.getText()));
+            }
+        });
+       
        
         
         VBox root = new VBox();
-        root.getChildren().addAll(seriesLabel,seriesChoice , termsLabel);
+        root.getChildren().addAll(seriesLabel,seriesChoice , termsLabel,termsField,saveBtn);
 
         
         Scene scene = new Scene(root, 300, 250);

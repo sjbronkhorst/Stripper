@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.TableViewEdit;
 import UI.UIStrip;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -109,16 +110,16 @@ public class FileHandler {
             BufferedReader br2 = new BufferedReader(fr2);
             String[] s = new String[nrOfLines];
 
-            //System.out.println("Nr of lines " + nrOfLines);
+            //TableViewEdit.println("Nr of lines " + nrOfLines);
             if (nrOfLines != 0) {
 
                 for (int i = 0; i < nrOfLines; i++) {
                     s[i] = br2.readLine();
-                    //System.out.println(s[i]);
+                    //TableViewEdit.println(s[i]);
 
                     String[] words = s[i].split(" ");
 
-                    // System.out.println("words 0 " +words[0]);
+                    // TableViewEdit.println("words 0 " +words[0]);
                     if (words[0].equals("n")) {
 
                         Node tempNode = new Node(Double.parseDouble(words[1]), Double.parseDouble(words[2]));
@@ -135,12 +136,12 @@ public class FileHandler {
                             strips.add(new UIStrip(n1, n2));   
                         }
                     } else {
-                        System.out.println("File syntax error");
+                        TableViewEdit.println("File syntax error");
                     }
 
                 }
             } else {
-                System.out.println("Error : File does not contain data");
+                TableViewEdit.println("Error : File does not contain data");
             }
 
             br2.close();
@@ -176,7 +177,7 @@ public class FileHandler {
 
             } catch (Exception e) {
 
-                System.out.println("File not found/available, close it and try again");
+                TableViewEdit.println("File not found/available, close it and try again");
                 return;
 
             }
@@ -217,7 +218,7 @@ public class FileHandler {
 
             } catch (Exception e) {
 
-                System.out.println("File not found/available, close it and try again");
+                TableViewEdit.println("File not found/available, close it and try again");
                 return;
 
             }
@@ -257,7 +258,7 @@ public class FileHandler {
 
             } catch (Exception e) {
 
-                System.out.println("File not found/available, close it and try again");
+                TableViewEdit.println("File not found/available, close it and try again");
                 return;
 
             }
