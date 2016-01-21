@@ -34,6 +34,7 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -494,7 +495,6 @@ public class ModelViewPane {
 
             double theta = 180 * s.getStripAngle() / Math.PI;
 
-            Group stripAndLoads = new Group();
             Box b = new Box(s.getStripWidth(), s.getStripThickness(), ModelProperties.getModelLength());
 
             if (stripLabelCheck.isSelected()) {
@@ -526,25 +526,29 @@ public class ModelViewPane {
 
             b.setRotate(theta);
             b.setDrawMode(DrawMode.LINE);
-            double L = s.getStripWidth() / 2.0;
-            double F = Math.sqrt(100 * 100 + L * L);
-            double alpha = Math.atan(100.0 / L);
 
             for (PointLoad p : s.getPointLoadList()) {
                 gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
 
                 Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
-                                
-                
-                pointLoad.setDrawMode(DrawMode.LINE);
+                Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+
+                //pointLoad.setDrawMode(DrawMode.LINE);
                 pointLoad.setTranslateX(x1);
                 pointLoad.setTranslateY(y1);
-                pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0 );
+                pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
                 pointLoad.setRotate(theta);
-                
+
                 pointLoad.setMaterial(greenStuff);
 
-                stripGroup.getChildren().addAll(pointLoad);
+                arrowHead.setTranslateX(x1);
+                arrowHead.setTranslateY(y1);
+                arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+                arrowHead.setRotate(theta);
+
+                arrowHead.setMaterial(greenStuff);
+
+                stripGroup.getChildren().addAll(pointLoad, arrowHead);
             }
 
             b.setTranslateX((x1 + x2) / 2.0);
@@ -619,7 +623,30 @@ public class ModelViewPane {
 
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
 
-        return line;
+        return (line);
+    }
+
+    public Sphere createArrowHead(Point3D origin, Point3D target) {
+        Point3D yAxis = new Point3D(0, 1, 0);
+        Point3D diff = target.subtract(origin);
+        double height = diff.magnitude();
+
+        Point3D mid = target.midpoint(origin);
+        Translate moveToMidpoint = new Translate(target.getX(), target.getY(), target.getZ());
+
+        Point3D axisOfRotation = diff.crossProduct(yAxis);
+        double angle = Math.acos(diff.normalize().dotProduct(yAxis));
+        Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
+
+        PhongMaterial blackStuff = new PhongMaterial();
+        blackStuff.setDiffuseColor(Color.BLACK);
+        blackStuff.setSpecularColor(Color.BLACK);
+        Sphere line = new Sphere(2);
+        line.setMaterial(blackStuff);
+
+        line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
+
+        return (line);
     }
 
 }
