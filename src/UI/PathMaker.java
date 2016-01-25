@@ -97,11 +97,11 @@ public class PathMaker extends Application {
                 do {
                     Path p = new Path(new Point2D(Double.parseDouble(startXF.getText()), Double.parseDouble(startYF.getText())), new Point2D(Double.parseDouble(endXF.getText()), Double.parseDouble(endYF.getText())), Integer.parseInt(numPointsF.getText()), startStripChoice.getValue());
 
-                    String[][] data = new String[p.getNumOfDataPoints() + 2][8];
+                    String[][] data = new String[p.getNumOfDataPoints() + 2][12];
 
                     data[0][0] = startStripChoice.getValue().toString();
 
-                    for (int i = 1; i < 8; i++) {
+                    for (int i = 1; i < 12; i++) {
                         data[0][i] = " ";
                     }
 
@@ -113,6 +113,11 @@ public class PathMaker extends Application {
                     data[1][5] = "SigmaX (in-plane)";
                     data[1][6] = "SigmaY (in-plane)";
                     data[1][7] = "SigmaXY (in-plane)";
+                    
+                    data[1][8] = "w" ;
+                    data[1][9] = "theta" ;
+                    data[1][10] = "u" ;
+                    data[1][11] = "v" ;
 
                     for (int i = 2; i < data.length; i++) {
                         data[i][0] = Double.toString(p.getxData()[i - 2]);
@@ -123,6 +128,12 @@ public class PathMaker extends Application {
                         data[i][5] = Double.toString(p.getQueryData()[i - 2][1].get(0));
                         data[i][6] = Double.toString(p.getQueryData()[i - 2][1].get(1));
                         data[i][7] = Double.toString(p.getQueryData()[i - 2][1].get(2));
+                        
+                        data[i][8] = Double.toString(p.getQueryData()[i - 2][2].get(0));
+                        data[i][9] = Double.toString(p.getQueryData()[i - 2][2].get(1));
+                        
+                        data[i][10] = Double.toString(p.getQueryData()[i - 2][3].get(0));
+                        data[i][11] = Double.toString(p.getQueryData()[i - 2][3].get(1));
                     }
 
                     fileData[count] = data;

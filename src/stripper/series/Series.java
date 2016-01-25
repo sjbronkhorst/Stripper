@@ -244,6 +244,9 @@ public abstract class Series {
 //        
 //        return f;
 //    }
+
+    public abstract double getVScalingValue(double y , int m);
+   
     
     
 

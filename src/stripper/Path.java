@@ -65,7 +65,7 @@ public class Path {
 
         xData = new double[numOfDataPoints];
         yData = new double[numOfDataPoints];
-        queryData = new Vector[numOfDataPoints][2];
+        queryData = new Vector[numOfDataPoints][4];
         
 //        TableViewEdit.println("######################################");
 //        TableViewEdit.println("Path start = " + start.toString());
@@ -78,7 +78,9 @@ public class Path {
             yData[i] = i*idy + start.getY();
             queryData[i][0] = strip.getBendingStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
             queryData[i][1] = strip.getPlaneStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
-            //queryData[i][2] = strip.getDisplacementVectorAt(i)
+            queryData[i][2] = strip.getBendingDisplacementVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
+            queryData[i][3] = strip.getPlaneDisplacementVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
+            
             
 //            TableViewEdit.println("-----------------------------------");
 //            TableViewEdit.println("X = " + xData[i] + " Y = " + yData[i]);

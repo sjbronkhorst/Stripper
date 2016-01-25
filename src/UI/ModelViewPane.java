@@ -82,6 +82,9 @@ public class ModelViewPane {
 
     CheckBox nodeLabelCheck;
     CheckBox stripLabelCheck;
+    CheckBox wireFrameCheck;
+    CheckBox axisCheck;
+    CheckBox nodesCheck;
 
     private double xScale = 1;
     private double yScale = 1;
@@ -125,12 +128,45 @@ public class ModelViewPane {
         canvas = new ResizableCanvas();
 
         nodeLabelCheck = new CheckBox("Node labels");
-        nodeLabelCheck.selectedProperty().set(true);
+        nodeLabelCheck.selectedProperty().set(false);
 
         stripLabelCheck = new CheckBox("Strip labels");
-        stripLabelCheck.selectedProperty().set(true);
+        stripLabelCheck.selectedProperty().set(false);
+
+        wireFrameCheck = new CheckBox("Wireframe");
+        wireFrameCheck.selectedProperty().set(false);
+
+        axisCheck = new CheckBox("Show Global Axis");
+        axisCheck.selectedProperty().set(false);
+
+        nodesCheck = new CheckBox("Show Nodes");
+        nodesCheck.selectedProperty().set(true);
 
         stripLabelCheck.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                if (stripLabelCheck.isSelected()) {
+                    wireFrameCheck.setSelected(true);
+                }
+                draw();
+            }
+        });
+
+        nodeLabelCheck.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                if (nodeLabelCheck.isSelected()) {
+
+                    nodesCheck.setSelected(true);
+                    wireFrameCheck.setSelected(true);
+                }
+                draw();
+            }
+        });
+
+        wireFrameCheck.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -138,7 +174,15 @@ public class ModelViewPane {
             }
         });
 
-        nodeLabelCheck.setOnAction(new EventHandler<ActionEvent>() {
+        axisCheck.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                draw();
+            }
+        });
+
+        nodesCheck.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -327,6 +371,9 @@ public class ModelViewPane {
         btnList.add(downRotateBtn);
         checkList.add(nodeLabelCheck);
         checkList.add(stripLabelCheck);
+        checkList.add(wireFrameCheck);
+        checkList.add(axisCheck);
+        checkList.add(nodesCheck);
 
         zoomBox.getChildren().addAll(btnList);
         zoomBox.getChildren().addAll(checkList);
@@ -378,37 +425,6 @@ public class ModelViewPane {
 
         scene3d.widthProperty().addListener(evt -> draw());
         scene3d.heightProperty().addListener(evt -> draw());
-
-        axisGroup.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
-        axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
-        axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
-        Text xText = new Text("X");
-        xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
-        xText.translateXProperty().set(110);
-        axisGroup.getChildren().add(xText);
-
-        Text yText = new Text("Z");
-        yText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
-        yText.translateYProperty().set(110);
-        axisGroup.getChildren().add(yText);
-
-        Text zText = new Text("Y");
-        zText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
-        zText.translateZProperty().set(110);
-        axisGroup.getChildren().add(zText);
-
-        Box arrowHeadX = new Box(10, 10, 10);
-        arrowHeadX.setMaterial(yellowStuff);
-        Box arrowHeadY = new Box(10, 10, 10);
-        arrowHeadY.setMaterial(yellowStuff);
-        Box arrowHeadZ = new Box(10, 10, 10);
-        arrowHeadZ.setMaterial(yellowStuff);
-
-        arrowHeadX.setTranslateX(100);
-        arrowHeadY.setTranslateY(100);
-        arrowHeadZ.setTranslateZ(100);
-
-        axisGroup.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
 
         draw();
 
@@ -499,39 +515,57 @@ public class ModelViewPane {
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
-                t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+                t.setFont(Font.font("Calibri", FontWeight.BOLD, 0.7*s.getStripWidth()));
 
-                t.translateXProperty().set(((x1 + x2) / 2.0) + s.getStripThickness() / 2.0 + 1 + 1);
-                t.translateYProperty().set(((y1 + y2) / 2.0) - s.getStripThickness() / 2.0 - 1 - 1);
+                t.translateXProperty().set(((x1 + x2) / 2.0) /*+ s.getStripThickness() / 2.0 + 1 + 1*/);
+                t.translateYProperty().set(((y1 + y2) / 2.0) /*- s.getStripThickness() / 2.0 - 1 - 1*/);
 
                 t.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 
                 t.getTransforms().add(new Rotate(-90 - theta, new Point3D(1, 0, 0)));
 
-                Text t2 = new Text(s.toString());
-                t2.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
-
-                t2.translateXProperty().set(((x1 + x2) / 2.0) - s.getStripThickness() / 2.0 - 1 - 1);
-                t2.translateYProperty().set(((y1 + y2) / 2.0) + s.getStripThickness() / 2.0 + 1 + 1);
-
-                t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
-
-                t2.getTransforms().add(new Rotate(90 - theta, new Point3D(1, 0, 0)));
+//                Text t2 = new Text(s.toString());
+//                t2.setFont(Font.font("Calibri", FontWeight.BOLD, s.getStripWidth()));
+//
+//                t2.translateXProperty().set(((x1 + x2) / 2.0) - s.getStripThickness() / 2.0 - 1 - 1);
+//                t2.translateYProperty().set(((y1 + y2) / 2.0) + s.getStripThickness() / 2.0 + 1 + 1);
+//
+//                t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
+//
+//                t2.getTransforms().add(new Rotate(90 - theta, new Point3D(1, 0, 0)));
 
                 stripGroup.getChildren().add(t);
-                stripGroup.getChildren().add(t2);
+               // stripGroup.getChildren().add(t2);
             }
 
             b.setMaterial(redStuff);
 
             b.setRotate(theta);
-            b.setDrawMode(DrawMode.LINE);
+            if (wireFrameCheck.isSelected()) {
+                b.setDrawMode(DrawMode.LINE);
+            }
 
             for (PointLoad p : s.getPointLoadList()) {
                 gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
 
-                Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
-                Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+                Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()), 0.5);
+                //Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+
+                int sign = 1;
+                if (p.getMagnitude() < 0) {
+                    sign = -1;
+                }
+
+                for (int i = 1; i < 10; i++) {
+                    Cylinder arrowHead = createConnection(new Point3D(p.getX(), p.getMagnitude() - sign * i, p.getY()), new Point3D(p.getX(), p.getMagnitude() - sign * i - sign * 1, p.getY()), i / 2);
+                    arrowHead.setTranslateX(x1);
+                    arrowHead.setTranslateY(y1);
+                    arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+                    arrowHead.setRotate(theta);
+
+                    arrowHead.setMaterial(greenStuff);
+                    stripGroup.getChildren().add(arrowHead);
+                }
 
                 //pointLoad.setDrawMode(DrawMode.LINE);
                 pointLoad.setTranslateX(x1);
@@ -541,14 +575,7 @@ public class ModelViewPane {
 
                 pointLoad.setMaterial(greenStuff);
 
-                arrowHead.setTranslateX(x1);
-                arrowHead.setTranslateY(y1);
-                arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
-                arrowHead.setRotate(theta);
-
-                arrowHead.setMaterial(greenStuff);
-
-                stripGroup.getChildren().addAll(pointLoad, arrowHead);
+                stripGroup.getChildren().add(pointLoad);
             }
 
             b.setTranslateX((x1 + x2) / 2.0);
@@ -558,8 +585,13 @@ public class ModelViewPane {
 
         }
 
+        ////////////////////////////////////////////
+        //DRAW NODES
         nodeGroup.getChildren().clear();
-        for (Node n : NodeTableUtil.getNodeList()) {
+
+        if (nodesCheck.isSelected()) {
+
+            for (Node n : NodeTableUtil.getNodeList()) {
 
 //            gc.setFill(Color.DARKGRAY);
 //
@@ -577,28 +609,67 @@ public class ModelViewPane {
 //                gc.strokeText(Integer.toString(n.getNodeId()), n.getXCoord() - 15 / xScale, n.getZCoord() + 15 / xScale);
 //                gc.setStroke(Color.BLACK);
 //            }
-            PhongMaterial blueStuff = new PhongMaterial();
-            blueStuff.setDiffuseColor(Color.BLUE);
-            blueStuff.setSpecularColor(Color.BLACK);
+                PhongMaterial blueStuff = new PhongMaterial();
+                blueStuff.setDiffuseColor(Color.BLUE);
+                blueStuff.setSpecularColor(Color.BLACK);
 
-            Sphere s = new Sphere(10);
-            s.translateXProperty().set(n.getXCoord());
-            s.translateYProperty().set(n.getZCoord());
+                Sphere s = new Sphere(10);
+                s.translateXProperty().set(n.getXCoord());
+                s.translateYProperty().set(n.getZCoord());
 
-            if (nodeLabelCheck.isSelected()) {
-                Text t = new Text(n.toString());
-                t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+                if (nodeLabelCheck.isSelected()) {
+                    Text t = new Text(Integer.toString(n.getNodeId()));
+                    t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                t.translateXProperty().set(n.getXCoord() + 10);
-                t.translateYProperty().set(n.getZCoord() + 10);
+                    t.translateXProperty().set(n.getXCoord() + 10);
+                    t.translateYProperty().set(n.getZCoord() + 10);
 
-                nodeGroup.getChildren().add(t);
+                    nodeGroup.getChildren().add(t);
+                }
+
+                s.setMaterial(blueStuff);
+
+                nodeGroup.getChildren().add(s);
+
             }
+        }
 
-            s.setMaterial(blueStuff);
+        axisGroup.getChildren().clear();
 
-            nodeGroup.getChildren().add(s);
+        if (axisCheck.isSelected()) {
 
+            //////////////////////////////
+            //CREATE 3D AXIS
+            axisGroup.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
+            axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
+            axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
+            Text xText = new Text("X");
+            xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            xText.translateXProperty().set(110);
+            axisGroup.getChildren().add(xText);
+
+            Text yText = new Text("Z");
+            yText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            yText.translateYProperty().set(110);
+            axisGroup.getChildren().add(yText);
+
+            Text zText = new Text("Y");
+            zText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            zText.translateZProperty().set(110);
+            axisGroup.getChildren().add(zText);
+
+            Box arrowHeadX = new Box(10, 10, 10);
+            arrowHeadX.setMaterial(yellowStuff);
+            Box arrowHeadY = new Box(10, 10, 10);
+            arrowHeadY.setMaterial(yellowStuff);
+            Box arrowHeadZ = new Box(10, 10, 10);
+            arrowHeadZ.setMaterial(yellowStuff);
+
+            arrowHeadX.setTranslateX(100);
+            arrowHeadY.setTranslateY(100);
+            arrowHeadZ.setTranslateZ(100);
+
+            axisGroup.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
         }
 
     }
@@ -619,6 +690,29 @@ public class ModelViewPane {
         blackStuff.setDiffuseColor(Color.BLACK);
         blackStuff.setSpecularColor(Color.BLACK);
         Cylinder line = new Cylinder(1, height);
+        line.setMaterial(blackStuff);
+
+        line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
+
+        return (line);
+    }
+
+    public Cylinder createConnection(Point3D origin, Point3D target, double thickness) {
+        Point3D yAxis = new Point3D(0, 1, 0);
+        Point3D diff = target.subtract(origin);
+        double height = diff.magnitude();
+
+        Point3D mid = target.midpoint(origin);
+        Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(), mid.getZ());
+
+        Point3D axisOfRotation = diff.crossProduct(yAxis);
+        double angle = Math.acos(diff.normalize().dotProduct(yAxis));
+        Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);
+
+        PhongMaterial blackStuff = new PhongMaterial();
+        blackStuff.setDiffuseColor(Color.BLACK);
+        blackStuff.setSpecularColor(Color.BLACK);
+        Cylinder line = new Cylinder(thickness, height);
         line.setMaterial(blackStuff);
 
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);

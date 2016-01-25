@@ -44,7 +44,7 @@ public class Stripper {
         Series_CC Y = new Series_CC(modelLength);
 
         Strip_General myStrip = new Strip_General(n1, n2);
-        myStrip.setProperties(usrMat, 10, modelLength, Y);
+        myStrip.setProperties(usrMat, modelLength, Y);
 
 //        myStrip.setUdlX(force);
 //

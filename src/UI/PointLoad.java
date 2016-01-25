@@ -23,9 +23,6 @@ public class PointLoad {
 
     
 
-    private Direction direction;
-    private Strip strip;
-
     private static AtomicInteger loadSequence = new AtomicInteger(0);
     private final ReadOnlyIntegerWrapper pointLoadId = new ReadOnlyIntegerWrapper(this, "pointLoadId", loadSequence.incrementAndGet());
     private final ReadOnlyStringWrapper dirString = new ReadOnlyStringWrapper(this , "disString" , null);
@@ -35,10 +32,10 @@ public class PointLoad {
     private final ReadOnlyDoubleWrapper magnitude = new ReadOnlyDoubleWrapper(this, "magnitude", 0.0);
     
     
-
+    
     public PointLoad() {
         
-        
+               
     }
 
     public double getX() {
@@ -96,6 +93,7 @@ public class PointLoad {
     {
         yCoordProperty().set(yCoord);
     }
+    
     
     
     

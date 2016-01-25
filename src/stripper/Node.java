@@ -47,7 +47,7 @@ public class Node {
      * @param i longitudinal distance %
      * 
      */
-    public void setDisplacementVector(Vector u, int m , int yPercentage) // needs rename, "displacement" is misleading
+    public void setParameterVector(Vector u, int m , int yPercentage) 
     {
         displacementVectors[m][yPercentage] = u;
     }
@@ -62,24 +62,34 @@ public class Node {
         this.dofPrescribedStatus = status;
     }
     
-    public Vector getDisplacementContributionVectorAt(int m , int yPercentage) 
+    public Vector getParameterContributionVectorAt(int m , int yPercentage) 
     {
         return displacementVectors[m][yPercentage];
     }
     
-    public Vector getDisplacementVectorAt(int yPercentage) 
-    {
-        Vector u = Vector.getVector(4);
-        u.clear();
-        
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) 
-        {
-            u.add(getDisplacementContributionVectorAt(m , yPercentage) );
-        }
-        
-        
-        return u;
-    }
+//    public Vector getDisplacementVectorAt(int yPercentage)  // needs scaling
+//    {
+//        Vector u = Vector.getVector(4);
+//        u.clear();
+//        
+//        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) 
+//        {
+//            Vector scale = Vector.getVector(4);
+//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(0)*ModelProperties.getFourierSeries().getFunctionValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 0);
+//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(1)*ModelProperties.getFourierSeries().getFunctionValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 1);
+//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(2)*ModelProperties.getFourierSeries().getFunctionValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 2);
+//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(3)*ModelProperties.getFourierSeries().getVScalingValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 3);
+//            
+//            
+//            
+//            u.add(scale);
+//            
+//            scale.release();
+//        }
+//        
+//        
+//        return u;
+//    }
 
     public Vector[][] getDisplacementVectors() 
     {

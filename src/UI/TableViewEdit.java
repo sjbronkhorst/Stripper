@@ -214,8 +214,12 @@ public class TableViewEdit extends Application {
 
                 for (Strip s : ModelProperties.getStripList()) {
 
-                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
+                    
+                    //thickness should not be set here
+                    s.setProperties(ModelProperties.getModelMaterial(), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
 
+                    
+                    
                     //s.getStiffnessMatrix(1, 1).printf("k" + Integer.toString(s.getStripId()));
                     //s.getMembraneStiffnessMatrix(1, 1).printf("M");
                     // s.getRotationMatrix().printf("R");
@@ -229,18 +233,19 @@ public class TableViewEdit extends Application {
                 //    protected Void call() throws Exception {
                 progInd.progressProperty().bind(s.progressProperty());
 
-                s.getDisplacementVector()[50].printf("U ");
+                s.computeParameterVector();
+                
+                
 
-                s.setDisplacedState((int) slider.getValue());
-                TableViewEdit.println(Integer.toString((int) slider.getValue()));
+                //s.setDisplacedState((int) slider.getValue());
+                //TableViewEdit.println(Integer.toString((int) slider.getValue()));
 
                 disCalced = true;
 
                 draw();
 
-                ModelProperties.getStripList().get(0).getNode1().getDisplacementContributionVectorAt(0, 50).printf(ModelProperties.getStripList().get(0).getNode1().toString() + " U m = 1 at 50%");
-
-                ModelProperties.getStripList().get(0).getDisplacementVectorAt(50).printf(ModelProperties.getStripList().get(0).toString());
+               
+                
 
                 for (Strip s : ModelProperties.getStripList()) {
                     //TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
@@ -276,7 +281,7 @@ public class TableViewEdit extends Application {
 
                 for (Strip s : ModelProperties.getStripList()) {
 
-                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(thicknessField.textProperty().get()), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
+                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
                     s.setEdgeTraction(0.001, 0.001);
 
                     ////////////////////////////////////////// Edge traction moet gestel kan word

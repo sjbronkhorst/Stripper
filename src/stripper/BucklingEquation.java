@@ -89,7 +89,7 @@ public class BucklingEquation {
                     Y.setLength(hwl);
 
                     for (Strip s : strips) {
-                        s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
+                        s.setProperties(s.getMaterial(), hwl, Y);
 
                         // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
                         // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");
@@ -142,7 +142,7 @@ public class BucklingEquation {
             Y.setLength(hwl);
 
             for (Strip s : strips) {
-                s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
+                s.setProperties(s.getMaterial(), hwl, Y);
 
                 // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
                 // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");

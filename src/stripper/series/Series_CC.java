@@ -515,4 +515,9 @@ public class Series_CC extends Series {
 
     }
 
+    @Override
+    public double getVScalingValue(double y, int m) {
+        return Math.sin((m+1)*Math.PI/a);
+    }
+
 }

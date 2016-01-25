@@ -86,7 +86,7 @@ public class SystemEquation {
     
    
 
-    public Vector[] getDisplacementVector() {
+    public void computeParameterVector() {
 
         fourierTermContributionUarr = new Vector[ModelProperties.getFourierTerms()][101];
 
@@ -205,7 +205,7 @@ public class SystemEquation {
 
                 for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
 
-                    n.setDisplacementVector(fourierTermContributionUarr[m][i].getSubVector(indices), m, i);
+                    n.setParameterVector(fourierTermContributionUarr[m][i].getSubVector(indices), m, i);
                 }
 
                 for (int y = 0; y < 4; y++) {
@@ -215,7 +215,7 @@ public class SystemEquation {
             }
         }
 
-        return Uarr;
+        //return Uarr;
     }
 
     public void setDisplacedState(int distPercentage) {
@@ -231,8 +231,8 @@ public class SystemEquation {
         
         for (Node n : NodeTableUtil.getNodeList())
         {
-         n.setDisplacedXCoord(n.getDisplacementVectorAt(distPercentage).get(0));
-         n.setDisplacedZCoord(n.getDisplacementVectorAt(distPercentage).get(2));
+        // n.setDisplacedXCoord(n.getBendingDisplacementVectorAt(distPercentage).get(0));
+         //n.setDisplacedZCoord(n.getDisplacementVectorAt(distPercentage).get(2));
         }
 
     }

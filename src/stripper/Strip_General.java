@@ -55,6 +55,8 @@ public class Strip_General extends Strip {
             this.stripId.set(uiStrip.getStripId());
 
             this.pointLoads = uiStrip.getPointLoadList();
+            this.t = uiStrip.getStripThickness();
+            
         }
     }
 
@@ -83,9 +85,8 @@ public class Strip_General extends Strip {
     }
 
     @Override
-    public void setProperties(Material mat, double thickness, double length, Series Y) {
+    public void setProperties(Material mat, double length, Series Y) {
         super.mat = mat;
-        super.t = thickness;
         super.a = length;
         super.Y = Y;
     }
