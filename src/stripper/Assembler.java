@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import java.util.Arrays;
 import java.util.List;
 import linalg.Matrix;
 import linalg.Vector;
@@ -28,10 +29,15 @@ public class Assembler {
         localDOF = localToGlobalConfNumbering.length;
         globalDOF = nrOfGlobalDOF;
         nrOfElements = strips.size();
+        
+        
 
         T = Matrix.getMatrix(localDOF, globalDOF);
         T.clear();
         for (int i = 0; i < localDOF; i++) {
+            
+           
+            
             T.set(1, localToGlobalConfNumbering[i][0], localToGlobalConfNumbering[i][1]);
         }
 

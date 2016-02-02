@@ -89,7 +89,7 @@ public class BucklingEquation {
                     Y.setLength(hwl);
 
                     for (Strip s : strips) {
-                        s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
+                        s.setProperties(s.getMaterial(), hwl, Y);
 
                         // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
                         // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");
@@ -97,8 +97,8 @@ public class BucklingEquation {
 
                     Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
 
-                    SystemSolver se = new SystemSolver(a.getK(r), status);
-                    SystemSolver sg = new SystemSolver(a.getKg(r), status);
+                    PartitionedSystem se = new PartitionedSystem(a.getK(r), status);
+                    PartitionedSystem sg = new PartitionedSystem(a.getKg(r), status);
 
                     Matrix Ke = se.getKff();
                     Matrix Kg = sg.getKff();
@@ -144,7 +144,7 @@ System.out.println("Lmax =" + Lmax);
             Y.setLength(hwl);
 
             for (Strip s : strips) {
-                s.setProperties(s.getMaterial(), s.getStripThickness(), hwl, Y);
+                s.setProperties(s.getMaterial(), hwl, Y);
 
                 // s.getStiffnessMatrix(1, 1).printf("Ke direct from strip");
                 // s.getGeometricMatrix(1, 1).printf("Kg direct from strip");
@@ -177,9 +177,8 @@ System.out.println("Lmax =" + Lmax);
             
             System.out.println("Starting solver");
 
-            SystemSolver se = new SystemSolver(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
-
-            SystemSolver sg = new SystemSolver(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
+            PartitionedSystem se = new PartitionedSystem(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
+            PartitionedSystem sg = new PartitionedSystem(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
 
             Matrix Ke = se.getKff();
             Matrix Kg = sg.getKff();

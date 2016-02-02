@@ -181,6 +181,11 @@ public class BucklingSeries_CC extends Series{
             return 0.0;
         }
     }
+
+    @Override
+    public double getVScalingValue(double y, int m) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     
     

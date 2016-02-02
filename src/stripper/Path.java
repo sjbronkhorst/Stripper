@@ -65,12 +65,12 @@ public class Path {
 
         xData = new double[numOfDataPoints];
         yData = new double[numOfDataPoints];
-        queryData = new Vector[numOfDataPoints][2];
+        queryData = new Vector[numOfDataPoints][4];
         
-        System.out.println("######################################");
-        System.out.println("Path start = " + start.toString());
-        System.out.println("Path end = " + end.toString());
-        System.out.println("######################################");
+//        TableViewEdit.println("######################################");
+//        TableViewEdit.println("Path start = " + start.toString());
+//        TableViewEdit.println("Path end = " + end.toString());
+//        TableViewEdit.println("######################################");
         
         for (int i = 0; i < numOfDataPoints; i++)
         {
@@ -78,13 +78,15 @@ public class Path {
             yData[i] = i*idy + start.getY();
             queryData[i][0] = strip.getBendingStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
             queryData[i][1] = strip.getPlaneStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
-            //queryData[i][2] = strip.getDisplacementVectorAt(i)
+            queryData[i][2] = strip.getBendingDisplacementVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
+            queryData[i][3] = strip.getPlaneDisplacementVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
             
-            System.out.println("-----------------------------------");
-            System.out.println("X = " + xData[i] + " Y = " + yData[i]);
-            System.out.println("-----------------------------------");
-            queryData[i][0].printf("Bending stress vector");
-            queryData[i][1].printf("Plane stress vector");
+            
+//            TableViewEdit.println("-----------------------------------");
+//            TableViewEdit.println("X = " + xData[i] + " Y = " + yData[i]);
+//            TableViewEdit.println("-----------------------------------");
+//            queryData[i][0].printf("Bending stress vector");
+//            queryData[i][1].printf("Plane stress vector");
             
             
         }

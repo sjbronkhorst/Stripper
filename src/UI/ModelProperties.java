@@ -54,6 +54,7 @@ public class ModelProperties
 
     public static void setFourierTerms(int fourierTerms) {
         ModelProperties.fourierTerms = fourierTerms;
+        TableViewEdit.println("Fourier terms set to " + fourierTerms);
     }
 
     public static Series getFourierSeries() {

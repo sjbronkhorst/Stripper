@@ -131,6 +131,11 @@ public class Series_SS extends Series {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public double getVScalingValue(double y, int m) {
+        return getFirstDerivativeValue(y, m);
+    }
+
    
 
 }

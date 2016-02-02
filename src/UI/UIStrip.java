@@ -6,6 +6,7 @@
 package UI;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.FXCollections;
@@ -28,7 +29,9 @@ public class UIStrip {
     private final ReadOnlyDoubleWrapper udlX = new ReadOnlyDoubleWrapper(this, "udlX", 0.0);
     private final ReadOnlyDoubleWrapper udlY = new ReadOnlyDoubleWrapper(this, "udlY", 0.0);
     private final ReadOnlyDoubleWrapper udlZ = new ReadOnlyDoubleWrapper(this, "udlZ", 0.0);
-    private int t;
+    
+    private final ReadOnlyDoubleWrapper t = new ReadOnlyDoubleWrapper(this, "t", 0.0);
+    
 
     private boolean hasNode1, hasNode2;
 
@@ -39,6 +42,8 @@ public class UIStrip {
         hasNode1 = true;
         hasNode2 = true;
     }
+    
+    
 
     public UIStrip() {
         this.node1 = null;
@@ -131,13 +136,18 @@ public class UIStrip {
         }
          return 0;
     }
-
-    public double getStripThickness() {
+    
+    public DoubleProperty thicknessProperty()
+    {
         return t;
     }
 
-    public void setStripThickness(int thickness) {
-        this.t = thickness;
+    public double getStripThickness() {
+        return t.doubleValue();
+    }
+
+    public void setStripThickness(double thickness) {
+        t.set(thickness);
     }
 
     public double getStripAngle() {

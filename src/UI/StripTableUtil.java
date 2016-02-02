@@ -90,6 +90,15 @@ public class StripTableUtil {
 
     }
     
+     public static TableColumn<UIStrip, Double> getStripThicknessColumn() {
+        TableColumn<UIStrip, Double> tColumn = new TableColumn("t");
+
+        tColumn.setCellValueFactory(new PropertyValueFactory<>("thickness"));
+
+        return tColumn;
+
+    }
+    
     public static TableColumn<UIStrip, Double> getUDLZColumn() {
         TableColumn<UIStrip, Double> udlZColumn = new TableColumn("Load - Z");
 

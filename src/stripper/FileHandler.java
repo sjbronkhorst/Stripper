@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.TableViewEdit;
 import UI.UIStrip;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -19,6 +20,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import stripper.materials.Material;
+import stripper.materials.Material_Steel;
+import stripper.materials.Material_User;
 
 /**
  *
@@ -35,13 +39,14 @@ public class FileHandler {
     private Map<Integer, Node> nodeMap = new HashMap<>();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
     private ObservableList<UIStrip> strips = FXCollections.<UIStrip>observableArrayList();
+    private Material mat;
     private FileChooser fileDialog = new FileChooser();
 
     public FileHandler() {
 
     }
 
-    public void writeFile(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
+    public void writeGeom(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showSaveDialog(null);
 
@@ -76,7 +81,7 @@ public class FileHandler {
         return strips;
     }
 
-    public void ReadFile() throws FileNotFoundException, IOException, IllegalStateException {
+    public void readGeom() throws FileNotFoundException, IOException, IllegalStateException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showOpenDialog(null);
 
@@ -105,16 +110,16 @@ public class FileHandler {
             BufferedReader br2 = new BufferedReader(fr2);
             String[] s = new String[nrOfLines];
 
-            //System.out.println("Nr of lines " + nrOfLines);
+            //TableViewEdit.println("Nr of lines " + nrOfLines);
             if (nrOfLines != 0) {
 
                 for (int i = 0; i < nrOfLines; i++) {
                     s[i] = br2.readLine();
-                    //System.out.println(s[i]);
+                    //TableViewEdit.println(s[i]);
 
                     String[] words = s[i].split(" ");
 
-                    // System.out.println("words 0 " +words[0]);
+                    // TableViewEdit.println("words 0 " +words[0]);
                     if (words[0].equals("n")) {
 
                         Node tempNode = new Node(Double.parseDouble(words[1]), Double.parseDouble(words[2]));
@@ -128,15 +133,15 @@ public class FileHandler {
 
                         if (n1 != null && n2 != null) {
 
-                            strips.add(new UIStrip(n1, n2));   ///////////fout !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            strips.add(new UIStrip(n1, n2));   
                         }
                     } else {
-                        System.out.println("File syntax error");
+                        TableViewEdit.println("File syntax error");
                     }
 
                 }
             } else {
-                System.out.println("Error : File does not contain data");
+                TableViewEdit.println("Error : File does not contain data");
             }
 
             br2.close();
@@ -172,7 +177,7 @@ public class FileHandler {
 
             } catch (Exception e) {
 
-                System.out.println("File not found/available, close it and try again");
+                TableViewEdit.println("File not found/available, close it and try again");
                 return;
 
             }
@@ -180,5 +185,120 @@ public class FileHandler {
             fileDialog.getExtensionFilters().clear();
         }
     }
+    
+    public void writeCSV(String[][][] data) throws IOException {
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Comma Separated Values", "*.csv"));
+        int cols = data[0][0].length;
+        int rows = data[0].length;
 
+        File file = fileDialog.showSaveDialog(null);
+
+        if (file != null) {
+
+            try {
+
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                for (int k = 0; k < data.length; k++) 
+                {
+                    
+                
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < cols; j++) {
+                        bw.append(data[k][i][j] + ";");
+
+                    }
+                    bw.newLine();
+                }
+                
+                }
+
+                bw.close();
+                fw.close();
+
+            } catch (Exception e) {
+
+                TableViewEdit.println("File not found/available, close it and try again");
+                return;
+
+            }
+
+            fileDialog.getExtensionFilters().clear();
+        }
+    }
+    
+    public void writeMaterial(Material mat)
+    {
+         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
+         
+         File file = fileDialog.showSaveDialog(null);
+
+        if (file != null) {
+
+            try {
+
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+
+                bw.append(mat.getName());
+                bw.newLine();
+                bw.append(Double.toString(mat.getEx()));
+                bw.newLine();
+                bw.append(Double.toString(mat.getEy()));
+                bw.newLine();
+                bw.append(Double.toString(mat.getVx()));
+                bw.newLine();
+                bw.append(Double.toString(mat.getVy()));
+                bw.newLine();
+                bw.append(Double.toString(mat.getG()));
+               
+               
+                bw.close();
+                fw.close();
+
+            } catch (Exception e) {
+
+                TableViewEdit.println("File not found/available, close it and try again");
+                return;
+
+            }
+
+            fileDialog.getExtensionFilters().clear();
+        }
+        
+        this.mat = mat;
+         
+    }
+    
+    public void readMaterial()throws FileNotFoundException, IOException, IllegalStateException {
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
+         
+         File file = fileDialog.showOpenDialog(null);
+
+        if (file != null) {
+
+            
+
+            FileReader fr = new FileReader(file);
+
+            BufferedReader br = new BufferedReader(fr);
+           
+            String name = br.readLine();
+            double Ex = Double.parseDouble(br.readLine());
+            double Ey = Double.parseDouble(br.readLine());
+            double vx = Double.parseDouble(br.readLine());
+            double vy = Double.parseDouble(br.readLine());
+            double G = Double.parseDouble(br.readLine());
+            mat = new Material_User(name, Ex, Ey, vx, vy, G);
+            
+            br.close();
+            fr.close();
+            
+        }
+    }
+    public Material getMaterial()
+    {
+        return mat;
+    }
+    
 }

@@ -44,7 +44,7 @@ public class Stripper {
         Series_CC Y = new Series_CC(modelLength);
 
         Strip_General myStrip = new Strip_General(n1, n2);
-        myStrip.setProperties(usrMat, 10, modelLength, Y);
+        myStrip.setProperties(usrMat, modelLength, Y);
 
 //        myStrip.setUdlX(force);
 //
@@ -147,8 +147,8 @@ public class Stripper {
         boolean [] status = {false,  false,  false,  false,   false,   false, false,   false};
         
         
-        SystemSolver se =new SystemSolver(myStrip.getStiffnessMatrix(1, 1), status);
-        SystemSolver sg =new SystemSolver(myStrip.getGeometricMatrix(1,1), status);
+        PartitionedSystem se =new PartitionedSystem(myStrip.getStiffnessMatrix(1, 1), status);
+        PartitionedSystem sg =new PartitionedSystem(myStrip.getGeometricMatrix(1, 1), status);
         
         Matrix Ke = se.getKff();
         Matrix Kg = sg.getKff();

@@ -46,21 +46,22 @@ public class Strip_SS extends Strip {
         } else {
             setNode1(uiStrip.getNode1());
             setNode2(uiStrip.getNode2());
-            
+
             setUdlX(uiStrip.getUdlX());
             setUdlY(uiStrip.getUdlY());
             setUdlZ(uiStrip.getUdlZ());
-            
+
             this.stripId.set(uiStrip.getStripId());
-            
+
             this.pointLoads = uiStrip.getPointLoadList();
+            this.t = uiStrip.getStripThickness();
+            
         }
     }
 
     @Override
-    public void setProperties(Material mat, double thickness, double length, Series Y) {
+    public void setProperties(Material mat, double length, Series Y) {
         super.mat = mat;
-        super.t = thickness;
         super.a = length;
         super.Y = new Series_SS(a);
     }

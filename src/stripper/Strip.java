@@ -7,6 +7,7 @@ package stripper;
 
 import UI.ModelProperties;
 import java.util.concurrent.atomic.AtomicInteger;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -44,30 +45,24 @@ public abstract class Strip {
 
     protected Node node1;
     protected Node node2;
-    protected double f1,f2; // Edge load size at node.
-    
-    
+    protected double f1, f2; // Edge load size at node.
 
     protected boolean hasNode1, hasNode2;
 
     public static void clearNumbering() {
         stripSequence.set(0);
     }
-    
-    public Vector getStatusVector()
-    {
+
+    public Vector getStatusVector() {
         Vector status = Vector.getVector(8);
-        
-        for (int i = 0; i < 4; i++)
-        {
-         status.set(Converter.boolToVec(node1.getStatus()).get(i), i);
-         status.set(Converter.boolToVec(node2.getStatus()).get(i), i+4);
+
+        for (int i = 0; i < 4; i++) {
+            status.set(Converter.boolToVec(node1.getStatus()).get(i), i);
+            status.set(Converter.boolToVec(node2.getStatus()).get(i), i + 4);
         }
-        
-        
-        
+
         return status;
-        }
+    }
 
     public ObservableList<UI.PointLoad> getPointLoadList() {
         return pointLoads;
@@ -246,6 +241,7 @@ public abstract class Strip {
 
         F.add(fp);
 
+        //No information in Cheung on pointloads on LO2 strip in other directions
         //Pointloads
         for (UI.PointLoad p : pointLoads) {
             double x = p.getX();
@@ -371,26 +367,55 @@ public abstract class Strip {
         return D;
     }
 
-    public Vector getDisplacementVectorAt(int yPecentage) {
-        Vector U = Vector.getVector(8);
+    public Matrix getPlaneDisplacementShapeFunctionMatrix(double x, double y, int m) {
+        Matrix N = Matrix.getMatrix(2, 4);
+        double b = getStripWidth();
+        double s = Y.getFunctionValue(y, m);
+        double s1 = Y.getVScalingValue(y, m);
 
-        int[] ind1 = {0, 1, 2, 3};
-        int[] ind2 = {4, 5, 6, 7};
+        x = x / b;
 
-        U.add(node1.getDisplacementVectorAt(yPecentage), ind1);
-        U.add(node2.getDisplacementVectorAt(yPecentage), ind2);
+        N.set((1 - x) * s, 0, 0);
+        N.set(0, 0, 1);
+        N.set(x * s, 0, 2);
+        N.set(0, 0, 3);
 
-        return U;
+        N.set(0, 1, 0);
+        N.set((1 - x) * a / Y.getMu_m(m) * s1, 1, 1);
+        N.set(0, 1, 2);
+        N.set(x * a / Y.getMu_m(m) * s1, 1, 3);
+
+        return N;
     }
 
-    public Vector getDisplacementContributionVectorAt(int m, int yPecentage) {
+    public Matrix getBendingDisplacementShapeFunctionMatrix(double x, double y, int m) {
+        Matrix N = Matrix.getMatrix(2, 4);
+        double b = getStripWidth();
+        double s = Y.getFunctionValue(y, m);
+
+        x = x / b;
+
+        N.set((1 - x) * s, 0, 0);
+        N.set(0, 0, 1);
+        N.set(x * s, 0, 2);
+        N.set(0, 0, 3);
+
+        N.set(0, 1, 0);
+        N.set((1 - x) * a / Y.getMu_m(m) * s, 1, 1);
+        N.set(0, 1, 2);
+        N.set(x * a / Y.getMu_m(m) * s, 1, 3);
+
+        return N;
+    }
+
+    public Vector getParameterContributionVectorAt(int m, int yPecentage) {
         Vector U = Vector.getVector(8);
 
         int[] ind1 = {0, 1, 2, 3};
         int[] ind2 = {4, 5, 6, 7};
 
-        U.add(node1.getDisplacementContributionVectorAt(m, yPecentage), ind1);
-        U.add(node2.getDisplacementContributionVectorAt(m, yPecentage), ind2);
+        U.add(node1.getParameterContributionVectorAt(m, yPecentage), ind1);
+        U.add(node2.getParameterContributionVectorAt(m, yPecentage), ind2);
 
         return U;
     }
@@ -411,10 +436,10 @@ public abstract class Strip {
         for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
             ub.clear();
 
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(2), 0);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(3), 1);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(6), 2);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(7), 3);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(2), 0);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(3), 1);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(6), 2);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(7), 3);
 
             Matrix B = getBendingStrainMatrix(localXCoordinate, (yPercentage / 100.0) * a, m + 1);
 
@@ -425,6 +450,68 @@ public abstract class Strip {
 
         ub.release();
         return getBendingPropertyMatrix().multiply(strain);
+    }
+
+    public Vector getPlaneDisplacementVectorAt(double localXCoordinate, int yPercentage) {
+        Vector f = Vector.getVector(2);
+        Vector param = Vector.getVector(4);
+
+        Matrix Nplane = Matrix.getMatrix(2, 4);
+        
+
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+
+            param.clear();
+
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(0), 0);
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(1), 1);
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(4), 2);
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(5), 3);
+            
+            Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, (yPercentage / 100.0) * a, m + 1);
+            f.add(Nplane.multiply(param));
+            
+            
+
+        }
+        
+        param.release();
+        Nplane.release();
+        
+
+        return f;
+    }
+    
+     public Vector getBendingDisplacementVectorAt(double localXCoordinate, int yPercentage) {
+        Vector w = Vector.getVector(2);
+        Vector param = Vector.getVector(4);
+
+        Matrix Nbend = Matrix.getMatrix(2, 4);
+        
+
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+
+                   
+
+            param.clear();
+
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(2), 0);
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(3), 1);
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(6), 2);
+            param.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(7), 3);
+            
+            Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, (yPercentage / 100.0) * a, m + 1);
+            w.add(Nbend.multiply(param));
+            
+            
+
+        }
+        
+        param.release();
+        Nbend.release();
+        
+
+        return w;
     }
 
     /**
@@ -443,10 +530,10 @@ public abstract class Strip {
         for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
             ub.clear();
 
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(0), 0);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(1), 1);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(4), 2);
-            ub.add(getRotationMatrix().transpose().multiply(getDisplacementContributionVectorAt(m, yPercentage)).get(5), 3);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(0), 0);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(1), 1);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(4), 2);
+            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVectorAt(m, yPercentage)).get(5), 3);
 
             Matrix B = getPlaneStrainMatrix(localXCoordinate, (yPercentage / 100.0) * a, m + 1);
 
@@ -509,22 +596,21 @@ public abstract class Strip {
         double I5 = I[4];
 
         Matrix Kgb = Matrix.getMatrix(4, 4);
-        
-        Kgb.set((10*T1+3*T2)*b*I5/35.0,0,0);
-        Kgb.set((15*T1+7*T2)*b*b*I5/420.0,0,1);
-        Kgb.set(9*(T1+T2)*b*I5/140.0,0,2);
-        Kgb.set(-(7*T1+6*T2)*b*b*I5/420.0,0,3);
-        
-        Kgb.set((5*T1+3*T2)*b*b*b*I5/840.0,1,1);
-        Kgb.set((6*T1 + 7*T2)*b*b*I5/420.0,1,2);
-        Kgb.set(-(T1+T2)*b*b*b*I5/280.0,1,3);
-        
-        Kgb.set((3*T1+10*T2)*b*I5/35.0,2,2);
-        Kgb.set(-(7*T1+15*T2)*b*b*I5/420.0,2,3);
-        
-        Kgb.set((3*T1+5*T2)*b*b*b*I5/840.0,3,3);
-        
-        
+
+        Kgb.set((10 * T1 + 3 * T2) * b * I5 / 35.0, 0, 0);
+        Kgb.set((15 * T1 + 7 * T2) * b * b * I5 / 420.0, 0, 1);
+        Kgb.set(9 * (T1 + T2) * b * I5 / 140.0, 0, 2);
+        Kgb.set(-(7 * T1 + 6 * T2) * b * b * I5 / 420.0, 0, 3);
+
+        Kgb.set((5 * T1 + 3 * T2) * b * b * b * I5 / 840.0, 1, 1);
+        Kgb.set((6 * T1 + 7 * T2) * b * b * I5 / 420.0, 1, 2);
+        Kgb.set(-(T1 + T2) * b * b * b * I5 / 280.0, 1, 3);
+
+        Kgb.set((3 * T1 + 10 * T2) * b * I5 / 35.0, 2, 2);
+        Kgb.set(-(7 * T1 + 15 * T2) * b * b * I5 / 420.0, 2, 3);
+
+        Kgb.set((3 * T1 + 5 * T2) * b * b * b * I5 / 840.0, 3, 3);
+
         Kgb.set(Kgb.get(0, 1), 1, 0);
 
         Kgb.set(Kgb.get(0, 2), 2, 0);
@@ -537,8 +623,7 @@ public abstract class Strip {
         return Kgb;
 
     }
-    
-   
+
     public Matrix getGeometricMatrix(int m, int n) {
         Matrix K = Matrix.getMatrix(8, 8);
 
@@ -554,10 +639,9 @@ public abstract class Strip {
 
         return K;
     }
-    
-    public Matrix getRotatedGeometricMatrix(int m, int n) 
-    {
-         Matrix S = getGeometricMatrix(m,n);
+
+    public Matrix getRotatedGeometricMatrix(int m, int n) {
+        Matrix S = getGeometricMatrix(m, n);
         Matrix R = getRotationMatrix();
         Matrix RT = R.transpose();
 
@@ -568,11 +652,9 @@ public abstract class Strip {
 
     public abstract Matrix getStiffnessMatrix(int n, int m);
 
-    public abstract void setProperties(Material mat, double thickness, double a, Series Y);
-    
-    
-    public void setEdgeTraction(double f1, double f2)
-    {
+    public abstract void setProperties(Material mat, double a, Series Y);
+
+    public void setEdgeTraction(double f1, double f2) {
         this.f1 = f1;
         this.f2 = f2;
     }
