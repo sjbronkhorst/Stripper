@@ -247,15 +247,15 @@ public class TableViewEdit extends Application {
                
                 
 
-                for (Strip s : ModelProperties.getStripList()) {
+               // for (Strip s : ModelProperties.getStripList()) {
                     //TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
 
 //                    TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth(), 50).get(1));
-                    for (int y = 0; y < 101; y++) {
-                        TableViewEdit.println(Double.toString(s.getBendingStressVectorAt(s.getStripWidth() / 2.0, y).get(1)));
-                    }
+                 //   for (int y = 0; y < 101; y++) {
+                 //      TableViewEdit.println(Double.toString(s.getBendingStressVectorAt(s.getStripWidth() / 2.0, y).get(1)));
+                 //   }
 
-                }
+             //   }
 
 //                        
 //                        

@@ -515,7 +515,7 @@ public class ModelViewPane {
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
-                t.setFont(Font.font("Calibri", FontWeight.BOLD, 0.7*s.getStripWidth()));
+                t.setFont(Font.font("Calibri", FontWeight.BOLD, 0.7 * s.getStripWidth()));
 
                 t.translateXProperty().set(((x1 + x2) / 2.0) /*+ s.getStripThickness() / 2.0 + 1 + 1*/);
                 t.translateYProperty().set(((y1 + y2) / 2.0) /*- s.getStripThickness() / 2.0 - 1 - 1*/);
@@ -533,9 +533,8 @@ public class ModelViewPane {
 //                t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
 //
 //                t2.getTransforms().add(new Rotate(90 - theta, new Point3D(1, 0, 0)));
-
                 stripGroup.getChildren().add(t);
-               // stripGroup.getChildren().add(t2);
+                // stripGroup.getChildren().add(t2);
             }
 
             b.setMaterial(redStuff);
@@ -548,40 +547,64 @@ public class ModelViewPane {
             for (PointLoad p : s.getPointLoadList()) {
                 gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
 
-                Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()), 0.5);
-                //Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
-
-                int sign = 1;
-                if (p.getMagnitude() < 0) {
-                    sign = -1;
-                }
-
-                for (int i = 1; i < 10; i++) {
-                    Cylinder arrowHead = createConnection(new Point3D(p.getX(), p.getMagnitude() - sign * i, p.getY()), new Point3D(p.getX(), p.getMagnitude() - sign * i - sign * 1, p.getY()), i / 2);
-                    arrowHead.setTranslateX(x1);
-                    arrowHead.setTranslateY(y1);
-                    arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
-                    arrowHead.setRotate(theta);
-
-                    arrowHead.setMaterial(greenStuff);
-                    stripGroup.getChildren().add(arrowHead);
-                }
-
-                //pointLoad.setDrawMode(DrawMode.LINE);
-                pointLoad.setTranslateX(x1);
-                pointLoad.setTranslateY(y1);
-                pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
-                pointLoad.setRotate(theta);
-
-                pointLoad.setMaterial(greenStuff);
-
-                stripGroup.getChildren().add(pointLoad);
+                addZArrowAt(x1, y1, theta, p);
             }
 
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
 
             stripGroup.getChildren().add(b);
+
+            if (s.getUdlZ() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord((double) (j));
+                        pl.setMagnitude(s.getUdlZ());
+
+                        addZArrowAt(x1, y1, theta, pl);
+
+                    }
+
+                }
+            }
+
+            if (s.getUdlX() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord((double) (j));
+                        pl.setMagnitude(10 * s.getUdlX() / Math.abs(s.getUdlX()));
+
+                        addXArrowAt(x1, y1, theta, pl);
+
+                    }
+
+                }
+            }
+
+            if (s.getUdlY() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord((double) (j));
+                        pl.setMagnitude(10 * s.getUdlY() / Math.abs(s.getUdlY()));
+
+                        addYArrowAt(x1, y1, theta, pl);
+
+                    }
+
+                }
+            }
 
         }
 
@@ -672,6 +695,99 @@ public class ModelViewPane {
             axisGroup.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
         }
 
+    }
+
+    public void addZArrowAt(double x1, double y1, double theta, PointLoad p) {
+        Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()), 0.5);
+        //Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+
+        int sign = 1;
+        if (p.getMagnitude() < 0) {
+            sign = -1;
+        }
+
+        for (int i = 1; i < 10; i++) {
+            Cylinder arrowHead = createConnection(new Point3D(p.getX(), p.getMagnitude() - sign * i, p.getY()), new Point3D(p.getX(), p.getMagnitude() - sign * i - sign * 1, p.getY()), i / 2);
+            arrowHead.setTranslateX(x1);
+            arrowHead.setTranslateY(y1);
+            arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+            arrowHead.setRotate(theta);
+
+            arrowHead.setMaterial(greenStuff);
+            stripGroup.getChildren().add(arrowHead);
+        }
+
+        //pointLoad.setDrawMode(DrawMode.LINE);
+        pointLoad.setTranslateX(x1);
+        pointLoad.setTranslateY(y1);
+        pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+        pointLoad.setRotate(theta);
+
+        pointLoad.setMaterial(greenStuff);
+
+        stripGroup.getChildren().add(pointLoad);
+    }
+
+    public void addXArrowAt(double x1, double y1, double theta, PointLoad p) {
+        Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX() + p.getMagnitude(), 0, p.getY()), 0.5);
+        //Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+
+        int sign = 1;
+        if (p.getMagnitude() < 0) {
+            sign = -1;
+        }
+
+        for (int i = 1; i < 10; i++) {
+            Cylinder arrowHead = createConnection(new Point3D(p.getX() + p.getMagnitude() - sign * i, 0, p.getY()), new Point3D(p.getX() + p.getMagnitude() - sign * i - sign * 1, 0, p.getY()), i / 2);
+            arrowHead.setTranslateX(x1);
+            arrowHead.setTranslateY(y1);
+            arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+            arrowHead.setRotate(theta);
+
+            arrowHead.setMaterial(greenStuff);
+            stripGroup.getChildren().add(arrowHead);
+        }
+
+        //pointLoad.setDrawMode(DrawMode.LINE);
+        pointLoad.setTranslateX(x1);
+        pointLoad.setTranslateY(y1);
+        pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+        pointLoad.setRotate(theta);
+
+        pointLoad.setMaterial(greenStuff);
+
+        stripGroup.getChildren().add(pointLoad);
+    }
+    
+    public void addYArrowAt(double x1, double y1, double theta, PointLoad p) {
+        Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX() , 0, p.getY()+ p.getMagnitude()), 0.5);
+        //Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
+
+        int sign = 1;
+        if (p.getMagnitude() < 0) {
+            sign = -1;
+        }
+
+        for (int i = 1; i < 10; i++) {
+            Cylinder arrowHead = createConnection(new Point3D(p.getX() , 0, p.getY()+ p.getMagnitude() - sign * i), new Point3D(p.getX() , 0, p.getY()+ p.getMagnitude() - sign * i - sign * 1), i / 2);
+            arrowHead.setTranslateX(x1);
+            arrowHead.setTranslateY(y1);
+            arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+            arrowHead.setRotate(theta);
+
+            arrowHead.setMaterial(greenStuff);
+            stripGroup.getChildren().add(arrowHead);
+        }
+
+        //pointLoad.setDrawMode(DrawMode.LINE);
+        pointLoad.setTranslateX(x1);
+        pointLoad.setTranslateY(y1);
+        pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+        pointLoad.setRotate(theta);
+
+        pointLoad.setMaterial(greenStuff);
+
+        stripGroup.getChildren().add(pointLoad);
     }
 
     public Cylinder createConnection(Point3D origin, Point3D target) {

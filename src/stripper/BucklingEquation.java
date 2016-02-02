@@ -97,8 +97,8 @@ public class BucklingEquation {
 
                     Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
 
-                    SystemSolver se = new SystemSolver(a.getK(r), status);
-                    SystemSolver sg = new SystemSolver(a.getKg(r), status);
+                    PartitionedSystem se = new PartitionedSystem(a.getK(r), status);
+                    PartitionedSystem sg = new PartitionedSystem(a.getKg(r), status);
 
                     Matrix Ke = se.getKff();
                     Matrix Kg = sg.getKff();
@@ -173,9 +173,8 @@ public class BucklingEquation {
 
             }
 
-            SystemSolver se = new SystemSolver(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
-
-            SystemSolver sg = new SystemSolver(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
+            PartitionedSystem se = new PartitionedSystem(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
+            PartitionedSystem sg = new PartitionedSystem(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
 
             Matrix Ke = se.getKff();
             Matrix Kg = sg.getKff();

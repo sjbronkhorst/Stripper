@@ -6,14 +6,17 @@
 package stripper;
 
 import linalg.Matrix;
+import linalg.Vector;
 
 /**
  *
  * @author SJ
  */
-public class SystemSolver {
-    
-    Matrix Kpp, Kff, Kpf,Kfp;
+public class PartitionedSystem {
+
+    Matrix Kpp, Kff, Kpf, Kfp;
+    private int fDOF, pDOF;
+    private boolean[] status;
 
     /**
      * Will set Kpp, Kff, Kfp, Kpf to corresponding part of Ks
@@ -22,8 +25,9 @@ public class SystemSolver {
      * @param status true for prescribed value, false for unknown/free
      *
      */
-    public SystemSolver(Matrix Ks, boolean[] status) {
-        int fDOF = 0;
+    public PartitionedSystem(Matrix Ks, boolean[] status) {
+        this.status = status;
+        fDOF = 0;
 
         for (int i = 0; i < status.length; i++) {
             if (status[i] == false) {
@@ -31,7 +35,7 @@ public class SystemSolver {
             }
         }
 
-        int pDOF = status.length - fDOF;
+        pDOF = status.length - fDOF;
 
         Kff = Matrix.getMatrix(fDOF, fDOF);
         Kpp = Matrix.getMatrix(pDOF, pDOF);
@@ -83,7 +87,7 @@ public class SystemSolver {
 
                     if (status[j] == false) {
                         Kff.set(Ks.get(i, j), nextKffRow, nextKffCol);
-                        
+
                         nextKffCol++;
 
                         if (nextKffCol == Kff.cols()) {
@@ -107,8 +111,6 @@ public class SystemSolver {
             }
 
         }
-        
-        
 
     }
 
@@ -127,9 +129,27 @@ public class SystemSolver {
     public Matrix getKfp() {
         return Kfp;
     }
+
+    /**
+     * Returns Wf (free nodal force parameters) if Ws (system nodal force parameters) are given
+     * @param Ws
+     * @return 
+     */
     
+   
     
-    
-    
+    public Vector getWf(Vector Ws) {
+        Vector Wf = Vector.getVector(fDOF);
+        int count = 0;
+        for (int i = 0; i < Ws.size(); i++) {
+            if (!status[i]) {
+                Wf.set(Ws.get(i), count);
+                count++;
+            }
+
+        }
+
+        return Wf;
+    }
 
 }
