@@ -13,7 +13,7 @@ public class BucklingSeries_CC extends Series{
 
     public BucklingSeries_CC(double a) {
         super(a);
-        isSimplySupported = false;
+        isSimplySupported = true;
     }
 
     @Override
@@ -24,6 +24,7 @@ public class BucklingSeries_CC extends Series{
     @Override
     public double getFunctionValue(double y, int m) {
        
+        
         return Math.sin(m*Math.PI*y/a)*Math.sin(Math.PI*y/a);
                         
     }
@@ -62,7 +63,8 @@ public class BucklingSeries_CC extends Series{
 
     @Override
     public double getMu_m(int m) {
-        return m*Math.PI;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
          }
     
  

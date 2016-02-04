@@ -124,5 +124,23 @@ public class StripTableUtil {
         return udlZColumn;
 
     }
+    
+    public static TableColumn<UIStrip, Double> getF1Column() {
+        TableColumn<UIStrip, Double> udlZColumn = new TableColumn("f1");
+
+        udlZColumn.setCellValueFactory(new PropertyValueFactory<>("f1"));
+
+        return udlZColumn;
+
+    }
+    
+     public static TableColumn<UIStrip, Double> getF2Column() {
+        TableColumn<UIStrip, Double> udlZColumn = new TableColumn("f2");
+
+        udlZColumn.setCellValueFactory(new PropertyValueFactory<>("f2"));
+
+        return udlZColumn;
+
+    }
 
 }

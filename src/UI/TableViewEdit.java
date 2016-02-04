@@ -52,9 +52,12 @@ public class TableViewEdit extends Application {
 
     ModelViewPane mvp = new ModelViewPane();
 
+    
     Boolean disCalced = false;
 
-    LoadPane lp = new LoadPane(this);
+    private boolean bucklingAnalysis = true;
+     
+    LoadPane lp ;
 
     TextField modelLengthField = new TextField();
 
@@ -75,23 +78,32 @@ public class TableViewEdit extends Application {
 
     SystemEquation s;
 
-    HomeMenuBar menuBar = new HomeMenuBar(this);
+    HomeMenuBar menuBar ;
 
     TabPane tabPane = new TabPane();
     Tab geometryTab = new Tab("Geometry");
     Tab loadTab = new Tab("Loads");
 
     private static final TextArea textArea = new TextArea();
+    
+   
 
     public static void main(String[] args) {
 
-        TableViewEdit.println("bla bla");
         Application.launch(args);
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
 
+       AnalysisChoicePrompt acp = new AnalysisChoicePrompt(stage);
+       
+        println("Buckling analysis : " + Boolean.toString(acp.getResult()));
+        bucklingAnalysis = acp.getResult();
+        lp = new LoadPane(this, bucklingAnalysis);
+        menuBar = new HomeMenuBar(this, !bucklingAnalysis);
+        
+        
         progInd.setStyle("-fx-progress-color: blue;");
 
         //progInd.setMinSize(50, 50);
@@ -214,12 +226,9 @@ public class TableViewEdit extends Application {
 
                 for (Strip s : ModelProperties.getStripList()) {
 
-                    
                     //thickness should not be set here
                     s.setProperties(ModelProperties.getModelMaterial(), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
 
-                    
-                    
                     //s.getStiffnessMatrix(1, 1).printf("k" + Integer.toString(s.getStripId()));
                     //s.getMembraneStiffnessMatrix(1, 1).printf("M");
                     // s.getRotationMatrix().printf("R");
@@ -234,29 +243,20 @@ public class TableViewEdit extends Application {
                 progInd.progressProperty().bind(s.progressProperty());
 
                 s.computeParameterVector();
-                
-                
 
                 //s.setDisplacedState((int) slider.getValue());
                 //TableViewEdit.println(Integer.toString((int) slider.getValue()));
-
                 disCalced = true;
 
                 draw();
 
-               
-                
-
                // for (Strip s : ModelProperties.getStripList()) {
-                    //TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
-
+                //TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
 //                    TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth(), 50).get(1));
-                 //   for (int y = 0; y < 101; y++) {
-                 //      TableViewEdit.println(Double.toString(s.getBendingStressVectorAt(s.getStripWidth() / 2.0, y).get(1)));
-                 //   }
-
+                //   for (int y = 0; y < 101; y++) {
+                //      TableViewEdit.println(Double.toString(s.getBendingStressVectorAt(s.getStripWidth() / 2.0, y).get(1)));
+                //   }
              //   }
-
 //                        
 //                        
                 //    return null;
@@ -274,17 +274,30 @@ public class TableViewEdit extends Application {
 
                 ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
 
+                
+                boolean noEdgeLoads = false;
+                
                 ModelProperties.getStripList().clear();
                 for (UIStrip s : StripTableUtil.getStripList()) {
                     ModelProperties.addStrip(s);
+                    
+                    if(s.getF1() == 0.0 && s.getF2() == 0.0 )
+                    {
+                        noEdgeLoads = true;
+                    }
+                    
                 }
+                
+                if(noEdgeLoads)
+                {
+                println("ERROR : Some strips have no edge loads specified ! ");
+                }
+                else
+                {
+                    for (Strip s : ModelProperties.getStripList()) {
 
-                for (Strip s : ModelProperties.getStripList()) {
-
-                    s.setProperties(ModelProperties.getModelMaterial(), Double.parseDouble(modelLengthField.textProperty().get()), ModelProperties.getFourierSeries());
-                    s.setEdgeTraction(0.001, 0.001);
-
-                    ////////////////////////////////////////// Edge traction moet gestel kan word
+                    s.setProperties(ModelProperties.getModelMaterial(), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
+                    
                 }
 
                 BucklingEquation b = new BucklingEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
@@ -327,7 +340,7 @@ public class TableViewEdit extends Application {
 
                 s.getIcons().add(ic);
                 chart.start(s);
-
+                }
             }
         });
 
@@ -445,7 +458,17 @@ public class TableViewEdit extends Application {
 
         textArea.setMinHeight(100);
         bucklePoints.setMaxWidth(100);
-        rightBox.getChildren().addAll(mvp.getPane(), calcBtn, buckleLable, bucklePoints, buckleBtn, progInd, plotBtn, textArea/*, slider*/);
+        
+        if(bucklingAnalysis)
+        {
+            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea/*, slider*/);
+        }
+        else
+        {
+            rightBox.getChildren().addAll(mvp.getPane(), calcBtn, progInd, textArea/*, slider*/);
+        }
+        
+        
 
         rightBox.setStyle("-fx-padding: 0;"
                 + "-fx-border-style: solid inside;"
@@ -668,7 +691,7 @@ public class TableViewEdit extends Application {
 
                 textArea.setText(textArea.getText() + s + "\n");
 
-                textArea.selectPositionCaret(textArea.getLength()-3);
+                textArea.selectPositionCaret(textArea.getLength() - 3);
                 textArea.deselect(); //removes the highlighting
 
                 System.out.println(s);//for echo if you want

@@ -138,7 +138,8 @@ public class Stripper {
         
         //BUCKLING TEST
         
-        myStrip.setEdgeTraction(0.001, 0.001);
+        myStrip.setEdgeTractionAtNode1(0.001);
+        myStrip.setEdgeTractionAtNode2(0.001);
         //Matrix Ke = myStrip.getStiffnessMatrix(1, 1);
         //Matrix Kg = myStrip.getGeometricMatrix(1, 1);
         

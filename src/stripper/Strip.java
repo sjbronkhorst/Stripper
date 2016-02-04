@@ -6,6 +6,7 @@
 package stripper;
 
 import UI.ModelProperties;
+import UI.TableViewEdit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -45,7 +46,11 @@ public abstract class Strip {
 
     protected Node node1;
     protected Node node2;
-    protected double f1, f2; // Edge load size at node.
+    // Edge load size at node.
+    protected double f1 , f2; 
+    
+
+   
 
     protected boolean hasNode1, hasNode2;
 
@@ -588,8 +593,11 @@ public abstract class Strip {
     }
 
     public Matrix getBendingGeometricStiffnessMatrix(int m, int n) {
+                
         double T1 = f1 * getStripThickness();
         double T2 = f2 * getStripThickness();
+        
+        
         double b = getStripWidth();
 
         double[] I = Y.getIntegralValues(m, n);
@@ -654,9 +662,16 @@ public abstract class Strip {
 
     public abstract void setProperties(Material mat, double a, Series Y);
 
-    public void setEdgeTraction(double f1, double f2) {
+    public void setEdgeTractionAtNode1(double f1) {
         this.f1 = f1;
-        this.f2 = f2;
+        
     }
+    
+     public void setEdgeTractionAtNode2(double f2) {
+        this.f2=f2;
+        
+    }
+     
+     
 
 }

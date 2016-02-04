@@ -42,10 +42,15 @@ public class HomeMenuBar {
     private MenuItem setBC = new MenuItem("Fourier series");
     private MenuItem makePath = new MenuItem("Path");
 
-    public HomeMenuBar(TableViewEdit viewer) {
+    public HomeMenuBar(TableViewEdit viewer , boolean hasPath) {
 
         fileMenu.getItems().addAll(geomFileRead, geomFileWrite);
-        editMenu.getItems().addAll(materialEdit , setBC , makePath);
+        editMenu.getItems().addAll(materialEdit , setBC);
+        
+        if(hasPath)
+        {
+            editMenu.getItems().add(makePath);
+        }
         
         
         menuBar.getMenus().add(fileMenu);

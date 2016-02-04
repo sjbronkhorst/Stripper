@@ -32,6 +32,9 @@ public class UIStrip {
     
     private final ReadOnlyDoubleWrapper t = new ReadOnlyDoubleWrapper(this, "t", 0.0);
     
+     protected final ReadOnlyDoubleWrapper f1 = new ReadOnlyDoubleWrapper(this, "f1", 0.0);
+    protected final ReadOnlyDoubleWrapper f2 = new ReadOnlyDoubleWrapper(this, "f2", 0.0);
+    
 
     private boolean hasNode1, hasNode2;
 
@@ -162,6 +165,36 @@ public class UIStrip {
     @Override
     public String toString() {
         return "Strip " + stripId.getValue().toString();
+    }
+    
+    public DoubleProperty f1Property()
+     {
+         return f1;
+     }
+     
+     public DoubleProperty f2Property()
+     {
+         return f2;
+     }
+     
+      public void setF1(double f1) {
+        this.f1.setValue(f1);
+        
+    }
+    
+     public void setF2(double f2) {
+        this.f2.setValue(f2);
+        
+    }
+     
+      public double getF1() {
+        return f1.doubleValue();
+        
+    }
+    
+      public double getF2() {
+        return f2.doubleValue();
+        
     }
     
    

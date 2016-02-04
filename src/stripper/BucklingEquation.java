@@ -87,6 +87,10 @@ public class BucklingEquation {
 
                     Series Y = ModelProperties.getFourierSeries();
                     Y.setLength(hwl);
+                    
+                    
+                                        
+                    
 
                     for (Strip s : strips) {
                         s.setProperties(s.getMaterial(), hwl, Y);

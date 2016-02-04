@@ -5,7 +5,6 @@
  */
 package UI;
 
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -20,87 +19,91 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
 
-
 /**
  *
  * @author SJ
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  */
-public class LoadPane 
-{
-    
+public class LoadPane {
+
     private ChoiceBox<UIStrip> stripChoice = new ChoiceBox<>(StripTableUtil.getStripList());
     private Label titleLabel = new Label("Select a Strip to edit its point loads :");
     private Label udlLabel = new Label("UDL (in element local coordinates) :");
     private Label udlZLabel = new Label("Z-magnitude");
     private Label udlXLabel = new Label("X-magnitude");
     private Label udlYLabel = new Label("Y-magnitude");
-    
+
     private TextField udlZTextF = new TextField();
     private TextField udlXTextF = new TextField();
     private TextField udlYTextF = new TextField();
-    
+
     private TableView<UIStrip> loadTable = new TableView<>(StripTableUtil.getStripList());
-    
+
     private TableView<PointLoad> pointLoadTable = new TableView<>(PointLoadTableUtil.getLoadList());
-    
+
     private TableViewEdit viewer;
-    
+
     private Button pointLoadAddBtn = new Button("Add");
     private Button pointLoadRemoveBtn = new Button("Remove");
-        
 
-    public LoadPane(TableViewEdit viewer) {
-        
+    private boolean bucklingAnalysis;
+
+    public LoadPane(TableViewEdit viewer, boolean bucklingAnalysis) {
+
+        this.bucklingAnalysis = bucklingAnalysis;
+
         this.viewer = viewer;
-        
+
         loadTable.setEditable(true);
-        
-        
         addStripIdColumn(loadTable);
-        addUdlX(loadTable);
-        addUdlY(loadTable);
-        addUdlZ(loadTable);
         
-        loadTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
-        pointLoadTable.setEditable(true);
-        addPointLoadIdColumn(pointLoadTable);
-        addPointLoadXCoord(pointLoadTable);
-        addPointLoadYCoord(pointLoadTable);
-        
-        addPointLoadMagnitude(pointLoadTable);
-        pointLoadTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
-        
+        if (bucklingAnalysis) {
+            addF1(loadTable);
+            addF2(loadTable);
+        } else {
+
+            addUdlX(loadTable);
+            addUdlY(loadTable);
+            addUdlZ(loadTable);
+
+            loadTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            pointLoadTable.setEditable(true);
+            addPointLoadIdColumn(pointLoadTable);
+            addPointLoadXCoord(pointLoadTable);
+            addPointLoadYCoord(pointLoadTable);
+
+            addPointLoadMagnitude(pointLoadTable);
+            pointLoadTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        }
+
         pointLoadAddBtn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                if(stripChoice.getSelectionModel().selectedIndexProperty().get() >= 0)
-                {
-                PointLoad p = new PointLoad();
-                PointLoadTableUtil.addPointLoad(p,stripChoice.getValue());
-                viewer.draw();
-                System.out.println("PointLoad " + p.getID() + " added to " + stripChoice.getValue().toString());
+                if (stripChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
+                    PointLoad p = new PointLoad();
+                    PointLoadTableUtil.addPointLoad(p, stripChoice.getValue());
+                    viewer.draw();
+                    System.out.println("PointLoad " + p.getID() + " added to " + stripChoice.getValue().toString());
                 }
 
             }
         });
-        
-         pointLoadRemoveBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+        pointLoadRemoveBtn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                
+
                 PointLoad p = pointLoadTable.getSelectionModel().getSelectedItem();
-                
+
                 if (p != null) {
-                    PointLoadTableUtil.removePointLoad(p,stripChoice.getValue());
+                    PointLoadTableUtil.removePointLoad(p, stripChoice.getValue());
                     System.out.println("PointLoad " + p.getID() + " removed from " + stripChoice.getValue().toString());
                 } else {
                     System.out.println("ERROR : No pointloads selected !");
@@ -109,33 +112,31 @@ public class LoadPane
 
             }
         });
-        
-         
-         stripChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+        stripChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                
-            PointLoadTableUtil.setStrip(stripChoice.getItems().get((int)newValue));
-            
-                
+
+                PointLoadTableUtil.setStrip(stripChoice.getItems().get((int) newValue));
+
                 //System.out.println("Index :" + stripChoice.getItems().get((int)newValue).toString());
-                
             }
         });
-       
-    
+
     }
-    
-    public VBox getPane()
-    {
+
+    public VBox getPane() {
         VBox pane = new VBox(10);
-        
-        pane.getChildren().addAll(udlLabel , loadTable,titleLabel,stripChoice,pointLoadTable, pointLoadAddBtn,pointLoadRemoveBtn );
+
+        if (bucklingAnalysis) {
+            pane.getChildren().addAll(udlLabel, loadTable);
+        } else {
+            pane.getChildren().addAll(udlLabel, loadTable, titleLabel, stripChoice, pointLoadTable, pointLoadAddBtn, pointLoadRemoveBtn);
+        }
         return pane;
     }
-            
-    
+
     public void addUdlZ(TableView<UIStrip> table) {
 
         TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getUDLZColumn();
@@ -156,12 +157,13 @@ public class LoadPane
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
             StripTableUtil.getStripList().get(row).setUdlZ(e.getNewValue());
-            
+
             viewer.draw();
         });
 
         table.getColumns().add(fNameCol);
     }
+
     public void addUdlX(TableView<UIStrip> table) {
 
         TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getUDLXColumn();
@@ -182,14 +184,14 @@ public class LoadPane
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
             StripTableUtil.getStripList().get(row).setUdlX(e.getNewValue());
-            
+
             viewer.draw();
         });
 
         table.getColumns().add(fNameCol);
     }
-    
-     public void addUdlY(TableView<UIStrip> table) {
+
+    public void addUdlY(TableView<UIStrip> table) {
 
         TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getUDLYColumn();
 
@@ -209,23 +211,23 @@ public class LoadPane
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
             StripTableUtil.getStripList().get(row).setUdlY(e.getNewValue());
-            
+
             viewer.draw();
         });
 
         table.getColumns().add(fNameCol);
     }
-    
-      public void addStripIdColumn(TableView<UIStrip> table) {
+
+    public void addStripIdColumn(TableView<UIStrip> table) {
 // Id column is non-editable
         table.getColumns().add(StripTableUtil.getIDColumn());
     }
-      
-       public void addPointLoadIdColumn(TableView<PointLoad> table) {
+
+    public void addPointLoadIdColumn(TableView<PointLoad> table) {
 // Id column is non-editable
         table.getColumns().add(PointLoadTableUtil.getIDColumn());
     }
-      
+
     public void addPointLoadMagnitude(TableView<PointLoad> table) {
 
         TableColumn<PointLoad, Double> fNameCol = PointLoadTableUtil.getMagnitudeColumn();
@@ -243,17 +245,17 @@ public class LoadPane
             PointLoad p = e.getRowValue();
 
             System.out.println("Magnitude changed for PointLoad "
-                    + p.getID()+ " at row " + (row + 1) + " to " + e.getNewValue());
+                    + p.getID() + " at row " + (row + 1) + " to " + e.getNewValue());
 
             PointLoadTableUtil.getLoadList().get(row).setMagnitude(e.getNewValue());
-            
+
             viewer.draw();
         });
 
         table.getColumns().add(fNameCol);
     }
-    
-     public void addPointLoadXCoord(TableView<PointLoad> table) {
+
+    public void addPointLoadXCoord(TableView<PointLoad> table) {
 
         TableColumn<PointLoad, Double> fNameCol = PointLoadTableUtil.getXCoordColumn();
 
@@ -270,17 +272,17 @@ public class LoadPane
             PointLoad p = e.getRowValue();
 
             System.out.println("XCoord changed for PointLoad "
-                    + p.getID()+ " at row " + (row + 1) + " to " + e.getNewValue());
+                    + p.getID() + " at row " + (row + 1) + " to " + e.getNewValue());
 
             PointLoadTableUtil.getLoadList().get(row).setXCoord(e.getNewValue());
-            
+
             viewer.draw();
         });
 
         table.getColumns().add(fNameCol);
     }
-    
-     public void addPointLoadYCoord(TableView<PointLoad> table) {
+
+    public void addPointLoadYCoord(TableView<PointLoad> table) {
 
         TableColumn<PointLoad, Double> fNameCol = PointLoadTableUtil.getYCoordColumn();
 
@@ -297,21 +299,68 @@ public class LoadPane
             PointLoad p = e.getRowValue();
 
             System.out.println("YCoord changed for PointLoad "
-                    + p.getID()+ " at row " + (row + 1) + " to " + e.getNewValue());
+                    + p.getID() + " at row " + (row + 1) + " to " + e.getNewValue());
 
             PointLoadTableUtil.getLoadList().get(row).setYCoord(e.getNewValue());
-            
+
             viewer.draw();
         });
 
         table.getColumns().add(fNameCol);
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
+    public void addF1(TableView<UIStrip> table) {
+
+        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getF1Column();
+
+        DoubleStringConverter converter = new DoubleStringConverter();
+        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+
+        fNameCol.setOnEditStart(e -> {
+            System.out.println("Press Enter to save changes, Esc to cancel");
+        });
+
+        fNameCol.setOnEditCommit(e -> {
+            int row = e.getTablePosition().getRow();
+
+            UIStrip strip = e.getRowValue();
+
+            System.out.println("Edge load at first node changed for UIStrip "
+                    + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
+
+            StripTableUtil.getStripList().get(row).setF1(e.getNewValue());
+
+            viewer.draw();
+        });
+
+        table.getColumns().add(fNameCol);
+    }
+
+    public void addF2(TableView<UIStrip> table) {
+
+        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getF2Column();
+
+        DoubleStringConverter converter = new DoubleStringConverter();
+        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+
+        fNameCol.setOnEditStart(e -> {
+            System.out.println("Press Enter to save changes, Esc to cancel");
+        });
+
+        fNameCol.setOnEditCommit(e -> {
+            int row = e.getTablePosition().getRow();
+
+            UIStrip strip = e.getRowValue();
+
+            System.out.println("Edge load at first node changed for UIStrip "
+                    + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
+
+            StripTableUtil.getStripList().get(row).setF2(e.getNewValue());
+
+            viewer.draw();
+        });
+
+        table.getColumns().add(fNameCol);
+    }
+
 }
