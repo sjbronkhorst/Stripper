@@ -30,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
@@ -552,6 +553,7 @@ public class ModelViewPane {
 
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
+           b.setDrawMode(DrawMode.LINE);
 
             stripGroup.getChildren().add(b);
 

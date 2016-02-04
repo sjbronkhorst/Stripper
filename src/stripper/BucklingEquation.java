@@ -139,8 +139,10 @@ public class BucklingEquation {
         double Lmax = ModelProperties.getModelLength();
         double Lincrement = Lmax / ((double) steps);
         double hwl = Lincrement; // Half-Wave Length
-
+System.out.println("Lmax =" + Lmax);
         while (hwl <= Lmax) {
+            
+            System.out.println("hwl =" + hwl);
 
             Series Y = ModelProperties.getFourierSeries();
             Y.setLength(hwl);
@@ -176,6 +178,8 @@ public class BucklingEquation {
                 }
 
             }
+            
+            System.out.println("Starting solver");
 
             PartitionedSystem se = new PartitionedSystem(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
             PartitionedSystem sg = new PartitionedSystem(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
@@ -186,6 +190,8 @@ public class BucklingEquation {
             bucklingLoads[index][0] = (index+1)*Lincrement;
             bucklingLoads[index][1] = getBucklingLoad(Ke, Kg);
 
+            
+            
             hwl += Lincrement;
             index++;
         }
