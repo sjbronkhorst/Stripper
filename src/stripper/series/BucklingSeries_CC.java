@@ -13,7 +13,7 @@ public class BucklingSeries_CC extends Series{
 
     public BucklingSeries_CC(double a) {
         super(a);
-        isSimplySupported = true;
+        isSimplySupported = false;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class BucklingSeries_CC extends Series{
 
     @Override
     public double getMu_m(int m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return m*Math.PI;
         
          }
     
@@ -106,7 +106,7 @@ public class BucklingSeries_CC extends Series{
     {
         if(m==n)
         {
-            return Math.PI*Math.PI*(m*m + 1)/4.0/a;
+            return -Math.PI*Math.PI*(m*m + 1)/4.0/a;
         }
         else if(m-n == 2)
         {
@@ -132,7 +132,7 @@ public class BucklingSeries_CC extends Series{
     {
         if(m==n)
         {
-            return -Math.PI*Math.PI*(m*m + 1)/4.0/a;
+            return -Math.PI*Math.PI*(n*n + 1)/4.0/a;
         }
         else if(m-n == 2)
         {
@@ -172,7 +172,7 @@ public class BucklingSeries_CC extends Series{
     {
         if(m==n)
         {
-            return Math.PI*Math.PI*(m+1)*(m+1)/4.0/a;
+            return Math.PI*Math.PI*(1+m*m)/4.0/a;
         }
         else if(Math.abs(m-n) == 2)
         {

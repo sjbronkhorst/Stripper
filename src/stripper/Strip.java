@@ -662,13 +662,15 @@ public abstract class Strip {
 
     public abstract void setProperties(Material mat, double a, Series Y);
 
+    
+    
     public void setEdgeTractionAtNode1(double f1) {
         this.f1 = f1;
         
     }
     
      public void setEdgeTractionAtNode2(double f2) {
-        this.f2=f2;
+        this.f2 = f2;
         
     }
      

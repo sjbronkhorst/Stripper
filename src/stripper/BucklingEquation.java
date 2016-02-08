@@ -62,7 +62,7 @@ public class BucklingEquation {
      */
     public double[][] getBucklingCurve(int steps) {
 
-        if (ModelProperties.getFourierSeries().isSimplySupported()) {
+        if (ModelProperties.getFourierSeries().isSimplySupported()  || ModelProperties.ignoreCoupling) {
             double[][] bucklingLoads = new double[steps][ModelProperties.getFourierTerms() + 2];
 
             boolean[] status = new boolean[nodes.size() * 4];
@@ -132,6 +132,10 @@ public class BucklingEquation {
         }
 
         // ELSE ----------------------------------------------------------------
+            
+            
+            
+            
         System.out.println("Series not SS , commencing full solution");
         double[][] bucklingLoads = new double[steps][2];
 

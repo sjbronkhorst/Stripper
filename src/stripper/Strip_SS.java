@@ -51,9 +51,9 @@ public class Strip_SS extends Strip {
             setUdlY(uiStrip.getUdlY());
             setUdlZ(uiStrip.getUdlZ());
             
-            
-            f1 = uiStrip.getF1();
-            f2 = uiStrip.getF2();
+            setEdgeTractionAtNode1(uiStrip.getF1());
+            setEdgeTractionAtNode2(uiStrip.getF2());
+           
 
             this.stripId.set(uiStrip.getStripId());
 

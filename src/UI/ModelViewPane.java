@@ -553,8 +553,7 @@ public class ModelViewPane {
 
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
-           b.setDrawMode(DrawMode.LINE);
-
+            
             stripGroup.getChildren().add(b);
 
             if (s.getUdlZ() != 0) {
@@ -606,6 +605,28 @@ public class ModelViewPane {
                     }
 
                 }
+            }
+
+            if (s.getF1() != 0 || s.getF2() != 0) {
+
+                  for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord(0.0);
+                        pl.setMagnitude(((s.getF2()-s.getF1())/s.getStripWidth())*i + s.getF1());
+
+                        
+                        if(pl.getMagnitude() != 0.0)
+                        {
+                        addYArrowAt(x1, y1, theta, pl);
+                        }
+
+                    
+
+                }
+
             }
 
         }
@@ -760,9 +781,9 @@ public class ModelViewPane {
 
         stripGroup.getChildren().add(pointLoad);
     }
-    
+
     public void addYArrowAt(double x1, double y1, double theta, PointLoad p) {
-        Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX() , 0, p.getY()+ p.getMagnitude()), 0.5);
+        Cylinder pointLoad = createConnection(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), 0, p.getY() + p.getMagnitude()), 0.5);
         //Sphere arrowHead = createArrowHead(new Point3D(p.getX(), 0, p.getY()), new Point3D(p.getX(), p.getMagnitude(), p.getY()));
 
         int sign = 1;
@@ -771,7 +792,7 @@ public class ModelViewPane {
         }
 
         for (int i = 1; i < 10; i++) {
-            Cylinder arrowHead = createConnection(new Point3D(p.getX() , 0, p.getY()+ p.getMagnitude() - sign * i), new Point3D(p.getX() , 0, p.getY()+ p.getMagnitude() - sign * i - sign * 1), i / 2);
+            Cylinder arrowHead = createConnection(new Point3D(p.getX(), 0, p.getY() + p.getMagnitude() - sign * i), new Point3D(p.getX(), 0, p.getY() + p.getMagnitude() - sign * i - sign * 1), i / 2);
             arrowHead.setTranslateX(x1);
             arrowHead.setTranslateY(y1);
             arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);

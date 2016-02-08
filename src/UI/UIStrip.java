@@ -32,8 +32,8 @@ public class UIStrip {
     
     private final ReadOnlyDoubleWrapper t = new ReadOnlyDoubleWrapper(this, "t", 0.0);
     
-     protected final ReadOnlyDoubleWrapper f1 = new ReadOnlyDoubleWrapper(this, "f1", 0.0);
-    protected final ReadOnlyDoubleWrapper f2 = new ReadOnlyDoubleWrapper(this, "f2", 0.0);
+     protected final ReadOnlyDoubleWrapper f1 = new ReadOnlyDoubleWrapper(this, "f1", 0.157);
+    protected final ReadOnlyDoubleWrapper f2 = new ReadOnlyDoubleWrapper(this, "f2", 0.157);
     
 
     private boolean hasNode1, hasNode2;

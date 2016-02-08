@@ -13,6 +13,7 @@ import stripper.Strip_General;
 import stripper.Strip_SS;
 import stripper.materials.Material;
 import stripper.materials.Material_Steel;
+import stripper.materials.Material_Z_Li;
 import stripper.series.Series;
 
 /**
@@ -22,10 +23,11 @@ import stripper.series.Series;
 public class ModelProperties 
 {
     
-  private static Material modelMaterial = new Material_Steel();
+  private static Material modelMaterial = new Material_Z_Li();
   private static double modelLength = 100;
   private static int fourierTerms = 2;
   private static Series fourierSeries = Series.getSerieslList().get(0);
+  public static boolean ignoreCoupling = false;
   
   private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
   

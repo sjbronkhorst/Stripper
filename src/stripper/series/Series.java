@@ -27,9 +27,11 @@ public abstract class Series {
         if(!listIsSet)
         {
         seriesList.clear();
+        seriesList.add(new BucklingSeries_CC(0));
         seriesList.add(new Series_SS(0));
         seriesList.add(new Series_CC(0));
         seriesList.add(new Series_CF(0));
+        
         
        
         
@@ -247,6 +249,22 @@ public abstract class Series {
 //    }
 
     public abstract double getVScalingValue(double y , int m);
+    
+    
+    public static void main(String []args)
+    {
+        
+        
+        double a = 200;
+        Series cufsm = new BucklingSeries_CC(a);
+        Series stripper = new Series_CC(a);
+        
+        
+        for (int i = 0; i < a; i++)
+        {
+            System.out.println(stripper.getFunctionValue(i, 1) + "          " + cufsm.getFunctionValue(i, 1));   
+        }
+    }
    
     
     

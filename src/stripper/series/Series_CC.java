@@ -29,6 +29,7 @@ public class Series_CC extends Series {
     public Matrix I4Mat;
     public Matrix I5Mat;
     boolean integralsCalculated = false;
+    public int gausspoints = 10;
 
     @Override
     public void computeAllIntegrals(int nTerms) {
@@ -251,7 +252,7 @@ public class Series_CC extends Series {
     @Override
     public double getYmIntegral(int m, double a) {
 
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(gausspoints, 0.98, 5);
         return ilg.integrate(2000, this.getFunction(m), 0, a);
     }
 
@@ -358,14 +359,14 @@ public class Series_CC extends Series {
             return 0.0;
         }
 
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(gausspoints, 0.98, 5);
         return ilg.integrate(2000, this.getF1(m, n), 0, a);
 
     }
 
     public double getI2(int m, int n) {
 
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(gausspoints, 0.98, 5);
         return ilg.integrate(2000, this.getF2(m, n), 0, a);
     }
 
@@ -380,13 +381,13 @@ public class Series_CC extends Series {
             return 0.0;
         }
 
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(gausspoints, 0.98, 5);
         return ilg.integrate(2000, this.getF4(n, m), 0, a);
     }
 
     public double getI5(int m, int n) {
 
-        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
+        IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(gausspoints, 0.98, 5);
         return ilg.integrate(2000, this.getF5(n, m), 0, a);
 
     }

@@ -52,8 +52,8 @@ public class Strip_General extends Strip {
             setUdlY(uiStrip.getUdlY());
             setUdlZ(uiStrip.getUdlZ());
             
-            f1 = uiStrip.getF1();
-            f2 = uiStrip.getF2();
+            setEdgeTractionAtNode1(uiStrip.getF1());
+            setEdgeTractionAtNode2(uiStrip.getF2());
 
             this.stripId.set(uiStrip.getStripId());
 
@@ -333,108 +333,108 @@ public class Strip_General extends Strip {
         return S;
     }
 
-    public Matrix getOldBendingStiffnessMatrix(int m, int n) {
-
-        Matrix S = Matrix.getMatrix(4, 4);
-
-        double b = getStripWidth();
-
-        double Ex = mat.getEx();
-
-        double Ey = mat.getEy();
-
-        double vx = mat.getVx();
-
-        double vy = mat.getVy();
-
-        double G = mat.getG();
-
-        //double t = getStripThickness();
-        double Dx = (Ex * t * t * t) / (12 * (1 - vx * vy));
-
-        double Dy = (Ey * t * t * t) / (12 * (1 - vx * vy));
-
-        double D1 = (vx * Ey * t * t * t) / (12 * (1 - vx * vy));
-
-        double Dxy = G * t * t * t / 12;
-
-        computeIntegralArray(m, n);
-        double[] I = integralArray;
-
-        double c = 1.0 / (420 * b * b * b);
-
-        double K11 = c * (5040 * Dx * I[0]
-                - 504 * b * b * D1 * I[1]
-                - 504 * b * b * D1 * I[2]
-                + 156 * b * b * b * b * Dy * I[3]
-                + 2016 * b * b * Dxy * I[4]);
-
-        double K12 = c * (2520 * b * Dx * I[0]
-                - 462 * b * b * b * D1 * I[1]
-                - 42 * b * b * b * D1 * I[2]
-                + 22 * b * b * b * b * b * Dy * I[3]
-                + 168 * b * b * b * Dxy * I[4]);
-
-        double K13 = c * (-5040 * Dx * I[0]
-                + 504 * b * b * D1 * I[1]
-                + 504 * b * b * D1 * I[2]
-                + 54 * b * b * b * b * Dy * I[3]
-                - 2016 * b * b * Dxy * I[4]);
-
-        double K14 = c * (2520 * b * Dx * I[0]
-                - 42 * b * b * b * D1 * I[1]
-                - 42 * b * b * b * D1 * I[2]
-                - 13 * b * b * b * b * b * Dy * I[3]
-                + 168 * b * b * b * Dxy * I[4]);
-
-        double K21 = K12;
-
-        double K22 = c * (1680 * b * b * Dx * I[0]
-                - 56 * b * b * b * b * D1 * I[1]
-                - 56 * b * b * b * b * D1 * I[2]
-                + 4 * b * b * b * b * b * b * Dy * I[3]
-                + 224 * b * b * b * b * Dxy * I[4]);
-
-        double K23 = -K14;
-
-        double K24 = c * (840 * b * b * Dx * I[0]
-                + 14 * b * b * b * b * D1 * I[1]
-                + 14 * b * b * b * b * D1 * I[2]
-                - 3 * b * b * b * b * b * b * Dy * I[3]
-                - 56 * b * b * b * b * Dxy * I[4]);
-
-        double K31 = K13;
-        double K32 = K23;
-        double K33 = K11;
-        double K34 = -K21;
-
-        double K41 = K14;
-        double K42 = K24;
-        double K43 = K34;
-        double K44 = K22;
-
-        S.set(K11, 0, 0);
-        S.set(K12, 0, 1);
-        S.set(K13, 0, 2);
-        S.set(K14, 0, 3);
-
-        S.set(K21, 1, 0);
-        S.set(K22, 1, 1);
-        S.set(K23, 1, 2);
-        S.set(K24, 1, 3);
-
-        S.set(K31, 2, 0);
-        S.set(K32, 2, 1);
-        S.set(K33, 2, 2);
-        S.set(K34, 2, 3);
-
-        S.set(K41, 3, 0);
-        S.set(K42, 3, 1);
-        S.set(K43, 3, 2);
-        S.set(K44, 3, 3);
-
-        return S;
-    }
+//    public Matrix getOldBendingStiffnessMatrix(int m, int n, double[] integralArray) {
+//
+//        Matrix S = Matrix.getMatrix(4, 4);
+//
+//        double b = getStripWidth();
+//
+//        double Ex = mat.getEx();
+//
+//        double Ey = mat.getEy();
+//
+//        double vx = mat.getVx();
+//
+//        double vy = mat.getVy();
+//
+//        double G = mat.getG();
+//
+//        //double t = getStripThickness();
+//        double Dx = (Ex * t * t * t) / (12 * (1 - vx * vy));
+//
+//        double Dy = (Ey * t * t * t) / (12 * (1 - vx * vy));
+//
+//        double D1 = (vx * Ey * t * t * t) / (12 * (1 - vx * vy));
+//
+//        double Dxy = G * t * t * t / 12;
+//
+//        computeIntegralArray(m, n);
+//        double[] I = integralArray;
+//
+//        double c = 1.0 / (420 * b * b * b);
+//
+//        double K11 = c * (5040 * Dx * I[0]
+//                - 504 * b * b * D1 * I[1]
+//                - 504 * b * b * D1 * I[2]
+//                + 156 * b * b * b * b * Dy * I[3]
+//                + 2016 * b * b * Dxy * I[4]);
+//
+//        double K12 = c * (2520 * b * Dx * I[0]
+//                - 462 * b * b * b * D1 * I[1]
+//                - 42 * b * b * b * D1 * I[2]
+//                + 22 * b * b * b * b * b * Dy * I[3]
+//                + 168 * b * b * b * Dxy * I[4]);
+//
+//        double K13 = c * (-5040 * Dx * I[0]
+//                + 504 * b * b * D1 * I[1]
+//                + 504 * b * b * D1 * I[2]
+//                + 54 * b * b * b * b * Dy * I[3]
+//                - 2016 * b * b * Dxy * I[4]);
+//
+//        double K14 = c * (2520 * b * Dx * I[0]
+//                - 42 * b * b * b * D1 * I[1]
+//                - 42 * b * b * b * D1 * I[2]
+//                - 13 * b * b * b * b * b * Dy * I[3]
+//                + 168 * b * b * b * Dxy * I[4]);
+//
+//        double K21 = K12;
+//
+//        double K22 = c * (1680 * b * b * Dx * I[0]
+//                - 56 * b * b * b * b * D1 * I[1]
+//                - 56 * b * b * b * b * D1 * I[2]
+//                + 4 * b * b * b * b * b * b * Dy * I[3]
+//                + 224 * b * b * b * b * Dxy * I[4]);
+//
+//        double K23 = -K14;
+//
+//        double K24 = c * (840 * b * b * Dx * I[0]
+//                + 14 * b * b * b * b * D1 * I[1]
+//                + 14 * b * b * b * b * D1 * I[2]
+//                - 3 * b * b * b * b * b * b * Dy * I[3]
+//                - 56 * b * b * b * b * Dxy * I[4]);
+//
+//        double K31 = K13;
+//        double K32 = K23;
+//        double K33 = K11;
+//        double K34 = -K21;
+//
+//        double K41 = K14;
+//        double K42 = K24;
+//        double K43 = K34;
+//        double K44 = K22;
+//
+//        S.set(K11, 0, 0);
+//        S.set(K12, 0, 1);
+//        S.set(K13, 0, 2);
+//        S.set(K14, 0, 3);
+//
+//        S.set(K21, 1, 0);
+//        S.set(K22, 1, 1);
+//        S.set(K23, 1, 2);
+//        S.set(K24, 1, 3);
+//
+//        S.set(K31, 2, 0);
+//        S.set(K32, 2, 1);
+//        S.set(K33, 2, 2);
+//        S.set(K34, 2, 3);
+//
+//        S.set(K41, 3, 0);
+//        S.set(K42, 3, 1);
+//        S.set(K43, 3, 2);
+//        S.set(K44, 3, 3);
+//
+//        return S;
+//    }
 
     public Matrix getMembraneStiffnessMatrix(int m, int n, double[] integralArray) {
 
@@ -590,89 +590,89 @@ public class Strip_General extends Strip {
         return M;
     }
 
-    public Matrix getOldMembraneStiffnessMatrix(int m, int n, double[] integralArray) {
-
-        Matrix M = Matrix.getMatrix(4, 4);
-
-        double b = getStripWidth();
-
-        double Ex = mat.getEx();
-        double Ey = mat.getEy();
-        double vx = mat.getVx();
-        double vy = mat.getVy();
-        double G = mat.getG();
-
-        double[] I = integralArray;
-
-        double C1 = Y.getMu_m(m) / a;
-        double C2 = Y.getMu_m(n) / a;
-
-        double K1 = Ex / (1 - vx * vy);
-        double K2 = vx * Ey / (1 - vx * vy);
-        double K3 = Ey / (1 - vx * vy);
-        double K4 = G;
-
-        if (b == 0) {
-            System.out.println("B is zero");
-        }
-
-        double K11 = K1 * (1.0 / b) * I[0]
-                + K4 * (b / 3.0) * I[4];
-
-        double K12 = K2 * (-1.0 / (2 * C2)) * I[2]
-                + K4 * (-1.0 / (2 * C2)) * I[4];
-
-        double K13 = K1 * (-1.0 / (b)) * I[0]
-                + K4 * (b / 6.0) * I[4];
-
-        double K14 = K2 * (-1.0 / (2 * C2)) * I[2]
-                + K4 * (1.0 / (2 * C2)) * I[4];
-
-        double K22 = K3 * (b / (3 * C1 * C2)) * I[3]
-                + K4 * (1.0 / (b * C1 * C2)) * I[4];
-
-        double K23 = K2 * (1.0 / (2 * C1)) * I[1]
-                + K4 * (-1.0 / (2 * C1)) * I[4];
-
-        double K24 = K3 * (b / (6 * C1 * C2)) * I[3]
-                + K4 * (-1.0 / (b * C1 * C2)) * I[4];
-
-        double K33 = K11;
-        double K34 = -K12;
-
-        double K44 = K22;
-
-        double K21 = K12;
-        double K31 = K13;
-        double K32 = -K14;
-        double K41 = -K23;
-        double K42 = K24;
-        double K43 = -K21;
-
-        M.set(K11, 0, 0);
-        M.set(K12, 0, 1);
-        M.set(K13, 0, 2);
-        M.set(K14, 0, 3);
-
-        M.set(K21, 1, 0);
-        M.set(K22, 1, 1);
-        M.set(K23, 1, 2);
-        M.set(K24, 1, 3);
-
-        M.set(K31, 2, 0);
-        M.set(K32, 2, 1);
-        M.set(K33, 2, 2);
-        M.set(K34, 2, 3);
-
-        M.set(K41, 3, 0);
-        M.set(K42, 3, 1);
-        M.set(K43, 3, 2);
-        M.set(K44, 3, 3);
-
-        M.scale(getStripThickness());
-
-        return M;
-    }
+//    public Matrix getOldMembraneStiffnessMatrix(int m, int n, double[] integralArray) {
+//
+//        Matrix M = Matrix.getMatrix(4, 4);
+//
+//        double b = getStripWidth();
+//
+//        double Ex = mat.getEx();
+//        double Ey = mat.getEy();
+//        double vx = mat.getVx();
+//        double vy = mat.getVy();
+//        double G = mat.getG();
+//
+//        double[] I = integralArray;
+//
+//        double C1 = Y.getMu_m(m) / a;
+//        double C2 = Y.getMu_m(n) / a;
+//
+//        double K1 = Ex / (1 - vx * vy);
+//        double K2 = vx * Ey / (1 - vx * vy);
+//        double K3 = Ey / (1 - vx * vy);
+//        double K4 = G;
+//
+//        if (b == 0) {
+//            System.out.println("B is zero");
+//        }
+//
+//        double K11 = K1 * (1.0 / b) * I[0]
+//                + K4 * (b / 3.0) * I[4];
+//
+//        double K12 = K2 * (-1.0 / (2 * C2)) * I[2]
+//                + K4 * (-1.0 / (2 * C2)) * I[4];
+//
+//        double K13 = K1 * (-1.0 / (b)) * I[0]
+//                + K4 * (b / 6.0) * I[4];
+//
+//        double K14 = K2 * (-1.0 / (2 * C2)) * I[2]
+//                + K4 * (1.0 / (2 * C2)) * I[4];
+//
+//        double K22 = K3 * (b / (3 * C1 * C2)) * I[3]
+//                + K4 * (1.0 / (b * C1 * C2)) * I[4];
+//
+//        double K23 = K2 * (1.0 / (2 * C1)) * I[1]
+//                + K4 * (-1.0 / (2 * C1)) * I[4];
+//
+//        double K24 = K3 * (b / (6 * C1 * C2)) * I[3]
+//                + K4 * (-1.0 / (b * C1 * C2)) * I[4];
+//
+//        double K33 = K11;
+//        double K34 = -K12;
+//
+//        double K44 = K22;
+//
+//        double K21 = K12;
+//        double K31 = K13;
+//        double K32 = -K14;
+//        double K41 = -K23;
+//        double K42 = K24;
+//        double K43 = -K21;
+//
+//        M.set(K11, 0, 0);
+//        M.set(K12, 0, 1);
+//        M.set(K13, 0, 2);
+//        M.set(K14, 0, 3);
+//
+//        M.set(K21, 1, 0);
+//        M.set(K22, 1, 1);
+//        M.set(K23, 1, 2);
+//        M.set(K24, 1, 3);
+//
+//        M.set(K31, 2, 0);
+//        M.set(K32, 2, 1);
+//        M.set(K33, 2, 2);
+//        M.set(K34, 2, 3);
+//
+//        M.set(K41, 3, 0);
+//        M.set(K42, 3, 1);
+//        M.set(K43, 3, 2);
+//        M.set(K44, 3, 3);
+//
+//        M.scale(getStripThickness());
+//
+//        return M;
+//    }
 
     @Override
     public Matrix getStiffnessMatrix(int m, int n) {
