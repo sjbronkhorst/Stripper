@@ -20,7 +20,7 @@ import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussInteg
  *
  * @author SJ
  */
-public class Series_CF extends Series {
+public class Series_CF extends Series{
 
     public Series_CF(double a) {
         super(a);
@@ -391,6 +391,12 @@ public class Series_CF extends Series {
     @Override
     public double getVScalingValue(double y, int m) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public boolean onlySupportsBuckling()
+    {
+        return false;
     }
 
 }

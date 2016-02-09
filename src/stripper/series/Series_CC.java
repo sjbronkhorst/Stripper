@@ -18,7 +18,11 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 
 /**
- *
+ *This Series function satisfies the C-C boundary conditions for a Strip.
+ * Because it satisfies ALL the boundary conditions, it can be used for both static and buckling analysis.
+ * However, it may be slow because only numerical integration is possible and also because BigDecimal is used to ensure accuracy.
+ * 
+ * 
  * @author SJ
  */
 public class Series_CC extends Series {
@@ -92,9 +96,7 @@ public class Series_CC extends Series {
         double um = getMu_m(m);
         double un = getMu_m(n);
 
-//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
-//
-//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
+
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
         double alphaN = (sin(un) - sinh(un)) / (cos(un) - cosh(un));
@@ -126,16 +128,11 @@ public class Series_CC extends Series {
     }
 
     public strictfp double getF2Value(double y, int m, int n) {
-        // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
 
-        //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
         double Pi = Math.PI;
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
-//
-//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
 
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
@@ -168,14 +165,10 @@ public class Series_CC extends Series {
     }
 
     public strictfp double getF4Value(double y, int m, int n) {
-        // Yn = sin(kn*y) - sinh(kn*y)-alphaN*(cos(kn*y) - cosh(kn*y))
-
-        //Ymd2 = alphaM*(km^2*cos(km*y) + km^2*cosh(km*y)) - km^2*sin(km*y) - km^2*sinh(km*y)
+   
         double um = getMu_m(m);
         double un = getMu_m(n);
-//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
-//
-//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
+
 
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
@@ -209,14 +202,10 @@ public class Series_CC extends Series {
     }
 
     public strictfp double getF5Value(double y, int m, int n) {
-        //Ymd1 = alphaM*(km*sin(km*y) + km*sinh(km*y)) + km*cos(km*y) - km*cosh(km*y)
-        //Ynd1 = alphaN*(kn*sin(kn*y) + kn*sinh(kn*y)) + kn*cos(kn*y) - kn*cosh(kn*y)
+  
 
         double um = getMu_m(m);
         double un = getMu_m(n);
-//        double alphaM = (bigSin(um).subtract(bigSinh(um))).divide((bigCos(um).subtract(bigCosh(um))),1000,RoundingMode.HALF_UP).doubleValue();
-//
-//        double alphaN  = (bigSin(un).subtract(bigSinh(un))).divide((bigCos(un).subtract(bigCosh(un))),1000,RoundingMode.HALF_UP).doubleValue();
 
         double alphaM = (sin(um) - sinh(um)) / (cos(um) - cosh(um));
 
@@ -339,6 +328,9 @@ public class Series_CC extends Series {
 
     @Override
     public double getMu_m(int m) {
+        
+        // YK Cheung - Finite Strip Method in Structural Analysis pg 9 
+        
         double Pi = Math.PI;
         if (m == 1) {
             return 4.730;
@@ -519,6 +511,12 @@ public class Series_CC extends Series {
     @Override
     public double getVScalingValue(double y, int m) {
         return Math.sin((m+1)*Math.PI/a);
+    }
+    
+    @Override
+    public boolean onlySupportsBuckling()
+    {
+        return false;
     }
 
 }

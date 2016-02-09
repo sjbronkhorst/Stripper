@@ -28,6 +28,8 @@ public class ModelProperties
   private static int fourierTerms = 2;
   private static Series fourierSeries = Series.getSerieslList().get(0);
   public static boolean ignoreCoupling = false;
+  public static boolean bucklingAnalysis = false; 
+  
   
   private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
   
@@ -91,7 +93,37 @@ public class ModelProperties
         }
     }
    
+    public static double getXBar()
+    {
+        double sumAx = 0;
+        double sumA = 0;
+        
+        for (UIStrip strip : StripTableUtil.getStripList())
+        {
+         sumAx += strip.getCrossSectionalArea()*strip.getXBar();
+         sumA += strip.getCrossSectionalArea();
+         
+        }
+               
+        
+        return sumAx/sumA;
+    }
     
+     public static double getZBar()
+    {
+        double sumAz = 0;
+        double sumA = 0;
+        
+        for (UIStrip strip : StripTableUtil.getStripList())
+        {
+         sumAz += strip.getCrossSectionalArea()*strip.getZBar();
+         sumA += strip.getCrossSectionalArea();
+         
+        }
+               
+        
+        return sumAz/sumA;
+    }
   
   
   

@@ -6,13 +6,12 @@
 package stripper.series;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
 
 /**
  *
  * @author SJ
  */
-public class Series_SS extends Series {
+public class Series_SS extends Series{
 
     public Series_SS(double a) {
         super(a);
@@ -134,6 +133,12 @@ public class Series_SS extends Series {
     @Override
     public double getVScalingValue(double y, int m) {
         return getFirstDerivativeValue(y, m);
+    }
+    
+    @Override
+    public boolean onlySupportsBuckling()
+    {
+        return false;
     }
 
    

@@ -5,6 +5,7 @@
  */
 package UI;
 
+import java.awt.geom.Point2D;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
@@ -196,6 +197,26 @@ public class UIStrip {
         return f2.doubleValue();
         
     }
+      
+      public double getCrossSectionalArea()
+     {
+         return getStripThickness()*getStripWidth();
+     }
+     
+     public Point2D.Double getCrossSectionalCentroid()
+     {
+         return new Point2D.Double( (node1.getXCoord() + node2.getXCoord())/2.0, (node1.getZCoord() + node2.getZCoord())/2.0);
+     }
+     
+     public double getXBar()
+     {
+         return getCrossSectionalCentroid().getX();
+     }
+     
+     public double getZBar()
+     {
+         return getCrossSectionalCentroid().getY();
+     }
     
    
 }

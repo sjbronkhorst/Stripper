@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
+import stripper.Node;
 
 /**
  *
@@ -49,6 +50,8 @@ public class LoadPane {
 
     private Button pointLoadAddBtn = new Button("Add");
     private Button pointLoadRemoveBtn = new Button("Remove");
+    private Button momentXSetBtn = new Button("Mx");
+    private Button momentZSetBtn = new Button("Mz");
 
     private boolean bucklingAnalysis;
 
@@ -123,6 +126,64 @@ public class LoadPane {
                 //System.out.println("Index :" + stripChoice.getItems().get((int)newValue).toString());
             }
         });
+        
+        momentXSetBtn.setOnAction(new EventHandler<ActionEvent>() 
+        {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+                double xBar = ModelProperties.getXBar();
+                double farthestFromCentroid = 0;
+                
+                for (Node n : NodeTableUtil.getNodeList())
+                {
+                    if(Math.abs(n.getXCoord() - xBar) > farthestFromCentroid)
+                    {
+                        farthestFromCentroid = n.getXCoord() - xBar;
+                    }
+                                       
+                }
+                         
+                for(UIStrip s : StripTableUtil.getStripList())
+                {
+                    s.setF1( 100*(s.getNode1().getXCoord() - xBar)/farthestFromCentroid);
+                    s.setF2( 100*(s.getNode2().getXCoord() - xBar)/farthestFromCentroid);
+                }
+                
+                                
+                viewer.draw();
+            }
+        });
+        
+        momentZSetBtn.setOnAction(new EventHandler<ActionEvent>() 
+        {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+                double zBar = ModelProperties.getZBar();
+                double farthestFromCentroid = 0;
+                
+                for (Node n : NodeTableUtil.getNodeList())
+                {
+                    if(Math.abs(n.getZCoord() - zBar) > farthestFromCentroid)
+                    {
+                        farthestFromCentroid = n.getZCoord() - zBar;
+                    }
+                                       
+                }
+                         
+                for(UIStrip s : StripTableUtil.getStripList())
+                {
+                    s.setF1( 100*(s.getNode1().getZCoord() - zBar)/farthestFromCentroid);
+                    s.setF2( 100*(s.getNode2().getZCoord() - zBar)/farthestFromCentroid);
+                }
+                
+                                
+                viewer.draw();
+            }
+        });
 
     }
 
@@ -130,7 +191,7 @@ public class LoadPane {
         VBox pane = new VBox(10);
 
         if (bucklingAnalysis) {
-            pane.getChildren().addAll(udlLabel, loadTable);
+            pane.getChildren().addAll(udlLabel, loadTable,momentXSetBtn,momentZSetBtn);
         } else {
             pane.getChildren().addAll(udlLabel, loadTable, titleLabel, stripChoice, pointLoadTable, pointLoadAddBtn, pointLoadRemoveBtn);
         }

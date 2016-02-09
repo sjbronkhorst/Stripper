@@ -144,7 +144,8 @@ public class BucklingEquation {
         double Lincrement = Lmax / ((double) steps);
         double hwl = Lincrement; // Half-Wave Length
 System.out.println("Lmax =" + Lmax);
-        while (hwl <= Lmax) {
+       
+while (hwl <= Lmax) {
             
             System.out.println("hwl =" + hwl);
 
@@ -198,6 +199,10 @@ System.out.println("Lmax =" + Lmax);
             
             hwl += Lincrement;
             index++;
+            
+            
+            
+            
         }
 
         return bucklingLoads;
@@ -217,12 +222,15 @@ System.out.println("Lmax =" + Lmax);
         //ev.printf("eig vectors");
         double alphaMin = eig.get(0, 0);
         for (int i = 0; i < eig.cols(); i++) {
-            if (eig.get(i, i) <= alphaMin) {
+            if (Math.abs(eig.get(i, i)) <= Math.abs(alphaMin)) {
                 alphaMin = eig.get(i, i);
 
             }
         }
 
+        Ke.release();
+        Kg.release();
+        
         //System.out.println(alphaMin);
         return alphaMin;
 

@@ -35,6 +35,7 @@ public class FourierEditor extends Application {
     Label termsLabel = new Label("Number of longitudinal terms : ");
     TextField termsField = new TextField(Double.toString(ModelProperties.getFourierTerms()));
     private ChoiceBox<Series> seriesChoice = new ChoiceBox<>(Series.getSerieslList());
+    
     Button saveBtn = new Button("SAVE");
 
      
@@ -60,7 +61,17 @@ public class FourierEditor extends Application {
               
               if(!ModelProperties.getFourierSeries().isSimplySupported())
               {
-                   ContinueWarning c = new ContinueWarning("WARNING: You have selected loaded edge boundary conditions that are not Simply-Suppported, a full solution could take a long time to complete.");
+                   ContinueWarning c = new ContinueWarning("WARNING: You have selected loaded edge boundary conditions that are not Simply-Suppported,\n a full solution could take a long time to complete.");
+                    try {
+                        c.start(new Stage());
+                    } catch (Exception ex) {
+                        Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+              }
+              
+              if(seriesChoice.getItems().get((int)newValue).onlySupportsBuckling() && !ModelProperties.bucklingAnalysis)
+              {
+                  ContinueWarning c = new ContinueWarning("WARNING: You are in Static Analysis mode.\n The chosen Series function only supports buckling analysis. \n Please choose another function.");
                     try {
                         c.start(new Stage());
                     } catch (Exception ex) {

@@ -7,6 +7,7 @@ package stripper;
 
 import UI.ModelProperties;
 import UI.TableViewEdit;
+import java.awt.geom.Point2D;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -17,6 +18,7 @@ import javafx.collections.ObservableList;
 import linalg.*;
 import stripper.materials.Material;
 import stripper.series.Series;
+
 
 /**
  *
@@ -231,6 +233,9 @@ public abstract class Strip {
             F.set(getStripWidth() / 2.0, 6);
             F.set(-getStripWidth() * getStripWidth() / 12.0, 7);
 
+            
+            
+            
             F.scale(Y.getYmIntegral(m, a) * udlZ.doubleValue());
         }
 
@@ -675,5 +680,8 @@ public abstract class Strip {
     }
      
      
+     
+     
+       
 
 }

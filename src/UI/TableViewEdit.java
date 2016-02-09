@@ -46,7 +46,6 @@ import stripper.FileHandler;
 import stripper.Path;
 
 import stripper.Strip;
-import stripper.series.BucklingSeries_CC;
 
 public class TableViewEdit extends Application {
 
@@ -55,7 +54,7 @@ public class TableViewEdit extends Application {
     
     Boolean disCalced = false;
 
-    private boolean bucklingAnalysis = true;
+   
      
     LoadPane lp ;
 
@@ -73,6 +72,7 @@ public class TableViewEdit extends Application {
     TextField bucklePoints = new TextField("100");
     Button setLengthBtn = new Button("set");
     Button setThicknessBtn = new Button("set");
+    Button modelPropertiesBtn = new Button("Model properties");
 
     ProgressBar progInd = new ProgressBar(0);
 
@@ -98,10 +98,10 @@ public class TableViewEdit extends Application {
 
        AnalysisChoicePrompt acp = new AnalysisChoicePrompt(stage);
        
-        println("Buckling analysis : " + Boolean.toString(acp.getResult()));
-        bucklingAnalysis = acp.getResult();
-        lp = new LoadPane(this, bucklingAnalysis);
-        menuBar = new HomeMenuBar(this, !bucklingAnalysis);
+        println("Buckling analysis mode : " + Boolean.toString(acp.getResult()));
+        ModelProperties.bucklingAnalysis = acp.getResult();
+        lp = new LoadPane(this, ModelProperties.bucklingAnalysis);
+        menuBar = new HomeMenuBar(this, !ModelProperties.bucklingAnalysis);
         
         
         progInd.setStyle("-fx-progress-color: blue;");
@@ -175,6 +175,17 @@ public class TableViewEdit extends Application {
                 TableViewEdit.println("Length has been set");
             }
         });
+        
+        modelPropertiesBtn.setOnAction(new EventHandler<ActionEvent>() 
+        {
+
+           @Override
+           public void handle(ActionEvent event) {
+               
+               println("x Bar = " + ModelProperties.getXBar());
+               println("z Bar = " + ModelProperties.getZBar());
+           }
+       });
 
         setThicknessBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -459,7 +470,7 @@ public class TableViewEdit extends Application {
         textArea.setMinHeight(100);
         bucklePoints.setMaxWidth(100);
         
-        if(bucklingAnalysis)
+        if(ModelProperties.bucklingAnalysis)
         {
             rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea/*, slider*/);
         }
@@ -497,7 +508,7 @@ public class TableViewEdit extends Application {
         Label lengthLabel = new Label("Model length :");
         Label thicknessLabel = new Label("Plate thickness :");
 
-        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox, lengthLabel, modelLengthField, setLengthBtn, thicknessLabel, thicknessField, setThicknessBtn);
+        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox, lengthLabel, modelLengthField, setLengthBtn, thicknessLabel, thicknessField, setThicknessBtn, modelPropertiesBtn);
 
         geometryTab.setContent(tableBox);
 
