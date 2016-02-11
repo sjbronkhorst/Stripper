@@ -345,7 +345,7 @@ public class TableViewEdit extends Application {
                 }
 
                 XYChartDataUtil.addSeries(xData, yData, "Signature curve");
-                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", ModelProperties.getModelLength() / 10, ModelProperties.getModelLength(), 0, (yData[0] + yData[yData.length - 1]) / 100, XYChartDataUtil.getDataList());
+                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, ModelProperties.getModelLength(), 0, (yData[0]), XYChartDataUtil.getDataList());
 
                 Stage s = new Stage();
 
