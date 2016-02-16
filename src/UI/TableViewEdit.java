@@ -41,6 +41,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import stripper.BucklingCurve;
+import stripper.BucklingDataPoint;
 import stripper.BucklingEquation;
 import stripper.FileHandler;
 import stripper.Path;
@@ -155,10 +157,15 @@ public class TableViewEdit extends Application {
 
                 if (slider.isFocused()) {
 
-                    //TableViewEdit.println("Changed from " + oldValue + " to " + newValue);
-                    s.setDisplacedState(newValue.intValue());
+                    
+                   
+                    
+                    
+                       
+                    }
+                    
                     draw();
-                }
+               
             }
         });
 
@@ -313,27 +320,33 @@ public class TableViewEdit extends Application {
 
                 BucklingEquation b = new BucklingEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
 
-                double[][] buckleData = b.getBucklingCurve(Integer.parseInt(bucklePoints.getText()));
-                String[][] stringData = new String[buckleData.length + 1][buckleData[0].length];
+                BucklingDataPoint[] buckleData = b.getBucklingLoads(Integer.parseInt(bucklePoints.getText()));
+                String[][] stringData = new String[buckleData.length + 1][ModelProperties.getFourierTerms()+2];
+                BucklingCurve bc = new BucklingCurve();
 
                 stringData[0][0] = "Length";
                 stringData[0][stringData[0].length - 1] = "Minimum stress (Signature curve)";
 
-                double[] xData = new double[buckleData.length];
-                double[] yData = new double[buckleData.length];
-
-                for (int i = 1; i < stringData[0].length - 1; i++) {
+               
+                for (int i = 1; i < stringData[0].length-1; i++) {
                     stringData[0][i] = "Buckling stress for half wave";
                 }
 
                 for (int i = 0; i < buckleData.length; i++) {
-                    for (int j = 0; j < buckleData[0].length; j++) {
-                        stringData[i + 1][j] = Double.toString(buckleData[i][j]);
+                    
+                    
+                    
+                    for (int j = 0; j < ModelProperties.getFourierTerms(); j++) {
+                                               
+                        stringData[i + 1][j+1] = Double.toString(buckleData[i].getSystemLoadFactor(j));
 
                     }
-
-                    xData[i] = buckleData[i][0];
-                    yData[i] = buckleData[i][buckleData[0].length - 1];
+                    
+                   
+                    stringData[i + 1][0] = Double.toString(buckleData[i].getPhysicalLength());
+                    stringData[i + 1][ModelProperties.getFourierTerms()+1] = Double.toString(buckleData[i].getMinLoadFactor());
+                    bc.addDataPoint(buckleData[i]);
+                    
 
                 }
 
@@ -344,9 +357,17 @@ public class TableViewEdit extends Application {
                     Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                XYChartDataUtil.addSeries(xData, yData, "Signature curve");
-                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, ModelProperties.getModelLength(), 0, (yData[0]), XYChartDataUtil.getDataList());
+                XYChartDataUtil.addSeries(bc.getPhysicalLengths(), bc.getLoadFactors(), "Signature curve");
+                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, ModelProperties.getModelLength(), 0, (bc.getLoadFactors()[0]), XYChartDataUtil.getDataList());
 
+                
+                ModelProperties.bucklingCurve = bc;
+                slider.setMin(bc.getPhysicalLengths()[0]);
+                slider.setMax(bc.getPhysicalLengths()[bc.getPhysicalLengths().length-1]);
+                slider.setValue(bc.getPhysicalLengths()[0]);
+               
+                
+                
                 Stage s = new Stage();
 
                 s.getIcons().add(ic);
@@ -472,7 +493,7 @@ public class TableViewEdit extends Application {
         
         if(ModelProperties.bucklingAnalysis)
         {
-            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea/*, slider*/);
+            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea,slider);
         }
         else
         {

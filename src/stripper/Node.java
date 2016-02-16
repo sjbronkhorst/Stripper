@@ -30,7 +30,7 @@ public class Node {
     private double displacedZCoord = 0 ;
     private boolean [] dofPrescribedStatus = {false,false,false,false}; // u v w theta
     
-    private Vector [][] displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
+    private Vector [] parameterVectors = new Vector[ModelProperties.getFourierTerms()];
 
     public Node(double xCoord ,double zCoord) 
     {
@@ -43,13 +43,13 @@ public class Node {
     
     /**
      * 
-     * @param u displacement vector @ i% of length
-     * @param i longitudinal distance %
+     * @param Pm parameter vector associated with term m
+     * @param m fourier term number associated with Pm
      * 
      */
-    public void setParameterVector(Vector u, int m , int yPercentage) 
+    public void setParameterVector(Vector P, int m ) 
     {
-        displacementVectors[m][yPercentage] = u;
+        parameterVectors[m] = P;
     }
     
     public boolean [] getStatus()
@@ -62,39 +62,29 @@ public class Node {
         this.dofPrescribedStatus = status;
     }
     
-    public Vector getParameterContributionVectorAt(int m , int yPercentage) 
+    
+    /**
+     * 
+     * @param m fourier term number
+     * @return the parameter vector associated with m
+     */
+    
+    public Vector getParameterContributionVector(int m) 
     {
-        return displacementVectors[m][yPercentage];
+        return parameterVectors[m];
     }
     
-//    public Vector getDisplacementVectorAt(int yPercentage)  // needs scaling
-//    {
-//        Vector u = Vector.getVector(4);
-//        u.clear();
-//        
-//        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) 
-//        {
-//            Vector scale = Vector.getVector(4);
-//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(0)*ModelProperties.getFourierSeries().getFunctionValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 0);
-//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(1)*ModelProperties.getFourierSeries().getFunctionValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 1);
-//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(2)*ModelProperties.getFourierSeries().getFunctionValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 2);
-//            scale.set(getParameterContributionVectorAt(m , yPercentage).get(3)*ModelProperties.getFourierSeries().getVScalingValue((yPercentage/100.0)*ModelProperties.getModelLength(), m), 3);
-//            
-//            
-//            
-//            u.add(scale);
-//            
-//            scale.release();
-//        }
-//        
-//        
-//        return u;
-//    }
 
-    public Vector[][] getDisplacementVectors() 
+
+    /**
+     * 
+     * @return an array containing parameter vectors associated with all m's 
+     */
+    
+    public Vector[] getParameterVectors() 
     {
         
-        return displacementVectors;
+        return parameterVectors;
     }
     
     

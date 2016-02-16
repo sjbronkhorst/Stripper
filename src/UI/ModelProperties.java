@@ -8,6 +8,7 @@ package UI;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import stripper.BucklingCurve;
 import stripper.Strip;
 import stripper.Strip_General;
 import stripper.Strip_SS;
@@ -29,6 +30,7 @@ public class ModelProperties
   private static Series fourierSeries = Series.getSerieslList().get(0);
   public static boolean ignoreCoupling = false;
   public static boolean bucklingAnalysis = false; 
+  public static BucklingCurve bucklingCurve;
   
   
   private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();

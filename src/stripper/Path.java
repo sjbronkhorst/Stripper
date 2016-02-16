@@ -76,10 +76,10 @@ public class Path {
         {
             xData[i] = i*idx + start.getX();
             yData[i] = i*idy + start.getY();
-            queryData[i][0] = strip.getBendingStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
-            queryData[i][1] = strip.getPlaneStressVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
-            queryData[i][2] = strip.getBendingDisplacementVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
-            queryData[i][3] = strip.getPlaneDisplacementVectorAt(xData[i], 100*(int)(yData[i])/(int)(strip.a));
+            queryData[i][0] = strip.getBendingStressVector(xData[i], yData[i]);
+            queryData[i][1] = strip.getPlaneStressVector(xData[i], yData[i]);
+            queryData[i][2] = strip.getBendingDisplacementVector(xData[i], yData[i]);
+            queryData[i][3] = strip.getPlaneDisplacementVector(xData[i], yData[i]);
             
             
 //            TableViewEdit.println("-----------------------------------");

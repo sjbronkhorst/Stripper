@@ -23,6 +23,8 @@ public class BucklingEquation {
     List<Strip> strips = new ArrayList<>();
     List<Node> nodes = new ArrayList<>();
     int[][] localToGlobalConfNumbering;
+    private int bucklingIndex;
+    private Matrix eigenMatrix, eigenVectors;
 
     public BucklingEquation(List<Strip> strips, List<Node> nodes) {
         this.strips = strips;
@@ -60,10 +62,10 @@ public class BucklingEquation {
      * modes 1 to total number of Fourier terms set in ModelProperties. The last
      * column of the array contains the signature curve.
      */
-    public double[][] getBucklingCurve(int steps) {
+    public BucklingDataPoint[] getBucklingLoads(int steps) {
 
-        if (ModelProperties.getFourierSeries().isSimplySupported()  || ModelProperties.ignoreCoupling) {
-            double[][] bucklingLoads = new double[steps][ModelProperties.getFourierTerms() + 2];
+        if (ModelProperties.getFourierSeries().isSimplySupported() || ModelProperties.ignoreCoupling) {
+            BucklingDataPoint[] bucklingLoads = new BucklingDataPoint[steps];
 
             boolean[] status = new boolean[nodes.size() * 4];
 
@@ -76,21 +78,22 @@ public class BucklingEquation {
             }
             double Lmax = ModelProperties.getModelLength();
             double Lincrement = Lmax / ((double) steps);
-            
-            for (int r = 1; r <= ModelProperties.getFourierTerms(); r++) { // r = mode shape
 
-                int index = 0;
-                double hwl = Lincrement; // Half-Wave Length
+            int index = 0;
+            double hwl = Lincrement; // Half-Wave Length
 
-                while (hwl <= Lmax) {
+            while (hwl <= Lmax) {
+
+                double[] loads = new double[ModelProperties.getFourierTerms()];
+                Vector[] eigVecs = new Vector[ModelProperties.getFourierTerms()];
+
+                bucklingLoads[index] = new BucklingDataPoint(hwl, ModelProperties.getFourierTerms());
+
+                for (int r = 1; r <= ModelProperties.getFourierTerms(); r++) { // r = mode shape
+
                     //ModelProperties.setModelLength(hwl);
-
                     Series Y = ModelProperties.getFourierSeries();
                     Y.setLength(hwl);
-                    
-                    
-                                        
-                    
 
                     for (Strip s : strips) {
                         s.setProperties(s.getMaterial(), hwl, Y);
@@ -107,46 +110,63 @@ public class BucklingEquation {
                     Matrix Ke = se.getKff();
                     Matrix Kg = sg.getKff();
 
-                    bucklingLoads[index][r] = getBucklingLoad(Ke, Kg);
+                    calcBucklingVectorValueAndIndex(Ke, Kg);
+                    bucklingLoads[index].setSystemLoadFactor(r - 1, eigenMatrix.get(bucklingIndex, bucklingIndex));
+                    bucklingLoads[index].setFreeParamVector(r - 1, eigenVectors.col(bucklingIndex));
 
-                    hwl += Lincrement;
-                    index++;
+                    
+
                 }
+
+                hwl += Lincrement;
+                index++;
 
             }
 
             for (int i = 0; i < steps; i++) {
-                double minBucklingLoad = bucklingLoads[i][1];
+                bucklingLoads[i].calcMinParamAndLoad();
+                
+                 for (int r = 0; r < ModelProperties.getFourierTerms(); r++) 
+                 {
+                
+                //Convert the free nodal param vector to a system nodal param vector
+                    Vector Uf = bucklingLoads[i].getMinParamVector();
 
-                for (int j = 2; j <= ModelProperties.getFourierTerms(); j++) {
-                    if (bucklingLoads[i][j] < minBucklingLoad) {
-                        minBucklingLoad = bucklingLoads[i][j];
+                    Vector Us = Vector.getVector(NodeTableUtil.getNodeList().size()*4);
+
+                    Us.clear();
+                    int count = 0;
+                    for (int k = 0; k < Us.size(); k++) {
+                        if (status[k] == false) {
+                            Us.set(Us.get(k) + Uf.get(count), k);
+                            count++;
+                        }
+
                     }
-                }
 
-                bucklingLoads[i][ModelProperties.getFourierTerms() + 1] = minBucklingLoad;
-                bucklingLoads[i][0] = (i + 1) * Lincrement;
+                    bucklingLoads[i].setFreeParamVector(r,Us);
+                
+                 }
+                
+                bucklingLoads[i].uncoupledDecompose();
+
             }
 
             return bucklingLoads;
         }
 
         // ELSE ----------------------------------------------------------------
-            
-            
-            
-            
         System.out.println("Series not SS , commencing full solution");
-        double[][] bucklingLoads = new double[steps][2];
+        BucklingDataPoint[] bucklingLoads = new BucklingDataPoint[steps];
 
         int index = 0;
         double Lmax = ModelProperties.getModelLength();
         double Lincrement = Lmax / ((double) steps);
         double hwl = Lincrement; // Half-Wave Length
-System.out.println("Lmax =" + Lmax);
-       
-while (hwl <= Lmax) {
-            
+        System.out.println("Lmax =" + Lmax);
+
+        while (hwl <= Lmax) {
+
             System.out.println("hwl =" + hwl);
 
             Series Y = ModelProperties.getFourierSeries();
@@ -161,7 +181,7 @@ while (hwl <= Lmax) {
 
             CoupledMatrix_1 cKe = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
             CoupledMatrix_1 cKg = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
-            CoupledVector_1 fK = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
+            CoupledVector_1 status = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
 
 //       Vector fK = Vector.getVector(8*nTerms);
 //       fK.clear();
@@ -178,61 +198,98 @@ while (hwl <= Lmax) {
 
                 for (Strip myStrip : strips) {
 
-                    fK.addForceVector(myStrip.getStatusVector(), myStrip.getNode1(), myStrip.getNode2(), i);
+                    status.addForceVector(myStrip.getStatusVector(), myStrip.getNode1(), myStrip.getNode2(), i);
 
                 }
 
             }
-            
+
             System.out.println("Starting solver");
 
-            PartitionedSystem se = new PartitionedSystem(cKe.getMatrix(), Converter.vecToBool(fK.getVector()));
-            PartitionedSystem sg = new PartitionedSystem(cKg.getMatrix(), Converter.vecToBool(fK.getVector()));
+            PartitionedSystem se = new PartitionedSystem(cKe.getMatrix(), Converter.vecToBool(status.getVector()));
+            PartitionedSystem sg = new PartitionedSystem(cKg.getMatrix(), Converter.vecToBool(status.getVector()));
 
             Matrix Ke = se.getKff();
             Matrix Kg = sg.getKff();
 
-            bucklingLoads[index][0] = (index+1)*Lincrement;
-            bucklingLoads[index][1] = getBucklingLoad(Ke, Kg);
+            calcBucklingVectorValueAndIndex(Ke, Kg);
 
-            
-            
+            bucklingLoads[index] = new BucklingDataPoint((index + 1) * Lincrement, ModelProperties.getFourierTerms());
+            bucklingLoads[index].setMinLoadFactor(eigenMatrix.get(bucklingIndex, bucklingIndex));
+            bucklingLoads[index].setMinParamVector(eigenVectors.col(bucklingIndex));
+
+            //Convert the free nodal param vector to a system nodal param vector
+            Vector Uf = bucklingLoads[index].getMinParamVector();
+
+            Vector Us = Vector.getVector(cKe.getMatrix().rows());
+
+            Us.clear();
+            int count = 0;
+            for (int k = 0; k < Us.size(); k++) {
+                if (status.getVector().get(k) == 0) {
+                    Us.set(Us.get(k) + Uf.get(count), k);
+                    count++;
+                }
+
+            }
+
+            bucklingLoads[index].setMinParamVector(Us);
+            bucklingLoads[index].coupledDecompose();
+
             hwl += Lincrement;
             index++;
-            
-            
-            
-            
+
         }
 
         return bucklingLoads;
 
     }
 
-    public double getBucklingLoad(Matrix Keff, Matrix Kgff) {
+    public void calcBucklingVectorValueAndIndex(Matrix Keff, Matrix Kgff) {
         Matrix Ke = Keff;
         Matrix Kg = Kgff;
+        int index = 0;
 
 //        Ke.printf("Ke");
 //        Kg.printf("Kg");
         Matrix K = Ke.multiply(Kg.inverse());
-        Matrix eig = K.eigenMatrix();
+
+        eigenMatrix = K.eigenMatrix();
+        eigenVectors = K.getEigenVectors();
 
         //eig.printf("eig values");
         //ev.printf("eig vectors");
-        double alphaMin = eig.get(0, 0);
-        for (int i = 0; i < eig.cols(); i++) {
-            if (Math.abs(eig.get(i, i)) <= Math.abs(alphaMin)) {
-                alphaMin = eig.get(i, i);
+        double alphaMin = eigenMatrix.get(0, 0);
+        for (int i = 0; i < eigenMatrix.cols(); i++) {
+            if ((eigenMatrix.get(i, i) <= alphaMin) && (eigenMatrix.get(i, i) >= 0)) {
+                alphaMin = eigenMatrix.get(i, i);
+                index = i;
 
             }
         }
 
         Ke.release();
         Kg.release();
-        
-        //System.out.println(alphaMin);
-        return alphaMin;
+
+        bucklingIndex = index;
+
+    }
+
+    public void setDisplacedState(BucklingDataPoint point) {
+
+       int[] indices = {0, 1, 2, 3};
+            for (Node n : nodes) {
+
+                for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+
+                    n.setParameterVector(point.freeParamVectors[m].getSubVector(indices), m);
+                }
+
+                for (int y = 0; y < 4; y++) {
+                    indices[y] = indices[y] + 4;
+                }
+
+            }
 
     }
 
