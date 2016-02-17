@@ -141,11 +141,11 @@ public class ModelProperties {
 
         for (Strip s : strips) {
 
-            zVec.set(s.getGlobalBendingDisplacementVector(0, modelLength / 2).get(0), s.getNode1Id() - 1);
-            xVec.set(s.getGlobalPlaneDisplacementVector(0, modelLength / 2).get(0), s.getNode1Id() - 1);
+            zVec.set(s.getGlobalBendingDisplacementVector(0, modelLength / (2*(point.getMinIndex()+1))).get(0), s.getNode1Id() - 1);
+            xVec.set(s.getGlobalPlaneDisplacementVector(0, modelLength / (2*(point.getMinIndex()+1))).get(0), s.getNode1Id() - 1);
 
-            zVec.set(s.getGlobalBendingDisplacementVector(s.getStripWidth(), modelLength / 2).get(0), s.getNode2Id() - 1);
-            xVec.set(s.getGlobalPlaneDisplacementVector(s.getStripWidth(), modelLength / 2).get(0), s.getNode2Id() - 1);
+            zVec.set(s.getGlobalBendingDisplacementVector(s.getStripWidth(), modelLength / (2*(point.getMinIndex()+1))).get(0), s.getNode2Id() - 1);
+            xVec.set(s.getGlobalPlaneDisplacementVector(s.getStripWidth(), modelLength / (2*(point.getMinIndex()+1))).get(0), s.getNode2Id() - 1);
 
         }
 

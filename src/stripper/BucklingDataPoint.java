@@ -95,6 +95,11 @@ public class BucklingDataPoint {
 
     }
     
+    public int getMinIndex()
+    {
+        return minIndex;
+    }
+    
     public void uncoupledDecompose()
     {
         for (int i = 0; i < nTerms; i++)
