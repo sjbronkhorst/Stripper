@@ -24,6 +24,7 @@ public class BucklingDataPoint {
     int minIndex;
 
     private int nTerms;
+    
 
     public BucklingDataPoint(double physicalLength, int nTerms) {
         this.physicalLength = physicalLength;
@@ -60,6 +61,7 @@ public class BucklingDataPoint {
 
     public void setFreeParamVector(int m, Vector eigVec) {
         freeParamVectors[m] = eigVec;
+       
     }
 
     public void setMinLoadFactor(double minLoadFactor) {
@@ -68,7 +70,10 @@ public class BucklingDataPoint {
 
     public void setMinParamVector(Vector minParamVector) {
         this.minParamVector = minParamVector;
+       
     }
+    
+   
 
     /**
      * Used for S-S special case strips

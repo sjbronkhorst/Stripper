@@ -275,22 +275,6 @@ public class BucklingEquation {
 
     }
 
-    public void setDisplacedState(BucklingDataPoint point) {
-
-       int[] indices = {0, 1, 2, 3};
-            for (Node n : nodes) {
-
-                for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
-
-                    n.setParameterVector(point.freeParamVectors[m].getSubVector(indices), m);
-                }
-
-                for (int y = 0; y < 4; y++) {
-                    indices[y] = indices[y] + 4;
-                }
-
-            }
-
-    }
+   
 
 }

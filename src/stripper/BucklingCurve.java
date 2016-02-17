@@ -6,7 +6,9 @@
 package stripper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -14,14 +16,14 @@ import java.util.List;
  */
 public class BucklingCurve 
 {
-    private List<BucklingDataPoint> dataPoints = new ArrayList<>();
+    public Map<Double,BucklingDataPoint> dataPoints = new HashMap<>();
     
     
     
     
     public void addDataPoint(BucklingDataPoint point)
     {
-        dataPoints.add(point);
+        dataPoints.put(point.physicalLength,point);
     }
     
     public double [] getLoadFactors()
@@ -29,7 +31,7 @@ public class BucklingCurve
         double [] data = new double [dataPoints.size()];
         
         int i =0;
-        for (BucklingDataPoint p : dataPoints)
+        for (BucklingDataPoint p : dataPoints.values())
         {
             data[i] = p.getMinLoadFactor();
             i++;
@@ -43,7 +45,7 @@ public class BucklingCurve
         double [] data = new double [dataPoints.size()];
         
         int i =0;
-        for (BucklingDataPoint p : dataPoints)
+        for (BucklingDataPoint p : dataPoints.values())
         {
             data[i] = p.getPhysicalLength();
             i++;

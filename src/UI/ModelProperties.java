@@ -5,10 +5,12 @@
  */
 package UI;
 
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import linalg.Vector;
 import stripper.BucklingCurve;
+import stripper.BucklingDataPoint;
+import stripper.Node;
 import stripper.Strip;
 import stripper.Strip_General;
 import stripper.Strip_SS;
@@ -21,20 +23,17 @@ import stripper.series.Series;
  *
  * @author SJ
  */
-public class ModelProperties 
-{
-    
-  private static Material modelMaterial = new Material_Z_Li();
-  private static double modelLength = 100;
-  private static int fourierTerms = 2;
-  private static Series fourierSeries = Series.getSerieslList().get(0);
-  public static boolean ignoreCoupling = false;
-  public static boolean bucklingAnalysis = false; 
-  public static BucklingCurve bucklingCurve;
-  
-  
-  private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
-  
+public class ModelProperties {
+
+    private static Material modelMaterial = new Material_Z_Li();
+    private static double modelLength = 100;
+    private static int fourierTerms = 2;
+    private static Series fourierSeries = Series.getSerieslList().get(0);
+    public static boolean ignoreCoupling = false;
+    public static boolean bucklingAnalysis = false;
+    public static BucklingCurve bucklingCurve;
+
+    private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
 
     public static Material getModelMaterial() {
         return modelMaterial;
@@ -54,7 +53,7 @@ public class ModelProperties
     }
 
     public static int getFourierTerms() {
-        
+
         return fourierTerms;
     }
 
@@ -73,63 +72,96 @@ public class ModelProperties
         ModelProperties.getFourierSeries().computeAllIntegrals(ModelProperties.getFourierTerms());
     }
 
-    
-    public static ObservableList<Strip> getStripList()
-    {
+    public static ObservableList<Strip> getStripList() {
         return strips;
     }
-    
+
     /**
-     * Strips should only be added to the model once all data is known e.g. boundary conditions
-     * @param uistrip is a dummy strip that can be displayed and has no mathematical significance. It helps with the separation of model and viewer.
+     * Strips should only be added to the model once all data is known e.g.
+     * boundary conditions
+     *
+     * @param uistrip is a dummy strip that can be displayed and has no
+     * mathematical significance. It helps with the separation of model and
+     * viewer.
      */
-    public static void addStrip(UIStrip uistrip)
-    {
-        if(ModelProperties.fourierSeries.isSimplySupported())
-        {
+    public static void addStrip(UIStrip uistrip) {
+        if (ModelProperties.fourierSeries.isSimplySupported()) {
             strips.add(new Strip_SS(uistrip));
-        }
-        else
-        {
+        } else {
             strips.add(new Strip_General(uistrip));
         }
     }
-   
-    public static double getXBar()
-    {
+
+    public static double getXBar() {
         double sumAx = 0;
         double sumA = 0;
-        
-        for (UIStrip strip : StripTableUtil.getStripList())
-        {
-         sumAx += strip.getCrossSectionalArea()*strip.getXBar();
-         sumA += strip.getCrossSectionalArea();
-         
+
+        for (UIStrip strip : StripTableUtil.getStripList()) {
+            sumAx += strip.getCrossSectionalArea() * strip.getXBar();
+            sumA += strip.getCrossSectionalArea();
+
         }
-               
-        
-        return sumAx/sumA;
+
+        return sumAx / sumA;
     }
-    
-     public static double getZBar()
-    {
+
+    public static double getZBar() {
         double sumAz = 0;
         double sumA = 0;
-        
-        for (UIStrip strip : StripTableUtil.getStripList())
-        {
-         sumAz += strip.getCrossSectionalArea()*strip.getZBar();
-         sumA += strip.getCrossSectionalArea();
-         
+
+        for (UIStrip strip : StripTableUtil.getStripList()) {
+            sumAz += strip.getCrossSectionalArea() * strip.getZBar();
+            sumA += strip.getCrossSectionalArea();
+
         }
-               
-        
-        return sumAz/sumA;
+
+        return sumAz / sumA;
     }
-  
-  
-  
-  
-  
-    
+
+    public static void setDisplacedState(BucklingDataPoint point) {
+
+        double scale = 20.0;
+        int[] indices = {0, 1, 2, 3};
+
+        for (Node n : NodeTableUtil.getNodeList()) {
+
+            for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+
+                n.setParameterVector(point.getFreeParamVector(m).getSubVector(indices), m);
+            }
+
+            for (int y = 0; y < 4; y++) {
+                indices[y] = indices[y] + 4;
+            }
+
+        }
+
+        Vector zVec = Vector.getVector(NodeTableUtil.getNodeList().size());
+        Vector xVec = Vector.getVector(NodeTableUtil.getNodeList().size());
+
+        for (Strip s : strips) {
+
+            zVec.set(s.getGlobalBendingDisplacementVector(0, modelLength / 2).get(0), s.getNode1Id() - 1);
+            xVec.set(s.getGlobalPlaneDisplacementVector(0, modelLength / 2).get(0), s.getNode1Id() - 1);
+
+            zVec.set(s.getGlobalBendingDisplacementVector(s.getStripWidth(), modelLength / 2).get(0), s.getNode2Id() - 1);
+            xVec.set(s.getGlobalPlaneDisplacementVector(s.getStripWidth(), modelLength / 2).get(0), s.getNode2Id() - 1);
+
+        }
+
+        zVec.normalize();
+        xVec.normalize();
+
+        zVec.scale(scale);
+        xVec.scale(scale);
+
+        for (Node n : NodeTableUtil.getNodeList()) {
+
+            n.setDisplacedZCoord(zVec.get(n.getNodeId() - 1));
+            n.setDisplacedXCoord(xVec.get(n.getNodeId() - 1));
+
+        }
+
+    }
+
 }

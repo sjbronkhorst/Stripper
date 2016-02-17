@@ -495,6 +495,36 @@ public abstract class Strip {
         return f;
     }
     
+     public Vector getGlobalPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
+        Vector f = Vector.getVector(2);
+        Vector param = Vector.getVector(4);
+
+        Matrix Nplane = Matrix.getMatrix(2, 4);
+        
+
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+
+            param.clear();
+
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(0), 0);
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(1), 1);
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(4), 2);
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(5), 3);
+            
+            Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            f.add(Nplane.multiply(param));
+            
+            
+
+        }
+        
+        param.release();
+        Nplane.release();
+        
+
+        return f;
+    }
+    
      public Vector getBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector w = Vector.getVector(2);
         Vector param = Vector.getVector(4);
@@ -512,6 +542,39 @@ public abstract class Strip {
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(3), 1);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(6), 2);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(7), 3);
+            
+            Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            w.add(Nbend.multiply(param));
+            
+            
+
+        }
+        
+        param.release();
+        Nbend.release();
+        
+
+        return w;
+    }
+     
+     
+     public Vector getGlobalBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
+        Vector w = Vector.getVector(2);
+        Vector param = Vector.getVector(4);
+
+        Matrix Nbend = Matrix.getMatrix(2, 4);
+        
+
+        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+
+                   
+
+            param.clear();
+
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(2), 0);
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(3), 1);
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(6), 2);
+            param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(7), 3);
             
             Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
             w.add(Nbend.multiply(param));

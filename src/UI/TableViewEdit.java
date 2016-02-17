@@ -157,7 +157,14 @@ public class TableViewEdit extends Application {
 
                 if (slider.isFocused()) {
 
-                    
+                    if(disCalced && (ModelProperties.bucklingCurve.dataPoints.get(slider.getValue()) != null))
+                    {
+                        
+                        ModelProperties.setDisplacedState(ModelProperties.bucklingCurve.dataPoints.get(slider.getValue()));
+                        
+                        
+                        
+                    }
                    
                     
                     
@@ -362,16 +369,22 @@ public class TableViewEdit extends Application {
 
                 
                 ModelProperties.bucklingCurve = bc;
-                slider.setMin(bc.getPhysicalLengths()[0]);
-                slider.setMax(bc.getPhysicalLengths()[bc.getPhysicalLengths().length-1]);
-                slider.setValue(bc.getPhysicalLengths()[0]);
+                slider.setMin(ModelProperties.getModelLength()/Double.parseDouble(bucklePoints.getText()));
+                slider.setMax(ModelProperties.getModelLength());
+                slider.setValue(ModelProperties.getModelLength()/Double.parseDouble(bucklePoints.getText()));
                
-                
+                   
                 
                 Stage s = new Stage();
 
                 s.getIcons().add(ic);
                 chart.start(s);
+                slider.setMinorTickCount(0);
+                slider.setMajorTickUnit(ModelProperties.getModelLength()/Double.parseDouble(bucklePoints.getText()));
+                disCalced = true;
+                
+                
+                
                 }
             }
         });

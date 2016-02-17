@@ -30,11 +30,11 @@ public class Node {
     private double displacedZCoord = 0 ;
     private boolean [] dofPrescribedStatus = {false,false,false,false}; // u v w theta
     
-    private Vector [] parameterVectors = new Vector[ModelProperties.getFourierTerms()];
+    private Vector [] parameterVectors;
 
     public Node(double xCoord ,double zCoord) 
     {
-        
+        parameterVectors = new Vector[ModelProperties.getFourierTerms()];
         this.xCoord.set(xCoord);
         this.zCoord.set(zCoord);
         

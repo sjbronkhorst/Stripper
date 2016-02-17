@@ -19,6 +19,8 @@ import javafx.scene.SubScene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -71,6 +73,7 @@ public class ModelViewPane {
     double xRotation = 0;
     double yRotation = 0;
     double zRotation = 0;
+    
 
     double pressedX;
     double pressedY;
@@ -87,10 +90,17 @@ public class ModelViewPane {
     CheckBox axisCheck;
     CheckBox nodesCheck;
 
+    Tab tab2D = new Tab("  2D   ");
+    Tab tab3D = new Tab("   3D   ");
+
+    TabPane tabPane = new TabPane();
+
     private double xScale = 1;
     private double yScale = 1;
 
     VBox viewBox = new VBox(10);
+    VBox box3D = new VBox(10);
+    VBox box2D = new VBox(10);
 
     HBox zoomBox = new HBox(10);
 
@@ -98,12 +108,18 @@ public class ModelViewPane {
     Group stripGroup = new Group();
     Group axisGroup = new Group();
 
-    VBox threeDBox = new VBox(10);
+    Group nodeGroup2 = new Group();
+    Group stripGroup2 = new Group();
+    Group axisGroup2 = new Group();
 
     SubScene scene3d;
     Group threeDGroup;
 
+    SubScene scene2d;
+    Group twoDGroup;
+
     PerspectiveCamera camera = new PerspectiveCamera(true);
+    PerspectiveCamera camera2 = new PerspectiveCamera(true);
 
     PhongMaterial yellowStuff = new PhongMaterial();
     PhongMaterial greenStuff = new PhongMaterial();
@@ -125,6 +141,12 @@ public class ModelViewPane {
         camera.setTranslateZ(-1000);
         camera.setNearClip(0.1);
         camera.setFarClip(2000);
+
+        camera2.setTranslateX(0);
+        camera2.setTranslateY(0);
+        camera2.setTranslateZ(-1000);
+        camera2.setNearClip(0.1);
+        camera2.setFarClip(2000);
 
         canvas = new ResizableCanvas();
 
@@ -197,15 +219,22 @@ public class ModelViewPane {
             public void handle(ActionEvent event) {
 
                 camera.setTranslateZ(camera.getTranslateZ() + 100);
+               
                 camera.setNearClip(0.1);
                 camera.setFarClip(Math.abs(camera.getTranslateZ() * 4));
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
 
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-                xScale = xScale * 1.1;
-                yScale = yScale * 1.1;
-                gc.scale(1.1, 1.1);
+                camera2.setTranslateZ(camera2.getTranslateZ() + 100);
+                camera2.setNearClip(0.1);
+                camera2.setFarClip(Math.abs(camera2.getTranslateZ() * 4));
+                camera2.setFieldOfView(35);
+                scene2d.setCamera(camera2);
+
+//                GraphicsContext gc = canvas.getGraphicsContext2D();
+//                xScale = xScale * 1.1;
+//                yScale = yScale * 1.1;
+//                gc.scale(1.1, 1.1);
                 draw();
             }
         });
@@ -216,15 +245,22 @@ public class ModelViewPane {
             public void handle(ActionEvent event) {
 
                 camera.setTranslateZ(camera.getTranslateZ() - 100);
+                
                 camera.setNearClip(0.1);
                 camera.setFarClip(Math.abs(camera.getTranslateZ() * 4));
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
 
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-                xScale = xScale / 1.1;
-                yScale = yScale / 1.1;
-                gc.scale(1.0 / 1.1, 1.0 / 1.1);
+                camera2.setTranslateZ(camera2.getTranslateZ() - 100);
+                camera2.setNearClip(0.1);
+                camera2.setFarClip(Math.abs(camera2.getTranslateZ() * 4));
+                camera2.setFieldOfView(35);
+                scene2d.setCamera(camera2);
+
+//                GraphicsContext gc = canvas.getGraphicsContext2D();
+//                xScale = xScale / 1.1;
+//                yScale = yScale / 1.1;
+//                gc.scale(1.0 / 1.1, 1.0 / 1.1);
                 draw();
             }
         });
@@ -238,6 +274,11 @@ public class ModelViewPane {
 
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
+
+                camera2.setTranslateX(camera2.getTranslateX() + 50);
+
+                camera2.setFieldOfView(35);
+                scene2d.setCamera(camera2);
 
                 draw();
             }
@@ -253,6 +294,11 @@ public class ModelViewPane {
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
 
+                camera2.setTranslateX(camera2.getTranslateX() - 50);
+
+                camera2.setFieldOfView(35);
+                scene2d.setCamera(camera2);
+
                 draw();
             }
         });
@@ -267,6 +313,11 @@ public class ModelViewPane {
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
 
+                camera2.setTranslateY(camera2.getTranslateY() + 50);
+
+                camera2.setFieldOfView(35);
+                scene2d.setCamera(camera2);
+
                 draw();
             }
         });
@@ -280,6 +331,11 @@ public class ModelViewPane {
 
                 camera.setFieldOfView(35);
                 scene3d.setCamera(camera);
+
+                camera2.setTranslateY(camera2.getTranslateY() - 50);
+
+                camera2.setFieldOfView(35);
+                scene2d.setCamera(camera2);
 
                 draw();
             }
@@ -333,7 +389,7 @@ public class ModelViewPane {
             }
         });
 
-        viewBox.setOnMousePressed(new EventHandler<MouseEvent>() {
+        box3D.setOnMousePressed(new EventHandler<MouseEvent>() {
 
             @Override
             public void handle(MouseEvent event) {
@@ -344,7 +400,7 @@ public class ModelViewPane {
             }
         });
 
-        viewBox.setOnMouseDragged(new EventHandler<MouseEvent>() {
+        box3D.setOnMouseDragged(new EventHandler<MouseEvent>() {
 
             @Override
             public void handle(MouseEvent event) {
@@ -380,19 +436,25 @@ public class ModelViewPane {
         zoomBox.getChildren().addAll(checkList);
 
         threeDGroup = new Group(stripGroup, nodeGroup, axisGroup);
+        twoDGroup = new Group(stripGroup2, nodeGroup2, axisGroup2);
 
         scene3d = new SubScene(threeDGroup, 100, 100, true, SceneAntialiasing.BALANCED);
         scene3d.setCamera(camera);
 
-        viewBox.addEventHandler(ScrollEvent.SCROLL, (ScrollEvent e) -> {
+        scene2d = new SubScene(twoDGroup, 100, 100, true, SceneAntialiasing.BALANCED);
+        scene2d.setCamera(camera2);
+
+        box3D.addEventHandler(ScrollEvent.SCROLL, (ScrollEvent e) -> {
 
             double notches = e.getDeltaY();
 
             if (notches > 0) {
                 camera.setTranslateZ(camera.getTranslateZ() + 50);
+             
 
             } else {
                 camera.setTranslateZ(camera.getTranslateZ() - 50);
+              
 
             }
 
@@ -403,7 +465,16 @@ public class ModelViewPane {
 
         });
 
-        viewBox.getChildren().addAll(/*canvas*/scene3d);
+        box2D.getChildren().add(scene2d);
+        box3D.getChildren().add(scene3d);
+
+        tab2D.setContent(box2D);
+        tab3D.setContent(box3D);
+
+        tabPane.getTabs().addAll(tab2D, tab3D);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        viewBox.getChildren().addAll(tabPane);
 
         zoomBox.setMinHeight(40);
         zoomBox.setMinWidth(40);
@@ -427,6 +498,12 @@ public class ModelViewPane {
         scene3d.widthProperty().addListener(evt -> draw());
         scene3d.heightProperty().addListener(evt -> draw());
 
+        scene2d.widthProperty().bind(viewBox.widthProperty());
+        scene2d.heightProperty().bind(viewBox.heightProperty());
+
+        scene2d.widthProperty().addListener(evt -> draw());
+        scene2d.heightProperty().addListener(evt -> draw());
+
         draw();
 
     }
@@ -442,22 +519,22 @@ public class ModelViewPane {
 
     public void draw() {
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
+        
+      
+       // GraphicsContext gc = canvas.getGraphicsContext2D();
         double x1 = 0;
         double y1 = 0;
         double x2 = 0;
         double y2 = 0;
 
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
-        gc.setFill(Color.BLACK);
-
-        gc.setStroke(Color.GRAY);
-
-        gc.strokeRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
-        gc.setStroke(Color.BLACK);
-
+//        gc.setFill(Color.WHITE);
+//        gc.fillRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
+//        gc.setFill(Color.BLACK);
+//
+//        gc.setStroke(Color.GRAY);
+//
+//        gc.strokeRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
+//        gc.setStroke(Color.BLACK);
         double x3 = 0;
         double y3 = 0;
         double x4 = 0;
@@ -484,32 +561,31 @@ public class ModelViewPane {
             }
 
             if (stripLabelCheck.isSelected()) {
-                gc.setFont(Font.font("Calibri", FontWeight.BOLD, 30 / xScale));
-
-                gc.setFill(Color.BLUE);
-                gc.fillText(Integer.toString(s.getStripId()), (x1 + x2) / 2.0, (y1 + y2) / 2.0);
-                gc.setFill(Color.BLACK);
+//                gc.setFont(Font.font("Calibri", FontWeight.BOLD, 30 / xScale));
+//
+//                gc.setFill(Color.BLUE);
+//                gc.fillText(Integer.toString(s.getStripId()), (x1 + x2) / 2.0, (y1 + y2) / 2.0);
+//                gc.setFill(Color.BLACK);
             }
 
             if (s.getUdlZ() != 0) {
-                gc.setStroke(Color.LIME);
-
-                gc.strokeLine(x1, y1, (x1 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y1 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
-
-                gc.strokeLine(x2, y2, (x2 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y2 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
-
-                gc.strokeLine((x1 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y1 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())), (x2 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y2 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
+//                gc.setStroke(Color.LIME);
+//
+//                gc.strokeLine(x1, y1, (x1 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y1 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
+//
+//                gc.strokeLine(x2, y2, (x2 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y2 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
+//
+//                gc.strokeLine((x1 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y1 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())), (x2 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y2 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
 
             }
 
-            gc.setStroke(Color.DARKGRAY);
-            gc.strokeLine(x3, y3, x4, y4);
-            gc.setStroke(Color.BLACK);
-
-            gc.setStroke(Color.BLACK);
-
-            gc.strokeLine(x1, y1, x2, y2);
-
+//            gc.setStroke(Color.DARKGRAY);
+//            gc.strokeLine(x3, y3, x4, y4);
+//            gc.setStroke(Color.BLACK);
+//
+//            gc.setStroke(Color.BLACK);
+//
+//            gc.strokeLine(x1, y1, x2, y2);
             double theta = 180 * s.getStripAngle() / Math.PI;
 
             Box b = new Box(s.getStripWidth(), s.getStripThickness(), ModelProperties.getModelLength());
@@ -546,14 +622,14 @@ public class ModelViewPane {
             }
 
             for (PointLoad p : s.getPointLoadList()) {
-                gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
+                //gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
 
                 addZArrowAt(x1, y1, theta, p);
             }
 
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
-            
+
             stripGroup.getChildren().add(b);
 
             if (s.getUdlZ() != 0) {
@@ -609,21 +685,16 @@ public class ModelViewPane {
 
             if (s.getF1() != 0 || s.getF2() != 0) {
 
-                  for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
 
-                        PointLoad pl = new PointLoad();
-                        pl.setXCoord((double) (i));
-                        pl.setYCoord(0.0);
-                        pl.setMagnitude(((s.getF2()-s.getF1())/s.getStripWidth())*i + s.getF1());
+                    PointLoad pl = new PointLoad();
+                    pl.setXCoord((double) (i));
+                    pl.setYCoord(0.0);
+                    pl.setMagnitude(((s.getF2() - s.getF1()) / s.getStripWidth()) * i + s.getF1());
 
-                        
-                        if(pl.getMagnitude() != 0.0)
-                        {
+                    if (pl.getMagnitude() != 0.0) {
                         addYArrowAt(x1, y1, theta, pl);
-                        }
-
-                    
+                    }
 
                 }
 
@@ -634,6 +705,7 @@ public class ModelViewPane {
         ////////////////////////////////////////////
         //DRAW NODES
         nodeGroup.getChildren().clear();
+        
 
         if (nodesCheck.isSelected()) {
 
@@ -659,7 +731,7 @@ public class ModelViewPane {
                 blueStuff.setDiffuseColor(Color.BLUE);
                 blueStuff.setSpecularColor(Color.BLACK);
 
-                Sphere s = new Sphere(10);
+                Sphere s = new Sphere(-camera.getTranslateZ()/100);
                 s.translateXProperty().set(n.getXCoord());
                 s.translateYProperty().set(n.getZCoord());
 
@@ -671,6 +743,7 @@ public class ModelViewPane {
                     t.translateYProperty().set(n.getZCoord() + 10);
 
                     nodeGroup.getChildren().add(t);
+
                 }
 
                 s.setMaterial(blueStuff);
@@ -681,6 +754,7 @@ public class ModelViewPane {
         }
 
         axisGroup.getChildren().clear();
+        axisGroup2.getChildren().clear();
 
         if (axisCheck.isSelected()) {
 
@@ -689,6 +763,11 @@ public class ModelViewPane {
             axisGroup.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
             axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
             axisGroup.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
+
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
+
             Text xText = new Text("X");
             xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
             xText.translateXProperty().set(110);
@@ -716,6 +795,285 @@ public class ModelViewPane {
             arrowHeadZ.setTranslateZ(100);
 
             axisGroup.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
+        }
+        draw2();
+    }
+
+    public void draw2() {
+
+       // GraphicsContext gc = canvas.getGraphicsContext2D();
+        double x1 = 0;
+        double y1 = 0;
+        double x2 = 0;
+        double y2 = 0;
+
+//        gc.setFill(Color.WHITE);
+//        gc.fillRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
+//        gc.setFill(Color.BLACK);
+//
+//        gc.setStroke(Color.GRAY);
+//
+//        gc.strokeRect(0, 0, canvas.getWidth() / xScale, canvas.getHeight() / yScale);
+//        gc.setStroke(Color.BLACK);
+        double x3 = 0;
+        double y3 = 0;
+        double x4 = 0;
+        double y4 = 0;
+
+        stripGroup2.getChildren().clear();
+
+        for (UIStrip s : StripTableUtil.getStripList()) {
+
+            if (s.hasBothNodes()) {
+
+                x1 = s.getNode1().getXCoord();
+                y1 = s.getNode1().getZCoord();
+
+                x2 = s.getNode2().getXCoord();
+                y2 = s.getNode2().getZCoord();
+
+                x3 = s.getNode1().getDisplacedXCoord() + x1;
+                y3 = s.getNode1().getDisplacedZCoord() + y1;
+
+                x4 = s.getNode2().getDisplacedXCoord() + x2;
+                y4 = s.getNode2().getDisplacedZCoord() + y2;
+
+            }
+
+            if (stripLabelCheck.isSelected()) {
+//                gc.setFont(Font.font("Calibri", FontWeight.BOLD, 30 / xScale));
+//
+//                gc.setFill(Color.BLUE);
+//                gc.fillText(Integer.toString(s.getStripId()), (x1 + x2) / 2.0, (y1 + y2) / 2.0);
+//                gc.setFill(Color.BLACK);
+            }
+
+            if (s.getUdlZ() != 0) {
+//                gc.setStroke(Color.LIME);
+//
+//                gc.strokeLine(x1, y1, (x1 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y1 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
+//
+//                gc.strokeLine(x2, y2, (x2 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y2 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
+//
+//                gc.strokeLine((x1 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y1 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())), (x2 + s.getUdlZ() * ((y2 - y1) / s.getStripWidth())), (y2 + s.getUdlZ() * ((x1 - x2) / s.getStripWidth())));
+
+            }
+
+//            gc.setStroke(Color.DARKGRAY);
+//            gc.strokeLine(x3, y3, x4, y4);
+//            gc.setStroke(Color.BLACK);
+//
+//            gc.setStroke(Color.BLACK);
+//
+//            gc.strokeLine(x1, y1, x2, y2);
+            double theta = 180 * s.getStripAngle() / Math.PI;
+
+            Box b = new Box(s.getStripWidth(), s.getStripThickness(),1);
+
+            if (stripLabelCheck.isSelected()) {
+                Text t = new Text(s.toString());
+                t.setFont(Font.font("Calibri", FontWeight.BOLD, 0.7 * s.getStripWidth()));
+
+                t.translateXProperty().set(((x3 + y4) / 2.0) /*+ s.getStripThickness() / 2.0 + 1 + 1*/);
+                t.translateYProperty().set(((y3 + y4) / 2.0) /*- s.getStripThickness() / 2.0 - 1 - 1*/);
+
+                t.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
+
+                t.getTransforms().add(new Rotate(-90 - theta, new Point3D(1, 0, 0)));
+
+//                Text t2 = new Text(s.toString());
+//                t2.setFont(Font.font("Calibri", FontWeight.BOLD, s.getStripWidth()));
+//
+//                t2.translateXProperty().set(((x1 + x2) / 2.0) - s.getStripThickness() / 2.0 - 1 - 1);
+//                t2.translateYProperty().set(((y1 + y2) / 2.0) + s.getStripThickness() / 2.0 + 1 + 1);
+//
+//                t2.getTransforms().add(new Rotate(90, new Point3D(0, 1, 0)));
+//
+//                t2.getTransforms().add(new Rotate(90 - theta, new Point3D(1, 0, 0)));
+                stripGroup2.getChildren().add(t);
+                // stripGroup.getChildren().add(t2);
+            }
+
+            b.setMaterial(redStuff);
+
+            b.setRotate(theta);
+            if (wireFrameCheck.isSelected()) {
+                b.setDrawMode(DrawMode.LINE);
+            }
+
+            for (PointLoad p : s.getPointLoadList()) {
+                //gc.strokeOval(s.getNode1().getXCoord() + p.getX() * Math.cos(s.getStripAngle()) - 5, s.getNode1().getZCoord() + p.getX() * Math.sin(s.getStripAngle()) - 5, 10, 10);
+
+                addZArrowAt(x1, y1, theta, p);
+            }
+
+            b.setTranslateX((x1 + x2) / 2.0);
+            b.setTranslateY((y1 + y2) / 2.0);
+            
+            
+            
+            Cylinder c = createConnection(new Point3D(x3, y3, 0), new Point3D(x4, y4, 0),s.getStripThickness());
+                    
+
+            stripGroup2.getChildren().add(c);
+
+            if (s.getUdlZ() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord((double) (j));
+                        pl.setMagnitude(s.getUdlZ());
+
+                        addZArrowAt(x1, y1, theta, pl);
+
+                    }
+
+                }
+            }
+
+            if (s.getUdlX() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord((double) (j));
+                        pl.setMagnitude(10 * s.getUdlX() / Math.abs(s.getUdlX()));
+
+                        addXArrowAt(x1, y1, theta, pl);
+
+                    }
+
+                }
+            }
+
+            if (s.getUdlY() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+
+                        PointLoad pl = new PointLoad();
+                        pl.setXCoord((double) (i));
+                        pl.setYCoord((double) (j));
+                        pl.setMagnitude(10 * s.getUdlY() / Math.abs(s.getUdlY()));
+
+                        addYArrowAt(x1, y1, theta, pl);
+
+                    }
+
+                }
+            }
+
+            if (s.getF1() != 0 || s.getF2() != 0) {
+
+                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+
+                    PointLoad pl = new PointLoad();
+                    pl.setXCoord((double) (i));
+                    pl.setYCoord(0.0);
+                    pl.setMagnitude(((s.getF2() - s.getF1()) / s.getStripWidth()) * i + s.getF1());
+
+                    if (pl.getMagnitude() != 0.0) {
+                        addYArrowAt(x1, y1, theta, pl);
+                    }
+
+                }
+
+            }
+
+        }
+
+        ////////////////////////////////////////////
+        //DRAW NODES
+        nodeGroup2.getChildren().clear();
+
+        if (nodesCheck.isSelected()) {
+
+            for (Node n : NodeTableUtil.getNodeList()) {
+
+//            gc.setFill(Color.DARKGRAY);
+//
+//            gc.fillOval(n.getXCoord() + n.getDisplacedXCoord() - (4.0 / xScale), n.getZCoord() + n.getDisplacedZCoord() - (4.0 / yScale), 8.0 / xScale, 8.0 / yScale);
+//            gc.setLineWidth(1 / xScale);
+//            gc.setFill(Color.BLACK);
+//
+//            gc.fillOval(n.getXCoord() - (4.0 / xScale), n.getZCoord() - (4.0 / yScale), 8.0 / xScale, 8.0 / yScale);
+//            gc.setLineWidth(1 / xScale);
+//
+//            if (nodeLabelCheck.isSelected()) {
+//                gc.setFont(Font.font("Calibri", FontWeight.BOLD, 30 / xScale));
+//
+//                gc.setStroke(Color.CRIMSON);
+//                gc.strokeText(Integer.toString(n.getNodeId()), n.getXCoord() - 15 / xScale, n.getZCoord() + 15 / xScale);
+//                gc.setStroke(Color.BLACK);
+//            }
+                PhongMaterial blueStuff = new PhongMaterial();
+                blueStuff.setDiffuseColor(Color.BLUE);
+                blueStuff.setSpecularColor(Color.BLACK);
+
+                Sphere s = new Sphere(-camera2.getTranslateZ()/100);
+                s.translateXProperty().set(n.getXCoord()+n.getDisplacedXCoord());
+                s.translateYProperty().set(n.getZCoord()+n.getDisplacedZCoord());
+
+                if (nodeLabelCheck.isSelected()) {
+                    Text t = new Text(Integer.toString(n.getNodeId()));
+                    t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+
+                    t.translateXProperty().set(n.getXCoord() + 10);
+                    t.translateYProperty().set(n.getZCoord() + 10);
+
+                    nodeGroup2.getChildren().add(t);
+
+                }
+
+                s.setMaterial(blueStuff);
+
+                nodeGroup2.getChildren().add(s);
+
+            }
+        }
+
+        axisGroup2.getChildren().clear();
+
+        if (axisCheck.isSelected()) {
+
+            //////////////////////////////
+            //CREATE 3D AXIS
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
+
+            Text xText = new Text("X");
+            xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            xText.translateXProperty().set(110);
+            axisGroup2.getChildren().add(xText);
+
+            Text yText = new Text("Z");
+            yText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            yText.translateYProperty().set(110);
+            axisGroup2.getChildren().add(yText);
+
+            Text zText = new Text("Y");
+            zText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            zText.translateZProperty().set(110);
+            axisGroup2.getChildren().add(zText);
+
+            Box arrowHeadX = new Box(10, 10, 10);
+            arrowHeadX.setMaterial(yellowStuff);
+            Box arrowHeadY = new Box(10, 10, 10);
+            arrowHeadY.setMaterial(yellowStuff);
+            Box arrowHeadZ = new Box(10, 10, 10);
+            arrowHeadZ.setMaterial(yellowStuff);
+
+            arrowHeadX.setTranslateX(100);
+            arrowHeadY.setTranslateY(100);
+            arrowHeadZ.setTranslateZ(100);
+
+            axisGroup2.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
         }
 
     }

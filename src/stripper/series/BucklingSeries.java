@@ -37,7 +37,7 @@ public abstract class BucklingSeries extends Series {
 
     @Override
     public double getVScalingValue(double y, int m) {
-        throw new UnsupportedOperationException("This series function does not suppport static analysis"); //To change body of generated methods, choose Tools | Templates.
+        return 1;
     }
     
     
