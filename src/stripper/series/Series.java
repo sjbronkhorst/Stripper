@@ -5,9 +5,7 @@
  */
 package stripper.series;
 
-import UI.ModelProperties;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -29,10 +27,10 @@ public abstract class Series {
         {
         seriesList.clear();
         
-        seriesList.add(new Series_SS(ModelProperties.getModelLength()));
-        seriesList.add(new Series_CC(ModelProperties.getModelLength()));
-        seriesList.add(new Series_CF(ModelProperties.getModelLength()));
-        seriesList.add(new BucklingSeries_CC(ModelProperties.getModelLength()));
+        seriesList.add(new Series_SS(0));
+        seriesList.add(new Series_CC(0));
+        seriesList.add(new Series_CF(0));
+        seriesList.add(new BucklingSeries_CC(0));
       
         
         
@@ -60,6 +58,11 @@ public abstract class Series {
     public boolean isSimplySupported()
     {
         return isSimplySupported;
+    }
+    
+    public double getLength()
+    {
+        return a;
     }
     
     

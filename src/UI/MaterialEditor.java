@@ -32,22 +32,22 @@ public class MaterialEditor extends Application {
 
     
     Label nameLabel = new Label("Name : ");
-    TextField nameField = new TextField(ModelProperties.getModelMaterial().getName());
+    TextField nameField = new TextField(Defaults.getBaseModel().getModelMaterial().getName());
 
     Label exLabel = new Label("Youngs Modulus (Ex) : ");
-    TextField exField = new TextField(Double.toString(ModelProperties.getModelMaterial().getEx()));
+    TextField exField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getEx()));
 
     Label eyLabel = new Label("Youngs Modulus (Ey) : ");
-    TextField eyField = new TextField(Double.toString(ModelProperties.getModelMaterial().getEy()));
+    TextField eyField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getEy()));
 
     Label vxLabel = new Label("Poisson (vx) : ");
-    TextField vxField = new TextField(Double.toString(ModelProperties.getModelMaterial().getVx()));
+    TextField vxField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getVx()));
     
     Label vyLabel = new Label("Poisson (vy) : ");
-    TextField vyField = new TextField(Double.toString(ModelProperties.getModelMaterial().getVy()));
+    TextField vyField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getVy()));
     
     Label gLabel = new Label("Shear Modulus (G) : ");
-    TextField gField = new TextField(Double.toString(ModelProperties.getModelMaterial().getG()));
+    TextField gField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getG()));
 
     @Override
     public void start(Stage primaryStage) {
@@ -65,17 +65,17 @@ public class MaterialEditor extends Application {
                 Material mat = new Material_User(nameField.getText(), Double.parseDouble(exField.getText()), Double.parseDouble(eyField.getText()), Double.parseDouble(vxField.getText()), Double.parseDouble(vyField.getText()), Double.parseDouble(gField.getText()));
                 f.writeMaterial(mat);
                             
-                ModelProperties.setModelMaterial(f.getMaterial());
+                Defaults.getBaseModel().setModelMaterial(f.getMaterial());
                 
-                nameField.setText(ModelProperties.getModelMaterial().getName());
+                nameField.setText(Defaults.getBaseModel().getModelMaterial().getName());
                 
-                exField.setText(Double.toString(ModelProperties.getModelMaterial().getEx()));
-                eyField.setText(Double.toString(ModelProperties.getModelMaterial().getEy()));
+                exField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getEx()));
+                eyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getEy()));
                 
-                vxField.setText(Double.toString(ModelProperties.getModelMaterial().getVx()));
-                vyField.setText(Double.toString(ModelProperties.getModelMaterial().getVy()));
+                vxField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getVx()));
+                vyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getVy()));
                 
-                gField.setText(Double.toString(ModelProperties.getModelMaterial().getG()));
+                gField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getG()));
 
             }
         });
@@ -89,7 +89,7 @@ public class MaterialEditor extends Application {
                 try {
 
                     f.readMaterial();
-                    ModelProperties.setModelMaterial(f.getMaterial());
+                    Defaults.getBaseModel().setModelMaterial(f.getMaterial());
 
                 } catch (IOException ex) {
                     Logger.getLogger(MaterialEditor.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,15 +97,15 @@ public class MaterialEditor extends Application {
                     Logger.getLogger(MaterialEditor.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
-                nameField.setText(ModelProperties.getModelMaterial().getName());
+                nameField.setText(Defaults.getBaseModel().getModelMaterial().getName());
                 
-                exField.setText(Double.toString(ModelProperties.getModelMaterial().getEx()));
-                eyField.setText(Double.toString(ModelProperties.getModelMaterial().getEy()));
+                exField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getEx()));
+                eyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getEy()));
                 
-                vxField.setText(Double.toString(ModelProperties.getModelMaterial().getVx()));
-                vyField.setText(Double.toString(ModelProperties.getModelMaterial().getVy()));
+                vxField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getVx()));
+                vyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getVy()));
                 
-                gField.setText(Double.toString(ModelProperties.getModelMaterial().getG()));
+                gField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getG()));
             }
         });
 

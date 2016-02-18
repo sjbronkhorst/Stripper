@@ -5,7 +5,7 @@
  */
 package stripper;
 
-import UI.ModelProperties;
+import UI.Model;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
@@ -29,17 +29,30 @@ public class Node {
     private double displacedXCoord = 0 ;
     private double displacedZCoord = 0 ;
     private boolean [] dofPrescribedStatus = {false,false,false,false}; // u v w theta
+    Model model;
     
     private Vector [] parameterVectors;
 
-    public Node(double xCoord ,double zCoord) 
+    public Node(double xCoord ,double zCoord, Model model) 
     {
-        parameterVectors = new Vector[ModelProperties.getFourierTerms()];
+        parameterVectors = new Vector[model.getFourierTerms()];
         this.xCoord.set(xCoord);
         this.zCoord.set(zCoord);
         
+        this.model = model;
+        
         //displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
     }
+    
+//    public Node(double xCoord ,double zCoord) 
+//    {
+//       // parameterVectors = new Vector[model.getFourierTerms()];
+//        this.xCoord.set(xCoord);
+//        this.zCoord.set(zCoord);
+//       // model.getNodeList().add(this);
+//               
+//        //displacementVectors = new Vector[ModelProperties.getFourierTerms()][101];
+//    }
     
     /**
      * 
@@ -49,6 +62,7 @@ public class Node {
      */
     public void setParameterVector(Vector P, int m ) 
     {
+        
         parameterVectors[m] = P;
     }
     

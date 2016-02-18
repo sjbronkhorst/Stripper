@@ -34,6 +34,7 @@ public class SystemEquation {
     List<Strip> strips = new ArrayList<>();
     List<Node> nodes = new ArrayList<>();
     int[][] localToGlobalConfNumbering;
+    private Model model;
    
     public Vector[] fourierTermParameterContributions;
 
@@ -54,11 +55,12 @@ public class SystemEquation {
         return progress;
     }
 
-    public SystemEquation(List<Strip> strips, List<Node> nodes) {
-        this.strips = strips;
-        this.nodes = nodes;
+    public SystemEquation(Model model) {
+        this.strips = model.getStripList();
+        this.nodes = model.getNodeList();
+        this.model = model;
 
-        if (ModelProperties.getFourierSeries().isSimplySupported()) {
+        if (model.getFourierSeries().isSimplySupported()) {
 
             localToGlobalConfNumbering = new int[strips.size() * 8][2];
 
@@ -88,11 +90,11 @@ public class SystemEquation {
 
     public void computeParameterVector() {
 
-        fourierTermParameterContributions = new Vector[ModelProperties.getFourierTerms()];
+        fourierTermParameterContributions = new Vector[model.getFourierTerms()];
 
         
-            for (int j = 0; j < ModelProperties.getFourierTerms(); j++) {
-                fourierTermParameterContributions[j] = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+            for (int j = 0; j < model.getFourierTerms(); j++) {
+                fourierTermParameterContributions[j] = Vector.getVector(model.getNodeList().size() * 4);
                 fourierTermParameterContributions[j].clear();
 
             }
@@ -101,7 +103,7 @@ public class SystemEquation {
 
         Cholesky c = new Cholesky();
 
-        Series Y = ModelProperties.getFourierSeries();
+        Series Y = model.getFourierSeries();
 
         TableViewEdit.println("Series simply suppported : " + Y.isSimplySupported());
 
@@ -119,9 +121,9 @@ public class SystemEquation {
             }
             
             
-            Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
+            Assembler a = new Assembler(strips, model.getNodeList().size() * 4, localToGlobalConfNumbering);
 
-            for (int i = 1; i <= ModelProperties.getFourierTerms(); i++) {
+            for (int i = 1; i <= model.getFourierTerms(); i++) {
 
                 PartitionedSystem s = new PartitionedSystem(a.getK(i), status);
                 Vector Wf = s.getWf(a.getF(i));
@@ -131,7 +133,7 @@ public class SystemEquation {
                 
 
                 
-                    Vector temp2 = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+                    Vector temp2 = Vector.getVector(model.getNodeList().size() * 4);
                     temp2.clear();
                     int count = 0;
                     for (int k = 0; k < temp2.size(); k++)
@@ -151,7 +153,7 @@ public class SystemEquation {
 
                 
 
-                progress.set((double) (i + 1) / (double) ModelProperties.getFourierTerms());
+                progress.set((double) (i + 1) / (double) model.getFourierTerms());
                 
                 temp.release();
 
@@ -159,17 +161,17 @@ public class SystemEquation {
 
         } else {
 
-            CoupledMatrix_1 cK = new CoupledMatrix_1(nodes.size(), ModelProperties.getFourierTerms());
-            CoupledVector_1 fK = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
-            CoupledVector_1 status = new CoupledVector_1(nodes.size(), ModelProperties.getFourierTerms());
+            CoupledMatrix_1 cK = new CoupledMatrix_1(nodes.size(), model.getFourierTerms());
+            CoupledVector_1 fK = new CoupledVector_1(nodes.size(), model.getFourierTerms());
+            CoupledVector_1 status = new CoupledVector_1(nodes.size(), model.getFourierTerms());
 
 //       Vector fK = Vector.getVector(8*nTerms);
 //       fK.clear();
-            for (int i = 1; i < ModelProperties.getFourierTerms() + 1; i++) {
+            for (int i = 1; i < model.getFourierTerms() + 1; i++) {
 
-                progress.set((double) (i + 1) / (double) ModelProperties.getFourierTerms());
+                progress.set((double) (i + 1) / (double) model.getFourierTerms());
 
-                for (int j = 1; j < ModelProperties.getFourierTerms() + 1; j++) {
+                for (int j = 1; j < model.getFourierTerms() + 1; j++) {
 
                     for (Strip myStrip : strips) {
                         cK.addStiffnessMatrix(myStrip.getRotatedStiffnessMatrix(i, j), myStrip.getNode1(), myStrip.getNode2(), i, j);
@@ -217,19 +219,19 @@ public class SystemEquation {
 
             for (Node n : nodes) {
 
-                for (int i = 0; i < ModelProperties.getFourierTerms(); i++) {
+                for (int i = 0; i < model.getFourierTerms(); i++) {
 
                   
 
                         // this needs to change because in plane y displacement is scaled with dY
-                        // Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1)) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1));
-                        // Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
-                        // Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
-                        // Uarr[j].add(u.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 3) * Y.getFunctionValue(ModelProperties.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 3);
-                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1)), 4 * (n.getNodeId() - 1));
-                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 1), 4 * (n.getNodeId() - 1) + 1);
-                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 2), 4 * (n.getNodeId() - 1) + 2);
-                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * ModelProperties.getFourierTerms() * (n.getNodeId() - 1) + 3), 4 * (n.getNodeId() - 1) + 3);
+                        // Uarr[j].add(u.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1)) * Y.getFunctionValue(model.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1));
+                        // Uarr[j].add(u.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1) + 1) * Y.getFunctionValue(model.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 1);
+                        // Uarr[j].add(u.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1) + 2) * Y.getFunctionValue(model.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 2);
+                        // Uarr[j].add(u.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1) + 3) * Y.getFunctionValue(model.getModelLength() * (j / 100.0), i + 1), 4 * (n.getNodeId() - 1) + 3);
+                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1)), 4 * (n.getNodeId() - 1));
+                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1) + 1), 4 * (n.getNodeId() - 1) + 1);
+                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1) + 2), 4 * (n.getNodeId() - 1) + 2);
+                        fourierTermParameterContributions[i].add(Us.get((i * 4) + 4 * model.getFourierTerms() * (n.getNodeId() - 1) + 3), 4 * (n.getNodeId() - 1) + 3);
 
                     
                 }
@@ -246,7 +248,7 @@ public class SystemEquation {
             int[] indices = {0, 1, 2, 3};
             for (Node n : nodes) {
 
-                for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+                for (int m = 0; m < model.getFourierTerms(); m++) {
 
                     n.setParameterVector(fourierTermParameterContributions[m].getSubVector(indices), m);
                 }
@@ -263,14 +265,14 @@ public class SystemEquation {
 
     public void setDisplacedState(int distPercentage) {
 
-//        for (int i = 0; i < NodeTableUtil.getNodeList().size(); i++) {
+//        for (int i = 0; i < model.getNodeList().size(); i++) {
 //            
 //            
 //            
-//            NodeTableUtil.getNodeList().get(i).setDisplacedXCoord(Uarr[distPercentage].get((i * 4)));
-//            NodeTableUtil.getNodeList().get(i).setDisplacedZCoord(Uarr[distPercentage].get((i * 4 + 2)));
+//            model.getNodeList().get(i).setDisplacedXCoord(Uarr[distPercentage].get((i * 4)));
+//            model.getNodeList().get(i).setDisplacedZCoord(Uarr[distPercentage].get((i * 4 + 2)));
 //        }
-        for (Node n : NodeTableUtil.getNodeList()) {
+        for (Node n : model.getNodeList()) {
         // n.setDisplacedXCoord(n.getBendingDisplacementVectorAt(distPercentage).get(0));
             //n.setDisplacedZCoord(n.getDisplacementVectorAt(distPercentage).get(2));
         }

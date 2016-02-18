@@ -23,6 +23,8 @@ public class Stripper {
      * @param args the command line arguments
      * @throws java.lang.InterruptedException
      */
+    
+    /*
     public static void main(String[] args) throws InterruptedException, Exception {
 
         double modelLength = 8000;
@@ -238,8 +240,7 @@ public class Stripper {
          time2 = System.currentTimeMillis();
          System.out.println("TIME2    =  " + (time2 - time1));
          */
-    }
-
+   // }
    
 
 }

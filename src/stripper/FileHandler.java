@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.Defaults;
 import UI.TableViewEdit;
 import UI.UIStrip;
 import java.io.BufferedReader;
@@ -21,7 +22,6 @@ import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import stripper.materials.Material;
-import stripper.materials.Material_Steel;
 import stripper.materials.Material_User;
 
 /**
@@ -122,7 +122,7 @@ public class FileHandler {
                     // TableViewEdit.println("words 0 " +words[0]);
                     if (words[0].equals("n")) {
 
-                        Node tempNode = new Node(Double.parseDouble(words[1]), Double.parseDouble(words[2]));
+                        Node tempNode = new Node(Double.parseDouble(words[1]), Double.parseDouble(words[2]), Defaults.getBaseModel());
                         nodeMap.put(tempNode.getNodeId(), tempNode);
                         nodes.add(tempNode);
                     } else if (words[0].equals("e")) {

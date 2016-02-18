@@ -23,57 +23,60 @@ import stripper.series.Series;
  *
  * @author SJ
  */
-public class ModelProperties {
+public class Model{
 
-    private static Material modelMaterial = new Material_Z_Li();
-    private static double modelLength = 100;
-    private static int fourierTerms = 2;
-    private static Series fourierSeries = Series.getSerieslList().get(0);
-    public static boolean ignoreCoupling = false;
-    public static boolean bucklingAnalysis = false;
-    public static BucklingCurve bucklingCurve;
+    private Material modelMaterial = new Material_Steel();
+    private double modelLength = 100;
+    private int fourierTerms = 1;
+    private Series fourierSeries = Series.getSerieslList().get(0);
+    public BucklingCurve bucklingCurve;
 
-    private static ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
+    private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
+    private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
 
-    public static Material getModelMaterial() {
+    public Material getModelMaterial() {
         return modelMaterial;
     }
 
-    public static void setModelMaterial(Material modelMaterial) {
-        ModelProperties.modelMaterial = modelMaterial;
+    public void setModelMaterial(Material modelMaterial) {
+        this.modelMaterial = modelMaterial;
     }
 
-    public static double getModelLength() {
+    public double getModelLength() {
         return modelLength;
     }
 
-    public static void setModelLength(double modelLength) {
-        ModelProperties.modelLength = modelLength;
+    public void setModelLength(double modelLength) {
+        this.modelLength = modelLength;
         fourierSeries.setLength(modelLength);
     }
 
-    public static int getFourierTerms() {
+    public int getFourierTerms() {
 
         return fourierTerms;
     }
 
-    public static void setFourierTerms(int fourierTerms) {
-        ModelProperties.fourierTerms = fourierTerms;
+    public void setFourierTerms(int fourierTerms) {
+        this.fourierTerms = fourierTerms;
         TableViewEdit.println("Fourier terms set to " + fourierTerms);
     }
 
-    public static Series getFourierSeries() {
+    public Series getFourierSeries() {
         return fourierSeries;
     }
 
-    public static void setFourierSeries(Series fourierSeries) {
-        ModelProperties.fourierSeries = fourierSeries;
-        ModelProperties.fourierSeries.setLength(modelLength);
-        ModelProperties.getFourierSeries().computeAllIntegrals(ModelProperties.getFourierTerms());
+    public void setFourierSeries(Series fourierSeries) {
+        this.fourierSeries = fourierSeries;
+        this.fourierSeries.setLength(modelLength);
+        getFourierSeries().computeAllIntegrals(getFourierTerms());
     }
 
-    public static ObservableList<Strip> getStripList() {
+    public ObservableList<Strip> getStripList() {
         return strips;
+    }
+    
+     public ObservableList<Node> getNodeList() {
+        return nodes;
     }
 
     /**
@@ -84,15 +87,15 @@ public class ModelProperties {
      * mathematical significance. It helps with the separation of model and
      * viewer.
      */
-    public static void addStrip(UIStrip uistrip) {
-        if (ModelProperties.fourierSeries.isSimplySupported()) {
-            strips.add(new Strip_SS(uistrip));
+    public void addStrip(UIStrip uistrip) {
+        if (fourierSeries.isSimplySupported()) {
+            strips.add(new Strip_SS(uistrip, this));
         } else {
-            strips.add(new Strip_General(uistrip));
+            strips.add(new Strip_General(uistrip,this));
         }
     }
 
-    public static double getXBar() {
+    public double getXBar() {
         double sumAx = 0;
         double sumA = 0;
 
@@ -105,7 +108,7 @@ public class ModelProperties {
         return sumAx / sumA;
     }
 
-    public static double getZBar() {
+    public double getZBar() {
         double sumAz = 0;
         double sumA = 0;
 
@@ -118,14 +121,14 @@ public class ModelProperties {
         return sumAz / sumA;
     }
 
-    public static void setDisplacedState(BucklingDataPoint point) {
+    public void setDisplacedState(BucklingDataPoint point) {
 
         double scale = 20.0;
         int[] indices = {0, 1, 2, 3};
 
         for (Node n : NodeTableUtil.getNodeList()) {
 
-            for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+            for (int m = 0; m < getFourierTerms(); m++) {
 
                 n.setParameterVector(point.getFreeParamVector(m).getSubVector(indices), m);
             }

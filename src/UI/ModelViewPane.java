@@ -124,8 +124,12 @@ public class ModelViewPane {
     PhongMaterial yellowStuff = new PhongMaterial();
     PhongMaterial greenStuff = new PhongMaterial();
     PhongMaterial redStuff = new PhongMaterial();
+    
+    Model model;
 
-    public ModelViewPane() {
+    public ModelViewPane(Model model) {
+        
+        this.model = model;
 
         yellowStuff.setDiffuseColor(Color.YELLOW);
         yellowStuff.setSpecularColor(Color.GRAY);
@@ -588,7 +592,7 @@ public class ModelViewPane {
 //            gc.strokeLine(x1, y1, x2, y2);
             double theta = 180 * s.getStripAngle() / Math.PI;
 
-            Box b = new Box(s.getStripWidth(), s.getStripThickness(), ModelProperties.getModelLength());
+            Box b = new Box(s.getStripWidth(), s.getStripThickness(), model.getModelLength());
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
@@ -635,7 +639,7 @@ public class ModelViewPane {
             if (s.getUdlZ() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+                    for (int j = 0; j <= (int) (model.getModelLength()); j = j + 10) {
 
                         PointLoad pl = new PointLoad();
                         pl.setXCoord((double) (i));
@@ -652,7 +656,7 @@ public class ModelViewPane {
             if (s.getUdlX() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+                    for (int j = 0; j <= (int) (model.getModelLength()); j = j + 10) {
 
                         PointLoad pl = new PointLoad();
                         pl.setXCoord((double) (i));
@@ -669,7 +673,7 @@ public class ModelViewPane {
             if (s.getUdlY() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+                    for (int j = 0; j <= (int) (model.getModelLength()); j = j + 10) {
 
                         PointLoad pl = new PointLoad();
                         pl.setXCoord((double) (i));
@@ -920,7 +924,7 @@ public class ModelViewPane {
             if (s.getUdlZ() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+                    for (int j = 0; j <= (int) (model.getModelLength()); j = j + 10) {
 
                         PointLoad pl = new PointLoad();
                         pl.setXCoord((double) (i));
@@ -937,7 +941,7 @@ public class ModelViewPane {
             if (s.getUdlX() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+                    for (int j = 0; j <= (int) (model.getModelLength()); j = j + 10) {
 
                         PointLoad pl = new PointLoad();
                         pl.setXCoord((double) (i));
@@ -954,7 +958,7 @@ public class ModelViewPane {
             if (s.getUdlY() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-                    for (int j = 0; j <= (int) (ModelProperties.getModelLength()); j = j + 10) {
+                    for (int j = 0; j <= (int) (model.getModelLength()); j = j + 10) {
 
                         PointLoad pl = new PointLoad();
                         pl.setXCoord((double) (i));
@@ -1091,7 +1095,7 @@ public class ModelViewPane {
             Cylinder arrowHead = createConnection(new Point3D(p.getX(), p.getMagnitude() - sign * i, p.getY()), new Point3D(p.getX(), p.getMagnitude() - sign * i - sign * 1, p.getY()), i / 2);
             arrowHead.setTranslateX(x1);
             arrowHead.setTranslateY(y1);
-            arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+            arrowHead.setTranslateZ(-model.getModelLength() / 2.0);
             arrowHead.setRotate(theta);
 
             arrowHead.setMaterial(greenStuff);
@@ -1101,7 +1105,7 @@ public class ModelViewPane {
         //pointLoad.setDrawMode(DrawMode.LINE);
         pointLoad.setTranslateX(x1);
         pointLoad.setTranslateY(y1);
-        pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+        pointLoad.setTranslateZ(-model.getModelLength() / 2.0);
         pointLoad.setRotate(theta);
 
         pointLoad.setMaterial(greenStuff);
@@ -1122,7 +1126,7 @@ public class ModelViewPane {
             Cylinder arrowHead = createConnection(new Point3D(p.getX() + p.getMagnitude() - sign * i, 0, p.getY()), new Point3D(p.getX() + p.getMagnitude() - sign * i - sign * 1, 0, p.getY()), i / 2);
             arrowHead.setTranslateX(x1);
             arrowHead.setTranslateY(y1);
-            arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+            arrowHead.setTranslateZ(-model.getModelLength() / 2.0);
             arrowHead.setRotate(theta);
 
             arrowHead.setMaterial(greenStuff);
@@ -1132,7 +1136,7 @@ public class ModelViewPane {
         //pointLoad.setDrawMode(DrawMode.LINE);
         pointLoad.setTranslateX(x1);
         pointLoad.setTranslateY(y1);
-        pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+        pointLoad.setTranslateZ(-model.getModelLength() / 2.0);
         pointLoad.setRotate(theta);
 
         pointLoad.setMaterial(greenStuff);
@@ -1153,7 +1157,7 @@ public class ModelViewPane {
             Cylinder arrowHead = createConnection(new Point3D(p.getX(), 0, p.getY() + p.getMagnitude() - sign * i), new Point3D(p.getX(), 0, p.getY() + p.getMagnitude() - sign * i - sign * 1), i / 2);
             arrowHead.setTranslateX(x1);
             arrowHead.setTranslateY(y1);
-            arrowHead.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+            arrowHead.setTranslateZ(-model.getModelLength() / 2.0);
             arrowHead.setRotate(theta);
 
             arrowHead.setMaterial(greenStuff);
@@ -1163,7 +1167,7 @@ public class ModelViewPane {
         //pointLoad.setDrawMode(DrawMode.LINE);
         pointLoad.setTranslateX(x1);
         pointLoad.setTranslateY(y1);
-        pointLoad.setTranslateZ(-ModelProperties.getModelLength() / 2.0);
+        pointLoad.setTranslateZ(-model.getModelLength() / 2.0);
         pointLoad.setRotate(theta);
 
         pointLoad.setMaterial(greenStuff);

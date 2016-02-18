@@ -5,7 +5,7 @@
  */
 package stripper;
 
-import UI.ModelProperties;
+import UI.Model;
 import UI.TableViewEdit;
 import java.awt.geom.Point2D;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,10 +26,9 @@ import stripper.series.Series;
  */
 public abstract class Strip {
 
-    protected double a, t, beta; // length , thickness , angle
-    protected Material mat;
-   
-    protected Series Y;
+    protected double t, beta; // thickness , angle
+      
+   // protected Series Y;
 
     protected static AtomicInteger stripSequence = new AtomicInteger(0);
 
@@ -48,6 +47,8 @@ public abstract class Strip {
     protected Node node2;
     // Edge load size at node.
     protected double f1 , f2; 
+    
+    protected Model model;
     
 
    
@@ -144,7 +145,7 @@ public abstract class Strip {
     }
 
     public double getStripLength() {
-        return a;
+        return model.getModelLength();
     }
 
     public double getStripWidth() {
@@ -160,7 +161,7 @@ public abstract class Strip {
     }
 
     public Material getMaterial() {
-        return mat;
+        return model.getModelMaterial();
     }
 
     public Matrix getRotatedStiffnessMatrix(int m, int n) {
@@ -220,6 +221,8 @@ public abstract class Strip {
 
         // Bending udl
         Vector F = Vector.getVector(8);
+        Series Y = model.getFourierSeries();
+        double a = model.getModelLength();
 
         F.clear();
 
@@ -276,6 +279,7 @@ public abstract class Strip {
     public Matrix getBendingStrainMatrix(double x, double y, int m) {
         Matrix B = Matrix.getMatrix(3, 4);
         B.clear();
+        Series Y = model.getFourierSeries();
 
         double b = getStripWidth();
 
@@ -305,6 +309,8 @@ public abstract class Strip {
     public Matrix getPlaneStrainMatrix(double x, double y, int m) {
         Matrix B = Matrix.getMatrix(3, 4);
         B.clear();
+        Series Y = model.getFourierSeries();
+        double a = model.getModelLength();
 
         double b = getStripWidth();
 
@@ -329,6 +335,7 @@ public abstract class Strip {
 
         Matrix D = Matrix.getMatrix(3, 3);
         D.clear();
+        Material mat = model.getModelMaterial();
 
         double Ex = mat.getEx();
         double Ey = mat.getEy();
@@ -352,6 +359,7 @@ public abstract class Strip {
     public Matrix getBendingPropertyMatrix() {
         Matrix D = Matrix.getMatrix(3, 3);
         D.clear();
+        Material mat = model.getModelMaterial();
 
         double Ex = mat.getEx();
         double Ey = mat.getEy();
@@ -377,9 +385,11 @@ public abstract class Strip {
 
     public Matrix getPlaneDisplacementShapeFunctionMatrix(double x, double y, int m) {
         Matrix N = Matrix.getMatrix(2, 4);
+        Series Y = model.getFourierSeries();
         double b = getStripWidth();
         double s = Y.getFunctionValue(y, m);
         double s1 = Y.getVScalingValue(y, m);
+        double a = model.getModelLength();
 
         x = x / b;
 
@@ -398,8 +408,10 @@ public abstract class Strip {
 
     public Matrix getBendingDisplacementShapeFunctionMatrix(double x, double y, int m) {
         Matrix N = Matrix.getMatrix(2, 4);
+        Series Y = model.getFourierSeries();
         double b = getStripWidth();
         double s = Y.getFunctionValue(y, m);
+        double a = model.getModelLength();
 
         x = x / b;
 
@@ -442,11 +454,11 @@ public abstract class Strip {
      */
     public Vector getBendingStressVector(double localXCoordinate, double localYCoordinate) {
         Vector ub = Vector.getVector(4);
-
+        double a = model.getModelLength();
         Vector strain = Vector.getVector(3);
         strain.clear();
 
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+        for (int m = 0; m < model.getFourierTerms(); m++) {
             ub.clear();
 
             ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(2), 0);
@@ -468,11 +480,11 @@ public abstract class Strip {
     public Vector getPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector f = Vector.getVector(2);
         Vector param = Vector.getVector(4);
-
+        double a = model.getModelLength();
         Matrix Nplane = Matrix.getMatrix(2, 4);
         
 
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+        for (int m = 0; m < model.getFourierTerms(); m++) {
 
             param.clear();
 
@@ -498,11 +510,11 @@ public abstract class Strip {
      public Vector getGlobalPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector f = Vector.getVector(2);
         Vector param = Vector.getVector(4);
-
+        double a = model.getModelLength();
         Matrix Nplane = Matrix.getMatrix(2, 4);
         
 
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+        for (int m = 0; m < model.getFourierTerms(); m++) {
 
             param.clear();
 
@@ -528,11 +540,11 @@ public abstract class Strip {
      public Vector getBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector w = Vector.getVector(2);
         Vector param = Vector.getVector(4);
-
+        double a = model.getModelLength();
         Matrix Nbend = Matrix.getMatrix(2, 4);
         
 
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+        for (int m = 0; m < model.getFourierTerms(); m++) {
 
                    
 
@@ -561,11 +573,11 @@ public abstract class Strip {
      public Vector getGlobalBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector w = Vector.getVector(2);
         Vector param = Vector.getVector(4);
-
+        double a = model.getModelLength();
         Matrix Nbend = Matrix.getMatrix(2, 4);
         
 
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+        for (int m = 0; m < model.getFourierTerms(); m++) {
 
                    
 
@@ -599,11 +611,11 @@ public abstract class Strip {
      */
     public Vector getPlaneStressVector(double localXCoordinate, double localYCoordinate) {
         Vector ub = Vector.getVector(4);
-
+        double a = model.getModelLength();
         Vector strain = Vector.getVector(3);
         strain.clear();
 
-        for (int m = 0; m < ModelProperties.getFourierTerms(); m++) {
+        for (int m = 0; m < model.getFourierTerms(); m++) {
             ub.clear();
 
             ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(0), 0);
@@ -626,7 +638,8 @@ public abstract class Strip {
         double T1 = f1 * getStripThickness();
         double T2 = f2 * getStripThickness();
         double b = getStripWidth();
-
+        Series Y = model.getFourierSeries();
+        double a = model.getModelLength();
         double[] I = Y.getIntegralValues(m, n);
         double I4 = I[3];
         double I5 = I[4];
@@ -667,6 +680,7 @@ public abstract class Strip {
                 
         double T1 = f1 * getStripThickness();
         double T2 = f2 * getStripThickness();
+        Series Y = model.getFourierSeries();
         
         
         double b = getStripWidth();
@@ -731,7 +745,7 @@ public abstract class Strip {
 
     public abstract Matrix getStiffnessMatrix(int n, int m);
 
-    public abstract void setProperties(Material mat, double a, Series Y);
+   
 
     
     

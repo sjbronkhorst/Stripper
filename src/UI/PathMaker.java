@@ -31,8 +31,8 @@ import stripper.Strip;
  */
 public class PathMaker extends Application {
 
-    private final ChoiceBox<Strip> startStripChoice = new ChoiceBox<Strip>(ModelProperties.getStripList());
-    private final ChoiceBox<Strip> endStripChoice = new ChoiceBox<Strip>(ModelProperties.getStripList());
+    private final ChoiceBox<Strip> startStripChoice = new ChoiceBox<Strip>(Defaults.getBaseModel().getStripList());
+    private final ChoiceBox<Strip> endStripChoice = new ChoiceBox<Strip>(Defaults.getBaseModel().getStripList());
 
     private Label startXLbl = new Label("Start X :");
     private Label startYLbl = new Label("Start Y :");

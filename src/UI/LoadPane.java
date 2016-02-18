@@ -133,7 +133,7 @@ public class LoadPane {
             @Override
             public void handle(ActionEvent event) {
                 
-                double xBar = ModelProperties.getXBar();
+                double xBar = Defaults.getBaseModel().getXBar();
                 double farthestFromCentroid = 0;
                 
                 for (Node n : NodeTableUtil.getNodeList())
@@ -162,7 +162,7 @@ public class LoadPane {
             @Override
             public void handle(ActionEvent event) {
                 
-                double zBar = ModelProperties.getZBar();
+                double zBar = Defaults.getBaseModel().getZBar();
                 double farthestFromCentroid = 0;
                 
                 for (Node n : NodeTableUtil.getNodeList())

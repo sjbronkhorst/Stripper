@@ -51,13 +51,10 @@ import stripper.Strip;
 
 public class TableViewEdit extends Application {
 
-    ModelViewPane mvp = new ModelViewPane();
+    ModelViewPane mvp = new ModelViewPane(Defaults.getBaseModel());
 
-    
     Boolean disCalced = false;
 
-   
-     
     LoadPane lp ;
 
     TextField modelLengthField = new TextField();
@@ -101,9 +98,9 @@ public class TableViewEdit extends Application {
        AnalysisChoicePrompt acp = new AnalysisChoicePrompt(stage);
        
         println("Buckling analysis mode : " + Boolean.toString(acp.getResult()));
-        ModelProperties.bucklingAnalysis = acp.getResult();
-        lp = new LoadPane(this, ModelProperties.bucklingAnalysis);
-        menuBar = new HomeMenuBar(this, !ModelProperties.bucklingAnalysis);
+        Defaults.bucklingAnalysis = acp.getResult();
+        lp = new LoadPane(this, Defaults.bucklingAnalysis);
+        menuBar = new HomeMenuBar(this, !Defaults.bucklingAnalysis);
         
         
         progInd.setStyle("-fx-progress-color: blue;");
@@ -155,23 +152,23 @@ public class TableViewEdit extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 
-                if (slider.isFocused()) {
-
-                    if(disCalced && (ModelProperties.bucklingCurve.dataPoints.get(slider.getValue()) != null))
-                    {
-                        
-                        ModelProperties.setDisplacedState(ModelProperties.bucklingCurve.dataPoints.get(slider.getValue()));
-                        
-                        
-                        
-                    }
-                   
-                    
-                    
-                       
-                    }
-                    
-                    draw();
+//                if (slider.isFocused()) {
+//
+//                    if(disCalced && (Defaults.getBaseModel().bucklingCurve.dataPoints.get(slider.getValue()) != null))
+//                    {
+//                        
+//                        ModelProperties.setDisplacedState(ModelProperties.bucklingCurve.dataPoints.get(slider.getValue()));
+//                        
+//                        
+//                        
+//                    }
+//                   
+//                    
+//                    
+//                       
+//                    }
+//                    
+//                    draw();
                
             }
         });
@@ -181,12 +178,13 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
-                ModelProperties.getFourierSeries().setLength(ModelProperties.getModelLength());
+                Defaults.getBaseModel().setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
+                Defaults.getBaseModel().getFourierSeries().setLength(Defaults.getBaseModel().getModelLength());
 
                 draw();
 
-                TableViewEdit.println("Length has been set");
+                TableViewEdit.println("Model length has been set to " + Double.toString(Defaults.getBaseModel().getModelLength()));
+                
             }
         });
         
@@ -196,8 +194,8 @@ public class TableViewEdit extends Application {
            @Override
            public void handle(ActionEvent event) {
                
-               println("x Bar = " + ModelProperties.getXBar());
-               println("z Bar = " + ModelProperties.getZBar());
+               println("x Bar = " + Defaults.getBaseModel().getXBar());
+               println("z Bar = " + Defaults.getBaseModel().getZBar());
            }
        });
 
@@ -242,25 +240,20 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                ModelProperties.getStripList().clear();
+                Defaults.getBaseModel().getStripList().clear();
 
                 for (UIStrip s : StripTableUtil.getStripList()) {
 
-                    ModelProperties.addStrip(s);
+                    Defaults.getBaseModel().addStrip(s);
+                }
+                
+                Defaults.getBaseModel().getNodeList().clear();
+                for(Node n : NodeTableUtil.getNodeList())
+                {
+                    Defaults.getBaseModel().getNodeList().add(n);
                 }
 
-                for (Strip s : ModelProperties.getStripList()) {
-
-                    //thickness should not be set here
-                    s.setProperties(ModelProperties.getModelMaterial(), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
-
-                    //s.getStiffnessMatrix(1, 1).printf("k" + Integer.toString(s.getStripId()));
-                    //s.getMembraneStiffnessMatrix(1, 1).printf("M");
-                    // s.getRotationMatrix().printf("R");
-                    //s.getRotatedLoadVector(1).printf("P"+Integer.toString(s.getStripId()));
-                }
-
-                s = new SystemEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
+                s = new SystemEquation(Defaults.getBaseModel());
 
                 // Task<Void> task = new Task<Void>() {
                 //    @Override
@@ -297,14 +290,14 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
+              //  ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
 
                 
                 boolean noEdgeLoads = false;
                 
-                ModelProperties.getStripList().clear();
+                Defaults.getBaseModel().getStripList().clear();
                 for (UIStrip s : StripTableUtil.getStripList()) {
-                    ModelProperties.addStrip(s);
+                    Defaults.getBaseModel().addStrip(s);
                     
                     if(s.getF1() == 0.0 && s.getF2() == 0.0 )
                     {
@@ -313,22 +306,37 @@ public class TableViewEdit extends Application {
                     
                 }
                 
+                Defaults.getBaseModel().getNodeList().clear();
+                for(Node n : NodeTableUtil.getNodeList())
+                {
+                    Defaults.getBaseModel().getNodeList().add(n);
+                }
+                
+                
+                
+                
                 if(noEdgeLoads)
                 {
                 println("ERROR : Some strips have no edge loads specified ! ");
                 }
                 else
                 {
-                    for (Strip s : ModelProperties.getStripList()) {
+                   
 
-                    s.setProperties(ModelProperties.getModelMaterial(), ModelProperties.getModelLength(), ModelProperties.getFourierSeries());
-                    
-                }
+                BucklingEquation b = new BucklingEquation(Defaults.getBaseModel());
 
-                BucklingEquation b = new BucklingEquation(ModelProperties.getStripList(), NodeTableUtil.getNodeList());
-
-                BucklingDataPoint[] buckleData = b.getBucklingLoads(Integer.parseInt(bucklePoints.getText()));
-                String[][] stringData = new String[buckleData.length + 1][ModelProperties.getFourierTerms()+2];
+                
+                
+                
+                
+                
+                BucklingDataPoint[] buckleData = new  BucklingDataPoint[1];
+                        
+                      buckleData[0] =  b.getBucklingData();
+                
+                
+                
+                String[][] stringData = new String[buckleData.length + 1][Defaults.getBaseModel().getFourierTerms()+2];
                 BucklingCurve bc = new BucklingCurve();
 
                 stringData[0][0] = "Length";
@@ -343,7 +351,7 @@ public class TableViewEdit extends Application {
                     
                     
                     
-                    for (int j = 0; j < ModelProperties.getFourierTerms(); j++) {
+                    for (int j = 0; j < Defaults.getBaseModel().getFourierTerms(); j++) {
                                                
                         stringData[i + 1][j+1] = Double.toString(buckleData[i].getSystemLoadFactor(j));
 
@@ -351,7 +359,7 @@ public class TableViewEdit extends Application {
                     
                    
                     stringData[i + 1][0] = Double.toString(buckleData[i].getPhysicalLength());
-                    stringData[i + 1][ModelProperties.getFourierTerms()+1] = Double.toString(buckleData[i].getMinLoadFactor());
+                    stringData[i + 1][Defaults.getBaseModel().getFourierTerms()+1] = Double.toString(buckleData[i].getMinLoadFactor());
                     bc.addDataPoint(buckleData[i]);
                     
 
@@ -365,13 +373,15 @@ public class TableViewEdit extends Application {
                 }
 
                 XYChartDataUtil.addSeries(bc.getPhysicalLengths(), bc.getLoadFactors(), "Signature curve");
-                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, ModelProperties.getModelLength(), 0, (bc.getLoadFactors()[0]), XYChartDataUtil.getDataList());
+                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]), XYChartDataUtil.getDataList());
 
                 
-                ModelProperties.bucklingCurve = bc;
-                slider.setMin(ModelProperties.getModelLength()/Double.parseDouble(bucklePoints.getText()));
-                slider.setMax(ModelProperties.getModelLength());
-                slider.setValue(ModelProperties.getModelLength()/Double.parseDouble(bucklePoints.getText()));
+                Defaults.getBaseModel().bucklingCurve = bc;  // WRONG a model only has one buckling point bacause it can only have one physical length
+                
+                
+                slider.setMin(Defaults.getBaseModel().getModelLength()/Double.parseDouble(bucklePoints.getText()));
+                slider.setMax(Defaults.getBaseModel().getModelLength());
+                slider.setValue(Defaults.getBaseModel().getModelLength()/Double.parseDouble(bucklePoints.getText()));
                
                    
                 
@@ -380,7 +390,7 @@ public class TableViewEdit extends Application {
                 s.getIcons().add(ic);
                 chart.start(s);
                 slider.setMinorTickCount(0);
-                slider.setMajorTickUnit(ModelProperties.getModelLength()/Double.parseDouble(bucklePoints.getText()));
+                slider.setMajorTickUnit(Defaults.getBaseModel().getModelLength()/Double.parseDouble(bucklePoints.getText()));
                 disCalced = true;
                 
                 
@@ -439,7 +449,7 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                Node n = new Node(0, 0);
+                Node n = new Node(0, 0, Defaults.getBaseModel());
                 NodeTableUtil.addNode(n);
                 draw();
                 TableViewEdit.println("Node " + n.getNodeId() + " added.");
@@ -504,7 +514,7 @@ public class TableViewEdit extends Application {
         textArea.setMinHeight(100);
         bucklePoints.setMaxWidth(100);
         
-        if(ModelProperties.bucklingAnalysis)
+        if(Defaults.bucklingAnalysis)
         {
             rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea,slider);
         }

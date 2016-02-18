@@ -5,6 +5,7 @@ package stripper;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import UI.Model;
 import UI.PointLoad;
 import UI.UIStrip;
 import linalg.Matrix;
@@ -20,23 +21,26 @@ import stripper.series.Series;
  */
 public class Strip_SS extends Strip {
 
-    public Strip_SS(Node node1, Node node2) {
+    public Strip_SS(Node node1, Node node2, Model model) {
 
         setNode1(node1);
         setNode2(node2);
-
+        
+        this.model = model;
+       
     }
 
-    public Strip_SS() {
+    public Strip_SS(Model model) {
 
         hasNode1 = false;
         hasNode2 = false;
         this.node1Id.set(0);
         this.node2Id.set(0);
-
+        this.model = model;
+        
     }
 
-    public Strip_SS(UIStrip uiStrip) {
+    public Strip_SS(UIStrip uiStrip, Model model) {
         if (!uiStrip.hasBothNodes()) {
 
             hasNode1 = false;
@@ -61,18 +65,15 @@ public class Strip_SS extends Strip {
             this.t = uiStrip.getStripThickness();
             
         }
-    }
+        this.model = model;
+       }
 
-    @Override
-    public void setProperties(Material mat, double length, Series Y) {
-        super.mat = mat;
-        super.a = length;
-        super.Y = new Series_SS(a);
-    }
-
+   
     public Matrix getBendingStiffnessMatrix(int m, int n) {
 
         Matrix S = Matrix.getMatrix(4, 4);
+        Material mat = model.getModelMaterial();
+        double a = model.getModelLength();
 
         if (m == n) {
 
@@ -127,6 +128,8 @@ public class Strip_SS extends Strip {
     public Matrix getMembraneStiffnessMatrix(int m, int n) {
 
         Matrix M = Matrix.getMatrix(4, 4);
+        Material mat = model.getModelMaterial();
+        double a = model.getModelLength();
 
         if (m == n) {
 

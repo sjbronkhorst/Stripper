@@ -21,6 +21,8 @@ import stripper.series.Series;
  */
 public class partialFor implements Callable<Double>
 {
+    
+    
 int startValue,endValue;
 String threadName;
 private Thread t;
@@ -29,6 +31,8 @@ private Thread t;
         int force = 10;
 
         Material usrMat = new Material_Steel();
+        
+        /*
         Node n1 = new Node(0, 0);
         Node n2 = new Node(10, 0);
         
@@ -43,6 +47,8 @@ private Thread t;
        
     }
 
+        */
+        
    public  void plus()
    {
        

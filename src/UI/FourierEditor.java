@@ -33,7 +33,7 @@ public class FourierEditor extends Application {
     
     Label seriesLabel = new Label("Selected Fourier series : ");
     Label termsLabel = new Label("Number of longitudinal terms : ");
-    TextField termsField = new TextField(Double.toString(ModelProperties.getFourierTerms()));
+    TextField termsField = new TextField(Integer.toString(Defaults.getNumberOfTerms()));
     private ChoiceBox<Series> seriesChoice = new ChoiceBox<>(Series.getSerieslList());
     
     Button saveBtn = new Button("SAVE");
@@ -44,7 +44,7 @@ public class FourierEditor extends Application {
     public void start(Stage primaryStage) {
         
         
-        seriesChoice.getSelectionModel().select(ModelProperties.getFourierSeries());
+        seriesChoice.getSelectionModel().select(Defaults.getBaseModel().getFourierSeries());
        
        seriesChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
@@ -53,13 +53,13 @@ public class FourierEditor extends Application {
                 
               if(seriesChoice.getSelectionModel().selectedIndexProperty().get() >= 0)
                 { 
-            ModelProperties.setFourierSeries(seriesChoice.getItems().get((int)newValue));
+            Defaults.getBaseModel().setFourierSeries(seriesChoice.getItems().get((int)newValue));
             
                     TableViewEdit.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
                 }
               
               
-              if(!ModelProperties.getFourierSeries().isSimplySupported())
+              if(!Defaults.getBaseModel().getFourierSeries().isSimplySupported())
               {
                    ContinueWarning c = new ContinueWarning("WARNING: You have selected loaded edge boundary conditions that are not Simply-Suppported,\n a full solution could take a long time to complete.");
                     try {
@@ -69,7 +69,7 @@ public class FourierEditor extends Application {
                     }
               }
               
-              if(seriesChoice.getItems().get((int)newValue).onlySupportsBuckling() && !ModelProperties.bucklingAnalysis)
+              if(seriesChoice.getItems().get((int)newValue).onlySupportsBuckling() && !Defaults.bucklingAnalysis)
               {
                   ContinueWarning c = new ContinueWarning("WARNING: You are in Static Analysis mode.\n The chosen Series function only supports buckling analysis. \n Please choose another function.");
                     try {
@@ -88,7 +88,7 @@ public class FourierEditor extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                ModelProperties.setFourierTerms(Integer.parseInt(termsField.getText()));
+                Defaults.getBaseModel().setFourierTerms(Integer.parseInt(termsField.getText()));
             }
         });
        

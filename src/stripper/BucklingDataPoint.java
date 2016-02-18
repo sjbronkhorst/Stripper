@@ -100,16 +100,16 @@ public class BucklingDataPoint {
         return minIndex;
     }
     
-    public void uncoupledDecompose()
-    {
-        for (int i = 0; i < nTerms; i++)
-        {
-         if(i != minIndex)
-         {
-             freeParamVectors[i].clear();
-         }
-        }
-    }
+//    public void uncoupledDecompose()
+//    {
+//        for (int i = 0; i < nTerms; i++)
+//        {
+//         if(i != minIndex)
+//         {
+//             freeParamVectors[i].clear();
+//         }
+//        }
+//    }
     
     public void coupledDecompose()
     {

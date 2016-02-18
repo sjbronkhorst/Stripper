@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.Model;
 import UI.UIStrip;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +20,7 @@ import linalg.Matrix;
 import stripper.materials.Material;
 import stripper.series.Series;
 
+
 /**
  *
  * @author SJ
@@ -30,14 +32,15 @@ public class Strip_General extends Strip {
 
     private double[] integralArray = new double[5];
 
-    public Strip_General(Node node1, Node node2) {
+    public Strip_General(Node node1, Node node2, Model model) {
 
         setNode1(node1);
         setNode2(node2);
-
+        this.model = model;
+       
     }
 
-    public Strip_General(UIStrip uiStrip) {
+    public Strip_General(UIStrip uiStrip, Model model) {
         if (!uiStrip.hasBothNodes()) {
 
             hasNode1 = false;
@@ -61,6 +64,8 @@ public class Strip_General extends Strip {
             this.t = uiStrip.getStripThickness();
             
         }
+        
+        this.model = model;
     }
 
     public boolean integralLastComputed(int m, int n) {
@@ -72,31 +77,28 @@ public class Strip_General extends Strip {
 
     public void computeIntegralArray(int m, int n) {
         if (!integralLastComputed(m, n)) {
-            integralArray = Y.getIntegralValues(m, n);
+            integralArray = model.getFourierSeries().getIntegralValues(m, n);
             mLastComputed = m;
             nLastComputed = n;
         }
     }
 
-    public Strip_General() {
+    public Strip_General(Model model) {
 
         hasNode1 = false;
         hasNode2 = false;
         this.node1Id.set(0);
         this.node2Id.set(0);
-
+        this.model = model;
+      
     }
 
-    @Override
-    public void setProperties(Material mat, double length, Series Y) {
-        super.mat = mat;
-        super.a = length;
-        super.Y = Y;
-    }
+   
 
     public Matrix getBendingStiffnessMatrix(int m, int n, double[] integralArray) {
 
         Matrix S = Matrix.getMatrix(4, 4);
+        Material mat = model.getModelMaterial();
 
         BigDecimal _1 = BigDecimal.ONE;
         BigDecimal _neg1 = new BigDecimal("-1");
@@ -333,8 +335,10 @@ public class Strip_General extends Strip {
         return S;
     }
 
+    /*
     public Matrix getOldBendingStiffnessMatrix(int m, int n, double[] integralArray) {
 
+        Material mat = model.getModelMaterial();
         Matrix S = Matrix.getMatrix(4, 4);
 
         double b = getStripWidth();
@@ -435,11 +439,13 @@ public class Strip_General extends Strip {
 
         return S;
     }
-
+*/
     public Matrix getMembraneStiffnessMatrix(int m, int n, double[] integralArray) {
 
         Matrix M = Matrix.getMatrix(4, 4);
         int scale = 1000;
+        Material mat = model.getModelMaterial();
+        Series Y = model.getFourierSeries();
 
         //double b = getStripWidth();
         BigDecimal b = new BigDecimal(getStripWidth());
@@ -589,10 +595,13 @@ public class Strip_General extends Strip {
 
         return M;
     }
-
+/*
     public Matrix getOldMembraneStiffnessMatrix(int m, int n, double[] integralArray) {
 
         Matrix M = Matrix.getMatrix(4, 4);
+        Material mat = model.getModelMaterial();
+        Series Y = model.getFourierSeries();
+        double a = model.getModelLength();
 
         double b = getStripWidth();
 
@@ -673,7 +682,7 @@ public class Strip_General extends Strip {
 
         return M;
     }
-
+*/
     @Override
     public Matrix getStiffnessMatrix(int m, int n) {
         Matrix K = Matrix.getMatrix(8, 8);
