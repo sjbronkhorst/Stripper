@@ -7,6 +7,7 @@ package UI;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import linalg.Matrix;
 import linalg.Vector;
 import stripper.BucklingCurve;
 import stripper.BucklingDataPoint;
@@ -29,11 +30,29 @@ public class Model{
     private double modelLength = 100;
     private int fourierTerms = 1;
     private Series fourierSeries = Series.getSerieslList().get(0);
-    public BucklingCurve bucklingCurve;
-
+    
     private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
 
+    
+    
+    
+    public Model(Model modelToClone)
+    {
+        modelMaterial = modelToClone.getModelMaterial();
+        modelLength = modelToClone.getModelLength();
+        fourierTerms = modelToClone.getFourierTerms();
+        fourierSeries = modelToClone.getFourierSeries();
+      
+        
+    }
+    
+     public Model()
+    { 
+        
+    }
+    
+    
     public Material getModelMaterial() {
         return modelMaterial;
     }
@@ -158,7 +177,7 @@ public class Model{
         zVec.scale(scale);
         xVec.scale(scale);
 
-        for (Node n : NodeTableUtil.getNodeList()) {
+        for (Node n : nodes) {
 
             n.setDisplacedZCoord(zVec.get(n.getNodeId() - 1));
             n.setDisplacedXCoord(xVec.get(n.getNodeId() - 1));

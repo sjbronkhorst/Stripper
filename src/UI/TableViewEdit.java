@@ -55,7 +55,7 @@ public class TableViewEdit extends Application {
 
     Boolean disCalced = false;
 
-    LoadPane lp ;
+    LoadPane lp;
 
     TextField modelLengthField = new TextField();
 
@@ -77,15 +77,13 @@ public class TableViewEdit extends Application {
 
     SystemEquation s;
 
-    HomeMenuBar menuBar ;
+    HomeMenuBar menuBar;
 
     TabPane tabPane = new TabPane();
     Tab geometryTab = new Tab("Geometry");
     Tab loadTab = new Tab("Loads");
 
     private static final TextArea textArea = new TextArea();
-    
-   
 
     public static void main(String[] args) {
 
@@ -95,14 +93,13 @@ public class TableViewEdit extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-       AnalysisChoicePrompt acp = new AnalysisChoicePrompt(stage);
-       
+        AnalysisChoicePrompt acp = new AnalysisChoicePrompt(stage);
+
         println("Buckling analysis mode : " + Boolean.toString(acp.getResult()));
         Defaults.bucklingAnalysis = acp.getResult();
         lp = new LoadPane(this, Defaults.bucklingAnalysis);
         menuBar = new HomeMenuBar(this, !Defaults.bucklingAnalysis);
-        
-        
+
         progInd.setStyle("-fx-progress-color: blue;");
 
         //progInd.setMinSize(50, 50);
@@ -152,24 +149,23 @@ public class TableViewEdit extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 
-//                if (slider.isFocused()) {
-//
-//                    if(disCalced && (Defaults.getBaseModel().bucklingCurve.dataPoints.get(slider.getValue()) != null))
-//                    {
-//                        
-//                        ModelProperties.setDisplacedState(ModelProperties.bucklingCurve.dataPoints.get(slider.getValue()));
-//                        
-//                        
-//                        
-//                    }
-//                   
-//                    
-//                    
-//                       
-//                    }
-//                    
-//                    draw();
-               
+                if (slider.isFocused()) {
+
+                    if(disCalced && (Defaults.bucklingCurve.dataPoints.get(slider.getValue()) != null))
+                    {
+                        
+                        Defaults.getBaseModel().setDisplacedState(Defaults.bucklingCurve.dataPoints.get(slider.getValue()));
+                        
+                        
+                        
+                    }
+                   
+                    
+                    
+                       
+                    }
+                    
+                    draw();
             }
         });
 
@@ -184,20 +180,19 @@ public class TableViewEdit extends Application {
                 draw();
 
                 TableViewEdit.println("Model length has been set to " + Double.toString(Defaults.getBaseModel().getModelLength()));
-                
+
             }
         });
-        
-        modelPropertiesBtn.setOnAction(new EventHandler<ActionEvent>() 
-        {
 
-           @Override
-           public void handle(ActionEvent event) {
-               
-               println("x Bar = " + Defaults.getBaseModel().getXBar());
-               println("z Bar = " + Defaults.getBaseModel().getZBar());
-           }
-       });
+        modelPropertiesBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                println("x Bar = " + Defaults.getBaseModel().getXBar());
+                println("z Bar = " + Defaults.getBaseModel().getZBar());
+            }
+        });
 
         setThicknessBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -246,10 +241,9 @@ public class TableViewEdit extends Application {
 
                     Defaults.getBaseModel().addStrip(s);
                 }
-                
+
                 Defaults.getBaseModel().getNodeList().clear();
-                for(Node n : NodeTableUtil.getNodeList())
-                {
+                for (Node n : NodeTableUtil.getNodeList()) {
                     Defaults.getBaseModel().getNodeList().add(n);
                 }
 
@@ -268,13 +262,13 @@ public class TableViewEdit extends Application {
 
                 draw();
 
-               // for (Strip s : ModelProperties.getStripList()) {
+                // for (Strip s : ModelProperties.getStripList()) {
                 //TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth() / 2.0, 50).get(1));
 //                    TableViewEdit.println(s.getPlaneStressVectorAt(s.getStripWidth(), 50).get(1));
                 //   for (int y = 0; y < 101; y++) {
                 //      TableViewEdit.println(Double.toString(s.getBendingStressVectorAt(s.getStripWidth() / 2.0, y).get(1)));
                 //   }
-             //   }
+                //   }
 //                        
 //                        
                 //    return null;
@@ -290,111 +284,107 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-              //  ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
-
-                
+                //  ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
                 boolean noEdgeLoads = false;
-                
+
                 Defaults.getBaseModel().getStripList().clear();
                 for (UIStrip s : StripTableUtil.getStripList()) {
+
                     Defaults.getBaseModel().addStrip(s);
-                    
-                    if(s.getF1() == 0.0 && s.getF2() == 0.0 )
-                    {
+
+                    if (s.getF1() == 0.0 && s.getF2() == 0.0) {
                         noEdgeLoads = true;
                     }
-                    
+
                 }
-                
+
                 Defaults.getBaseModel().getNodeList().clear();
-                for(Node n : NodeTableUtil.getNodeList())
-                {
+                for (Node n : NodeTableUtil.getNodeList()) {
                     Defaults.getBaseModel().getNodeList().add(n);
                 }
-                
-                
-                
-                
-                if(noEdgeLoads)
-                {
-                println("ERROR : Some strips have no edge loads specified ! ");
-                }
-                else
-                {
-                   
 
-                BucklingEquation b = new BucklingEquation(Defaults.getBaseModel());
+                if (noEdgeLoads) {
+                    println("ERROR : Some strips have no edge loads specified ! ");
+                } else {
 
-                
-                
-                
-                
-                
-                BucklingDataPoint[] buckleData = new  BucklingDataPoint[1];
+                    int steps = Integer.parseInt(bucklePoints.getText());
+                    BucklingEquation[] b = new BucklingEquation[steps];
+                    BucklingDataPoint[] buckleData = new BucklingDataPoint[steps];
+                    Model[] models = new Model[steps];
+
+                    for (int i = 0; i < steps; i++) {
+
+                        models[i] = new Model(Defaults.getBaseModel());
+
+                        for (UIStrip s : StripTableUtil.getStripList()) {
+
+                            models[i].addStrip(s);
+
+                        }
+
+                        for (Node n : NodeTableUtil.getNodeList()) {
+                            models[i].getNodeList().add(n);
+                        }
                         
-                      buckleData[0] =  b.getBucklingData();
-                
-                
-                
-                String[][] stringData = new String[buckleData.length + 1][Defaults.getBaseModel().getFourierTerms()+2];
-                BucklingCurve bc = new BucklingCurve();
+                        
 
-                stringData[0][0] = "Length";
-                stringData[0][stringData[0].length - 1] = "Minimum stress (Signature curve)";
+                        models[i].setModelLength(((double) (i + 1) / steps) * Defaults.getBaseModel().getModelLength());
 
-               
-                for (int i = 1; i < stringData[0].length-1; i++) {
-                    stringData[0][i] = "Buckling stress for half wave";
-                }
+                        b[i] = new BucklingEquation(models[i]);
 
-                for (int i = 0; i < buckleData.length; i++) {
-                    
-                    
-                    
-                    for (int j = 0; j < Defaults.getBaseModel().getFourierTerms(); j++) {
-                                               
-                        stringData[i + 1][j+1] = Double.toString(buckleData[i].getSystemLoadFactor(j));
+                        buckleData[i] = b[i].getBucklingData();
 
                     }
-                    
-                   
-                    stringData[i + 1][0] = Double.toString(buckleData[i].getPhysicalLength());
-                    stringData[i + 1][Defaults.getBaseModel().getFourierTerms()+1] = Double.toString(buckleData[i].getMinLoadFactor());
-                    bc.addDataPoint(buckleData[i]);
+
+                    String[][] stringData = new String[buckleData.length + 1][Defaults.getBaseModel().getFourierTerms() + 2];
                     
 
-                }
+                    stringData[0][0] = "Length";
+                    stringData[0][stringData[0].length - 1] = "Minimum stress (Signature curve)";
 
-                FileHandler f = new FileHandler();
-                try {
-                    f.writeCSV(stringData);
-                } catch (IOException ex) {
-                    Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    for (int i = 1; i < stringData[0].length - 1; i++) {
+                        stringData[0][i] = "Buckling stress for half wave";
+                    }
 
-                XYChartDataUtil.addSeries(bc.getPhysicalLengths(), bc.getLoadFactors(), "Signature curve");
-                LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]), XYChartDataUtil.getDataList());
+                    for (int i = 0; i < buckleData.length; i++) {
 
-                
-                Defaults.getBaseModel().bucklingCurve = bc;  // WRONG a model only has one buckling point bacause it can only have one physical length
-                
-                
-                slider.setMin(Defaults.getBaseModel().getModelLength()/Double.parseDouble(bucklePoints.getText()));
-                slider.setMax(Defaults.getBaseModel().getModelLength());
-                slider.setValue(Defaults.getBaseModel().getModelLength()/Double.parseDouble(bucklePoints.getText()));
-               
-                   
-                
-                Stage s = new Stage();
+                        for (int j = 0; j < Defaults.getBaseModel().getFourierTerms(); j++) {
 
-                s.getIcons().add(ic);
-                chart.start(s);
-                slider.setMinorTickCount(0);
-                slider.setMajorTickUnit(Defaults.getBaseModel().getModelLength()/Double.parseDouble(bucklePoints.getText()));
-                disCalced = true;
-                
-                
-                
+                            stringData[i + 1][j + 1] = Double.toString(buckleData[i].getSystemLoadFactor(j));
+
+                        }
+
+                        stringData[i + 1][0] = Double.toString(buckleData[i].getPhysicalLength());
+                        stringData[i + 1][Defaults.getBaseModel().getFourierTerms() + 1] = Double.toString(buckleData[i].getMinLoadFactor());
+                        
+                        Defaults.bucklingCurve.addDataPoint(buckleData[i]);
+
+                    }
+
+                    FileHandler f = new FileHandler();
+                    try {
+                        f.writeCSV(stringData);
+                    } catch (IOException ex) {
+                        Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    XYChartDataUtil.addSeries(Defaults.bucklingCurve.getPhysicalLengths(), Defaults.bucklingCurve.getLoadFactors(), "Signature curve");
+                    LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (Defaults.bucklingCurve.getLoadFactors()[0]), XYChartDataUtil.getDataList());
+
+                    
+
+                    slider.setMin(Defaults.getBaseModel().getModelLength() / Double.parseDouble(bucklePoints.getText()));
+                    slider.setMax(Defaults.getBaseModel().getModelLength());
+                    slider.setValue(Defaults.getBaseModel().getModelLength() / Double.parseDouble(bucklePoints.getText()));
+
+                    Stage s = new Stage();
+
+                    s.getIcons().add(ic);
+                    chart.start(s);
+                    slider.setMinorTickCount(0);
+                    slider.setMajorTickUnit(Defaults.getBaseModel().getModelLength() / Double.parseDouble(bucklePoints.getText()));
+                    disCalced = true;
+
                 }
             }
         });
@@ -513,17 +503,12 @@ public class TableViewEdit extends Application {
 
         textArea.setMinHeight(100);
         bucklePoints.setMaxWidth(100);
-        
-        if(Defaults.bucklingAnalysis)
-        {
-            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea,slider);
-        }
-        else
-        {
+
+        if (Defaults.bucklingAnalysis) {
+            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea, slider);
+        } else {
             rightBox.getChildren().addAll(mvp.getPane(), calcBtn, progInd, textArea/*, slider*/);
         }
-        
-        
 
         rightBox.setStyle("-fx-padding: 0;"
                 + "-fx-border-style: solid inside;"

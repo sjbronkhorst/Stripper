@@ -5,6 +5,7 @@
  */
 package UI;
 
+import stripper.BucklingCurve;
 import stripper.materials.Material;
 import stripper.materials.Material_Steel;
 import stripper.materials.Material_Z_Li;
@@ -20,6 +21,7 @@ public class Defaults
     private static Model baseModel = new Model();
     public static boolean ignoreCoupling = false;
     public static boolean bucklingAnalysis = false;
+    public static BucklingCurve bucklingCurve = new BucklingCurve();
     
     public static int getNumberOfTerms()
     {
