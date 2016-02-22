@@ -215,7 +215,7 @@ public class TableViewEdit extends Application {
 
                 if (disCalced) {
 
-                    XYChartDataUtil.addSeries(s.getxData(), s.getyData(), "Displacement");
+                    XYChartDataUtil.addSeries(s.getxData(), s.getyData());
 
                     LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
 
@@ -223,6 +223,7 @@ public class TableViewEdit extends Application {
 
                     s.getIcons().add(ic);
                     chart.start(s);
+                    
                 } else {
                     TableViewEdit.println("Nothing to plot");
                 }
@@ -368,7 +369,7 @@ public class TableViewEdit extends Application {
                         Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-                    XYChartDataUtil.addSeries(Defaults.bucklingCurve.getPhysicalLengths(), Defaults.bucklingCurve.getLoadFactors(), "Signature curve");
+                    XYChartDataUtil.addSeries(Defaults.bucklingCurve.getPhysicalLengths(), Defaults.bucklingCurve.getLoadFactors());
                     LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (Defaults.bucklingCurve.getLoadFactors()[0]), XYChartDataUtil.getDataList());
 
                     

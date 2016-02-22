@@ -14,6 +14,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.canvas.GraphicsContext;
@@ -27,6 +28,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -102,7 +104,8 @@ public class ModelViewPane {
     VBox box3D = new VBox(10);
     VBox box2D = new VBox(10);
 
-    HBox zoomBox = new HBox(10);
+    FlowPane zoomBox = new FlowPane(5, 5);
+    
 
     Group nodeGroup = new Group();
     Group stripGroup = new Group();
@@ -438,6 +441,8 @@ public class ModelViewPane {
 
         zoomBox.getChildren().addAll(btnList);
         zoomBox.getChildren().addAll(checkList);
+        
+        
 
         threeDGroup = new Group(stripGroup, nodeGroup, axisGroup);
         twoDGroup = new Group(stripGroup2, nodeGroup2, axisGroup2);
@@ -1242,6 +1247,10 @@ public class ModelViewPane {
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
 
         return (line);
+    }
+    public SubScene getScene2D()
+    {
+        return scene2d;
     }
 
 }

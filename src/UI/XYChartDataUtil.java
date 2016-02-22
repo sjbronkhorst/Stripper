@@ -3,18 +3,30 @@ package UI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 @SuppressWarnings("unchecked")
 public class XYChartDataUtil {
     
    
     private static ObservableList<XYChart.Series<Number, Number>> data = FXCollections.<XYChart.Series<Number, Number>>observableArrayList();
+    private static int seriesNum = 0;
+    public static XYChart.Series<Number,Number> vCrossHair = new XYChart.Series<>();
+    public static XYChart.Series<Number,Number> hCrossHair = new XYChart.Series<>();
     
-    public static void addSeries(double [] xData, double [] yData , String seriesName)
+    
+    
+   
+    
+    
+    public static void addSeries(double [] xData, double [] yData)
     {
         
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(seriesName);
+        series.setName("Curve " + Integer.toString(seriesNum));
+        
+        seriesNum++;
         
         for (int i = 0; i < xData.length; i++)
         {
@@ -31,67 +43,55 @@ public class XYChartDataUtil {
         return data;
     }
     
-
-    public static ObservableList<XYChart.Series<Number, Number>> getCountrySeries() {
+    public static void setCrossHair(Number x , Number y)
+    {
+        vCrossHair.setName("Vertical Crosshair");
+        hCrossHair.setName("Horizontal Crosshair");
+                
+        vCrossHair.getData().clear();
+        hCrossHair.getData().clear();
         
-        XYChart.Series<Number, Number> seriesChina = new XYChart.Series<>();
-        seriesChina.setName("China");
-        seriesChina.getData().addAll(new XYChart.Data<>(1950, 555),
-                new XYChart.Data<>(2000, 1275),
-                new XYChart.Data<>(2050, 1395),
-                new XYChart.Data<>(2100, 1182),
-                new XYChart.Data<>(2150, 1149));
+        vCrossHair.getData().add(new XYChart.Data<Number,Number>(x,y));
+        vCrossHair.getData().add(new XYChart.Data<Number,Number>(x,0));
         
+        hCrossHair.getData().add(new XYChart.Data<Number,Number>(x,y));
+        hCrossHair.getData().add(new XYChart.Data<Number,Number>(0,y));
         
-        XYChart.Series<Number, Number> seriesIndia = new XYChart.Series<>();
-        seriesIndia.setName("India");
-        seriesIndia.getData().addAll(new XYChart.Data<>(1950, 358),
-                new XYChart.Data<>(2000, 1017),
-                new XYChart.Data<>(2050, 1531),
-                new XYChart.Data<>(2100, 1458),
-                new XYChart.Data<>(2150, 1308));
+        if(!data.contains(vCrossHair))
+        {
+            data.add(vCrossHair);
+        }
         
-        XYChart.Series<Number, Number> seriesUSA = new XYChart.Series<>();
-        seriesUSA.setName("USA");
-        seriesUSA.getData().addAll(new XYChart.Data<>(1950, 158),
-                new XYChart.Data<>(2000, 285),
-                new XYChart.Data<>(2050, 409),
-                new XYChart.Data<>(2100, 437),
-                new XYChart.Data<>(2150, 453));
-
-        ObservableList<XYChart.Series<Number, Number>> data
-                = FXCollections.<XYChart.Series<Number, Number>>observableArrayList();
-        data.addAll(seriesChina, seriesIndia, seriesUSA);
+         if(!data.contains(hCrossHair))
+        {
+            data.add(hCrossHair);
+        }
+        
+       
         
         
-        return data;
+        
     }
+    
+    public static TableColumn<XYChart.Series<Number, Number>, String> getSeriesNameColumn() {
+        TableColumn<XYChart.Series<Number, Number>, String> idColumn = new TableColumn("Series");
 
-//    public static ObservableList<XYChart.Series<String, Number>> getYearSeries() {
-//        XYChart.Series<String, Number> series1950 = new XYChart.Series<>();
-//        series1950.setName("1950");
-//        series1950.getData().addAll(new XYChart.Data<>("China", 555),
-//                new XYChart.Data<>("India", 358),
-//                new XYChart.Data<>("Brazil", 54),
-//                new XYChart.Data<>("UK", 50),
-//                new XYChart.Data<>("USA", 158));
-//        XYChart.Series<String, Number> series2000 = new XYChart.Series<>();
-//        series2000.setName("2000");
-//        series2000.getData().addAll(new XYChart.Data<>("China", 1275),
-//                new XYChart.Data<>("India", 1017),
-//                new XYChart.Data<>("Brazil", 172),
-//                new XYChart.Data<>("UK", 59),
-//                new XYChart.Data<>("USA", 285));
-//        XYChart.Series<String, Number> series2050 = new XYChart.Series<>();
-//        series2050.setName("2050");
-//        series2050.getData().addAll(new XYChart.Data<>("China", 1395),
-//                new XYChart.Data<>("India", 1531),
-//                new XYChart.Data<>("Brazil", 233),
-//                new XYChart.Data<>("UK", 66),
-//                new XYChart.Data<>("USA", 409));
-//        ObservableList<XYChart.Series<String, Number>> data
-//                = FXCollections.<XYChart.Series<String, Number>>observableArrayList();
-//        data.addAll(series1950, series2000, series2050);
-//        return data;
-//    }
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        return idColumn;
+
+    }
+    
+     public static TableColumn<Number, Number> getXColumn() {
+        TableColumn<Number, Number> idColumn = new TableColumn("X");
+
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("X"));
+
+        return idColumn;
+
+    }
+     
+     
+    
+    
 }
