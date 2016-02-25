@@ -192,6 +192,7 @@ public class LineChartWindow extends Application {
 // Set the data for the chart
 //ObservableList<XYChart.Series<Number,Number>> chartData = XYChartDataUtil.getDataList();
         chart.setData(chartData);
+        chart.setAnimated(false);
 
         yUpperTf.setText(Double.toString(yUpperBound));
         yLowerTf.setText(Double.toString(yLowerBound));
