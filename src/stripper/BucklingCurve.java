@@ -5,10 +5,10 @@
  */
 package stripper;
 
+import UI.Model;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  *
@@ -16,24 +16,32 @@ import java.util.Map;
  */
 public class BucklingCurve 
 {
-    public Map<Double,BucklingDataPoint> dataPoints = new HashMap<>();
+   
+    private List<Model> modelList = new ArrayList<>();
+    private String name;
+    private static int bcNum = 0;
+   
+            
     
-    
-    
-    
-    public void addDataPoint(BucklingDataPoint point)
+    public BucklingCurve()
     {
-        dataPoints.put(point.physicalLength,point);
+       name = "Curve " + bcNum;
+       bcNum ++;
+    }
+    
+    public void addModel(Model model)
+    {
+       modelList.add(model);
     }
     
     public double [] getLoadFactors()
     {
-        double [] data = new double [dataPoints.size()];
+        double [] data = new double [modelList.size()];
         
         int i =0;
-        for (BucklingDataPoint p : dataPoints.values())
+        for (Model m : modelList)
         {
-            data[i] = p.getMinLoadFactor();
+            data[i] = m.getBucklePoint().getMinLoadFactor();
             i++;
         }
         
@@ -42,17 +50,53 @@ public class BucklingCurve
     
      public double [] getPhysicalLengths()
     {
-        double [] data = new double [dataPoints.size()];
+        double [] data = new double [modelList.size()];
         
         int i =0;
-        for (BucklingDataPoint p : dataPoints.values())
+        for (Model m : modelList)
         {
-            data[i] = p.getPhysicalLength();
+            data[i] = m.getBucklePoint().getPhysicalLength();
             i++;
         }
         
         return data;
     }
+     
+     public BucklingDataPoint getPoint(double physicalLength)
+     {
+         for(Model m : modelList)
+         {
+             if(m.getBucklePoint().getPhysicalLength() == physicalLength)
+             {
+                 return m.getBucklePoint();
+             }
+         }
+         
+         System.out.println("No such point");
+         return null;
+     }
+     
+     
+      public Model getModel(double physicalLength)
+     {
+         for(Model m : modelList)
+         {
+             if(m.getBucklePoint().getPhysicalLength() == physicalLength)
+             {
+                 return m;
+             }
+         }
+         
+         System.out.println("No such Model");
+         return null;
+     }
+
+    public String getName() {
+        return name;
+    }
+     
+     
+     
     
     
     

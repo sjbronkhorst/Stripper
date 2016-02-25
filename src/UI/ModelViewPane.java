@@ -48,6 +48,7 @@ import javafx.scene.transform.Translate;
 import linalg.Vector;
 
 import stripper.Node;
+import stripper.Strip;
 
 /**
  *
@@ -75,7 +76,6 @@ public class ModelViewPane {
     double xRotation = 0;
     double yRotation = 0;
     double zRotation = 0;
-    
 
     double pressedX;
     double pressedY;
@@ -105,7 +105,6 @@ public class ModelViewPane {
     VBox box2D = new VBox(10);
 
     FlowPane zoomBox = new FlowPane(5, 5);
-    
 
     Group nodeGroup = new Group();
     Group stripGroup = new Group();
@@ -127,11 +126,15 @@ public class ModelViewPane {
     PhongMaterial yellowStuff = new PhongMaterial();
     PhongMaterial greenStuff = new PhongMaterial();
     PhongMaterial redStuff = new PhongMaterial();
-    
+
     Model model;
 
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
     public ModelViewPane(Model model) {
-        
+
         this.model = model;
 
         yellowStuff.setDiffuseColor(Color.YELLOW);
@@ -226,7 +229,7 @@ public class ModelViewPane {
             public void handle(ActionEvent event) {
 
                 camera.setTranslateZ(camera.getTranslateZ() + 100);
-               
+
                 camera.setNearClip(0.1);
                 camera.setFarClip(Math.abs(camera.getTranslateZ() * 4));
                 camera.setFieldOfView(35);
@@ -252,7 +255,7 @@ public class ModelViewPane {
             public void handle(ActionEvent event) {
 
                 camera.setTranslateZ(camera.getTranslateZ() - 100);
-                
+
                 camera.setNearClip(0.1);
                 camera.setFarClip(Math.abs(camera.getTranslateZ() * 4));
                 camera.setFieldOfView(35);
@@ -441,8 +444,6 @@ public class ModelViewPane {
 
         zoomBox.getChildren().addAll(btnList);
         zoomBox.getChildren().addAll(checkList);
-        
-        
 
         threeDGroup = new Group(stripGroup, nodeGroup, axisGroup);
         twoDGroup = new Group(stripGroup2, nodeGroup2, axisGroup2);
@@ -459,11 +460,9 @@ public class ModelViewPane {
 
             if (notches > 0) {
                 camera.setTranslateZ(camera.getTranslateZ() + 50);
-             
 
             } else {
                 camera.setTranslateZ(camera.getTranslateZ() - 50);
-              
 
             }
 
@@ -528,9 +527,7 @@ public class ModelViewPane {
 
     public void draw() {
 
-        
-      
-       // GraphicsContext gc = canvas.getGraphicsContext2D();
+        // GraphicsContext gc = canvas.getGraphicsContext2D();
         double x1 = 0;
         double y1 = 0;
         double x2 = 0;
@@ -551,7 +548,7 @@ public class ModelViewPane {
 
         stripGroup.getChildren().clear();
 
-        for (UIStrip s : StripTableUtil.getStripList()) {
+        for (Strip s : model.getStripList()) {
 
             if (s.hasBothNodes()) {
 
@@ -560,12 +557,6 @@ public class ModelViewPane {
 
                 x2 = s.getNode2().getXCoord();
                 y2 = s.getNode2().getZCoord();
-
-                x3 = s.getNode1().getDisplacedXCoord() + x1;
-                y3 = s.getNode1().getDisplacedZCoord() + y1;
-
-                x4 = s.getNode2().getDisplacedXCoord() + x2;
-                y4 = s.getNode2().getDisplacedZCoord() + y2;
 
             }
 
@@ -692,14 +683,14 @@ public class ModelViewPane {
                 }
             }
 
-            if (s.getF1() != 0 || s.getF2() != 0) {
+            if (s.getEdgeTractionAtNode1()!= 0 || s.getEdgeTractionAtNode2() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
 
                     PointLoad pl = new PointLoad();
                     pl.setXCoord((double) (i));
                     pl.setYCoord(0.0);
-                    pl.setMagnitude(((s.getF2() - s.getF1()) / s.getStripWidth()) * i + s.getF1());
+                    pl.setMagnitude(((s.getEdgeTractionAtNode2() - s.getEdgeTractionAtNode1()) / s.getStripWidth()) * i + s.getEdgeTractionAtNode1());
 
                     if (pl.getMagnitude() != 0.0) {
                         addYArrowAt(x1, y1, theta, pl);
@@ -714,11 +705,10 @@ public class ModelViewPane {
         ////////////////////////////////////////////
         //DRAW NODES
         nodeGroup.getChildren().clear();
-        
 
         if (nodesCheck.isSelected()) {
 
-            for (Node n : NodeTableUtil.getNodeList()) {
+            for (Node n : model.getNodeList()) {
 
 //            gc.setFill(Color.DARKGRAY);
 //
@@ -740,7 +730,7 @@ public class ModelViewPane {
                 blueStuff.setDiffuseColor(Color.BLUE);
                 blueStuff.setSpecularColor(Color.BLACK);
 
-                Sphere s = new Sphere(-camera.getTranslateZ()/100);
+                Sphere s = new Sphere(-camera.getTranslateZ() / 100);
                 s.translateXProperty().set(n.getXCoord());
                 s.translateYProperty().set(n.getZCoord());
 
@@ -810,7 +800,7 @@ public class ModelViewPane {
 
     public void draw2() {
 
-       // GraphicsContext gc = canvas.getGraphicsContext2D();
+        // GraphicsContext gc = canvas.getGraphicsContext2D();
         double x1 = 0;
         double y1 = 0;
         double x2 = 0;
@@ -831,7 +821,7 @@ public class ModelViewPane {
 
         stripGroup2.getChildren().clear();
 
-        for (UIStrip s : StripTableUtil.getStripList()) {
+        for (Strip s : model.getStripList()) {
 
             if (s.hasBothNodes()) {
 
@@ -841,11 +831,11 @@ public class ModelViewPane {
                 x2 = s.getNode2().getXCoord();
                 y2 = s.getNode2().getZCoord();
 
-                x3 = s.getNode1().getDisplacedXCoord() + x1;
-                y3 = s.getNode1().getDisplacedZCoord() + y1;
+                x3 = x1 + s.getNode1().getDisplacedXCoord();
+                y3 = y1 + s.getNode1().getDisplacedZCoord();
 
-                x4 = s.getNode2().getDisplacedXCoord() + x2;
-                y4 = s.getNode2().getDisplacedZCoord() + y2;
+                x4 = x2 + s.getNode2().getDisplacedXCoord();
+                y4 = y2 + s.getNode2().getDisplacedZCoord();
 
             }
 
@@ -877,7 +867,7 @@ public class ModelViewPane {
 //            gc.strokeLine(x1, y1, x2, y2);
             double theta = 180 * s.getStripAngle() / Math.PI;
 
-            Box b = new Box(s.getStripWidth(), s.getStripThickness(),1);
+            Box b = new Box(s.getStripWidth(), s.getStripThickness(), 1);
 
             if (stripLabelCheck.isSelected()) {
                 Text t = new Text(s.toString());
@@ -918,11 +908,8 @@ public class ModelViewPane {
 
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
-            
-            
-            
-            Cylinder c = createConnection(new Point3D(x3, y3, 0), new Point3D(x4, y4, 0),s.getStripThickness());
-                    
+
+            Cylinder c = createConnection(new Point3D(x3, y3, 0), new Point3D(x4, y4, 0), s.getStripThickness());
 
             stripGroup2.getChildren().add(c);
 
@@ -977,14 +964,14 @@ public class ModelViewPane {
                 }
             }
 
-            if (s.getF1() != 0 || s.getF2() != 0) {
+            if (s.getEdgeTractionAtNode1() != 0 || s.getEdgeTractionAtNode2() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
 
                     PointLoad pl = new PointLoad();
                     pl.setXCoord((double) (i));
                     pl.setYCoord(0.0);
-                    pl.setMagnitude(((s.getF2() - s.getF1()) / s.getStripWidth()) * i + s.getF1());
+                    pl.setMagnitude(((s.getEdgeTractionAtNode2() - s.getEdgeTractionAtNode1()) / s.getStripWidth()) * i + s.getEdgeTractionAtNode1());
 
                     if (pl.getMagnitude() != 0.0) {
                         addYArrowAt(x1, y1, theta, pl);
@@ -1002,7 +989,7 @@ public class ModelViewPane {
 
         if (nodesCheck.isSelected()) {
 
-            for (Node n : NodeTableUtil.getNodeList()) {
+            for (Node n : model.getNodeList()) {
 
 //            gc.setFill(Color.DARKGRAY);
 //
@@ -1024,7 +1011,7 @@ public class ModelViewPane {
                 blueStuff.setDiffuseColor(Color.BLUE);
                 blueStuff.setSpecularColor(Color.BLACK);
 
-                Sphere s = new Sphere(-camera2.getTranslateZ()/100);
+                Sphere s = new Sphere(-camera2.getTranslateZ() / 100);
                 s.translateXProperty().set(n.getXCoord()+n.getDisplacedXCoord());
                 s.translateYProperty().set(n.getZCoord()+n.getDisplacedZCoord());
 
@@ -1032,8 +1019,8 @@ public class ModelViewPane {
                     Text t = new Text(Integer.toString(n.getNodeId()));
                     t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                    t.translateXProperty().set(n.getXCoord() + 10);
-                    t.translateYProperty().set(n.getZCoord() + 10);
+                    t.translateXProperty().set(n.getXCoord()+n.getDisplacedXCoord() + 10);
+                    t.translateYProperty().set(n.getZCoord()+n.getDisplacedZCoord() + 10);
 
                     nodeGroup2.getChildren().add(t);
 
@@ -1248,8 +1235,8 @@ public class ModelViewPane {
 
         return (line);
     }
-    public SubScene getScene2D()
-    {
+
+    public SubScene getScene2D() {
         return scene2d;
     }
 

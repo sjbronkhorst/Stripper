@@ -27,6 +27,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import stripper.BucklingCurve;
 import stripper.Node;
 //
 
@@ -179,7 +180,7 @@ public class LineChartWindow extends Application {
 
         chart.setTitle(chartTitle);
         chart.setCreateSymbols(false);
-        
+
         chart.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
@@ -187,8 +188,6 @@ public class LineChartWindow extends Application {
                 System.out.println("X = " + event.getSceneX() + "Y = " + event.getSceneY());
             }
         });
-        
-        
 
 // Set the data for the chart
 //ObservableList<XYChart.Series<Number,Number>> chartData = XYChartDataUtil.getDataList();
@@ -250,13 +249,39 @@ public class LineChartWindow extends Application {
             seriesDataTable.getItems().add(dataPoint);
         }
 
+      
+       
+
     }
 
     public void doSetCrossHair() {
         XYChartDataUtil.setCrossHair(seriesDataTable.getSelectionModel().getSelectedItem().getXValue(), seriesDataTable.getSelectionModel().getSelectedItem().getYValue());
 
-        Defaults.getBaseModel().setDisplacedState(Defaults.bucklingCurve.dataPoints.get((Double) seriesDataTable.getSelectionModel().getSelectedItem().getXValue()));
-        mvp.draw();
+        String bcName = seriesTable.getSelectionModel().getSelectedItem().getName();
+
+        BucklingCurve bc = Defaults.getBucklinCurve(bcName);
+        
+
+        if (bc != (null)) {
+
+            if (seriesDataTable.getSelectionModel().getSelectedItem() != null) {
+
+                double tableSelection = (Double) seriesDataTable.getSelectionModel().getSelectedItem().getXValue();
+                Model m = bc.getModel(tableSelection);
+
+                if (m != null) {
+
+                    
+                   
+                                        m.setDisplacedState(bc.getPoint((Double) seriesDataTable.getSelectionModel().getSelectedItem().getXValue()));
+                    mvp.setModel(m);
+                     mvp.draw();
+                }
+
+            }
+        }
+        
+       
     }
 
     public void addNameColumn(TableView<XYChart.Series<Number, Number>> table) {

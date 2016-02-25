@@ -5,6 +5,10 @@
  */
 package UI;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import stripper.BucklingCurve;
 import stripper.materials.Material;
 import stripper.materials.Material_Steel;
@@ -21,7 +25,8 @@ public class Defaults
     private static Model baseModel = new Model();
     public static boolean ignoreCoupling = false;
     public static boolean bucklingAnalysis = false;
-    public static BucklingCurve bucklingCurve = new BucklingCurve();
+    public static List<BucklingCurve> bucklingCurveList = new ArrayList<BucklingCurve>();
+   
     
     public static int getNumberOfTerms()
     {
@@ -31,6 +36,24 @@ public class Defaults
     public static Model getBaseModel()
     {
         return baseModel;
+    }
+    public static BucklingCurve getBucklinCurve(String name)
+    {
+        for (BucklingCurve bc : bucklingCurveList)
+        {
+         if(bc.getName().equals(name))
+         {
+             return bc;
+         }
+            
+            
+            
+        }
+        
+        System.out.println("No such BucklingCurve");
+        return null;
+        
+        
     }
     
         

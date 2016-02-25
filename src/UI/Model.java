@@ -5,6 +5,8 @@
  */
 package UI;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import linalg.Matrix;
@@ -33,6 +35,8 @@ public class Model{
     
     private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
+    private  Map<Integer , Node> nodeMap = new HashMap();
+    private BucklingDataPoint bucklePoint;
 
     
     
@@ -46,6 +50,16 @@ public class Model{
       
         
     }
+
+    public BucklingDataPoint getBucklePoint() {
+        return bucklePoint;
+    }
+
+    public void setBucklePoint(BucklingDataPoint bucklePoint) {
+        this.bucklePoint = bucklePoint;
+    }
+    
+    
     
      public Model()
     { 
@@ -90,13 +104,26 @@ public class Model{
         getFourierSeries().computeAllIntegrals(getFourierTerms());
     }
 
+    /**
+     * DO NOT ADD STRIPS HERE ! use the addStrip method to avoid errors caused by reference calls
+     * @return 
+     */
     public ObservableList<Strip> getStripList() {
         return strips;
     }
     
+     /**
+     * DO NOT ADD NODES HERE ! use the addNode method to avoid errors caused by reference calls
+     * @return 
+     */
      public ObservableList<Node> getNodeList() {
         return nodes;
     }
+     
+     public Map<Integer, Node> getNodeMap()
+     {
+         return nodeMap;
+     }
 
     /**
      * Strips should only be added to the model once all data is known e.g.
@@ -108,10 +135,37 @@ public class Model{
      */
     public void addStrip(UIStrip uistrip) {
         if (fourierSeries.isSimplySupported()) {
-            strips.add(new Strip_SS(uistrip, this));
+            
+            Strip s = new Strip_SS(uistrip, this);
+            s.setNode1(getNode(uistrip.getNode1Id()));
+            s.setNode2(getNode(uistrip.getNode2Id()));
+            strips.add(s);
         } else {
-            strips.add(new Strip_General(uistrip,this));
+            Strip s = new Strip_General(uistrip,this);
+            s.setNode1(getNode(uistrip.getNode1Id()));
+            s.setNode2(getNode(uistrip.getNode2Id()));
+            strips.add(s);
         }
+    }
+    
+    public void addNode(Node n)
+    {
+        nodes.add(new Node(n.getXCoord(), n.getZCoord(), this));
+    }
+    public Node getNode(int Id)
+    {
+        for (Node n : nodes)
+        {
+            
+            if(n.getNodeId() == Id)
+            {
+                return n;
+            }
+            
+        }
+        
+        System.out.println("No such node");
+        return null;
     }
 
     public double getXBar() {
@@ -142,10 +196,11 @@ public class Model{
 
     public void setDisplacedState(BucklingDataPoint point) {
 
-        double scale = 20.0;
+        double scale = 40.0;
         int[] indices = {0, 1, 2, 3};
-
-        for (Node n : NodeTableUtil.getNodeList()) {
+        
+            
+        for (Node n : nodes) {
 
             for (int m = 0; m < getFourierTerms(); m++) {
 
@@ -176,13 +231,17 @@ public class Model{
 
         zVec.scale(scale);
         xVec.scale(scale);
-
+        
+      
         for (Node n : nodes) {
 
             n.setDisplacedZCoord(zVec.get(n.getNodeId() - 1));
             n.setDisplacedXCoord(xVec.get(n.getNodeId() - 1));
 
         }
+        
+        
+        
 
     }
 

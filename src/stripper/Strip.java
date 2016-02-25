@@ -109,6 +109,12 @@ public abstract class Strip {
         hasNode1 = true;
 
     }
+    
+      public boolean hasBothNodes() {
+        return (hasNode1 && hasNode2);
+    }
+      
+      
 
     public void setNode2(Node n) {
         node2 = n;
@@ -756,6 +762,16 @@ public abstract class Strip {
     
      public void setEdgeTractionAtNode2(double f2) {
         this.f2 = f2;
+        
+    }
+     
+          public double getEdgeTractionAtNode1() {
+        return f1;
+        
+    }
+    
+      public double getEdgeTractionAtNode2() {
+        return f2;
         
     }
      

@@ -44,6 +44,7 @@ import javafx.util.converter.IntegerStringConverter;
 import stripper.BucklingCurve;
 import stripper.BucklingDataPoint;
 import stripper.BucklingEquation;
+import stripper.EigenValueFixer;
 import stripper.FileHandler;
 import stripper.Path;
 
@@ -136,38 +137,9 @@ public class TableViewEdit extends Application {
         Button stripRemoveBtn = new Button("Remove");
         Button stripPropertyBtn = new Button("Properties");
 
-        Slider slider = new Slider(0, 100, 50);
+       
 
-        slider.setMajorTickUnit(10);
-        slider.setMinorTickCount(1);
-        slider.showTickMarksProperty().set(true);
-        slider.snapToTicksProperty().set(true);
-        slider.showTickLabelsProperty().set(true);
-
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-
-                if (slider.isFocused()) {
-
-                    if(disCalced && (Defaults.bucklingCurve.dataPoints.get(slider.getValue()) != null))
-                    {
-                        
-                        Defaults.getBaseModel().setDisplacedState(Defaults.bucklingCurve.dataPoints.get(slider.getValue()));
-                        
-                        
-                        
-                    }
-                   
-                    
-                    
-                       
-                    }
-                    
-                    draw();
-            }
-        });
+        
 
         setLengthBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -236,17 +208,22 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                Defaults.getBaseModel().getStripList().clear();
+                
+                
+                //Defaults.getBaseModel().getNodeList().clear();
+//                Node.clearNumbering();
+//                for (Node n : NodeTableUtil.getNodeList()) {
+//                    Defaults.getBaseModel().addNode(n);
+//                }
+                
+                
+                //Defaults.getBaseModel().getStripList().clear();
+//                for (UIStrip s : StripTableUtil.getStripList()) {
+//
+//                    Defaults.getBaseModel().addStrip(s);
+//                }
 
-                for (UIStrip s : StripTableUtil.getStripList()) {
-
-                    Defaults.getBaseModel().addStrip(s);
-                }
-
-                Defaults.getBaseModel().getNodeList().clear();
-                for (Node n : NodeTableUtil.getNodeList()) {
-                    Defaults.getBaseModel().getNodeList().add(n);
-                }
+                
 
                 s = new SystemEquation(Defaults.getBaseModel());
 
@@ -288,21 +265,18 @@ public class TableViewEdit extends Application {
                 //  ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
                 boolean noEdgeLoads = false;
 
-                Defaults.getBaseModel().getStripList().clear();
-                for (UIStrip s : StripTableUtil.getStripList()) {
-
-                    Defaults.getBaseModel().addStrip(s);
-
-                    if (s.getF1() == 0.0 && s.getF2() == 0.0) {
-                        noEdgeLoads = true;
-                    }
-
-                }
-
-                Defaults.getBaseModel().getNodeList().clear();
-                for (Node n : NodeTableUtil.getNodeList()) {
-                    Defaults.getBaseModel().getNodeList().add(n);
-                }
+                //Defaults.getBaseModel().getNodeList().clear();
+//                Node.clearNumbering();
+//                for (Node n : NodeTableUtil.getNodeList()) {
+//                    Defaults.getBaseModel().addNode(n);
+//                }
+                
+                
+               // Defaults.getBaseModel().getStripList().clear();
+//                for (UIStrip s : StripTableUtil.getStripList()) {
+//
+//                    Defaults.getBaseModel().addStrip(s);
+//                }
 
                 if (noEdgeLoads) {
                     println("ERROR : Some strips have no edge loads specified ! ");
@@ -310,22 +284,27 @@ public class TableViewEdit extends Application {
 
                     int steps = Integer.parseInt(bucklePoints.getText());
                     BucklingEquation[] b = new BucklingEquation[steps];
-                    BucklingDataPoint[] buckleData = new BucklingDataPoint[steps];
                     Model[] models = new Model[steps];
 
                     for (int i = 0; i < steps; i++) {
 
                         models[i] = new Model(Defaults.getBaseModel());
 
+                        
+                        
+                        Node.clearNumbering();
+                        for (Node n : NodeTableUtil.getNodeList()) {
+                            models[i].addNode(n);
+                        }
+                        
+                        
                         for (UIStrip s : StripTableUtil.getStripList()) {
 
                             models[i].addStrip(s);
 
                         }
 
-                        for (Node n : NodeTableUtil.getNodeList()) {
-                            models[i].getNodeList().add(n);
-                        }
+                        
                         
                         
 
@@ -333,11 +312,12 @@ public class TableViewEdit extends Application {
 
                         b[i] = new BucklingEquation(models[i]);
 
-                        buckleData[i] = b[i].getBucklingData();
+                       models[i].setBucklePoint(b[i].getBucklingData());
 
                     }
-
-                    String[][] stringData = new String[buckleData.length + 1][Defaults.getBaseModel().getFourierTerms() + 2];
+                 
+            
+                    String[][] stringData = new String[models.length + 1][Defaults.getBaseModel().getFourierTerms() + 2];
                     
 
                     stringData[0][0] = "Length";
@@ -346,19 +326,22 @@ public class TableViewEdit extends Application {
                     for (int i = 1; i < stringData[0].length - 1; i++) {
                         stringData[0][i] = "Buckling stress for half wave";
                     }
+                    
+                    BucklingCurve bc = new BucklingCurve();
+                   
 
-                    for (int i = 0; i < buckleData.length; i++) {
+                    for (int i = 0; i < models.length; i++) {
 
                         for (int j = 0; j < Defaults.getBaseModel().getFourierTerms(); j++) {
 
-                            stringData[i + 1][j + 1] = Double.toString(buckleData[i].getSystemLoadFactor(j));
+                            stringData[i + 1][j + 1] = Double.toString(models[i].getBucklePoint().getSystemLoadFactor(j));
 
                         }
 
-                        stringData[i + 1][0] = Double.toString(buckleData[i].getPhysicalLength());
-                        stringData[i + 1][Defaults.getBaseModel().getFourierTerms() + 1] = Double.toString(buckleData[i].getMinLoadFactor());
+                        stringData[i + 1][0] = Double.toString(models[i].getBucklePoint().getPhysicalLength());
+                        stringData[i + 1][Defaults.getBaseModel().getFourierTerms() + 1] = Double.toString(models[i].getBucklePoint().getMinLoadFactor());
                         
-                        Defaults.bucklingCurve.addDataPoint(buckleData[i]);
+                        bc.addModel(models[i]);
 
                     }
 
@@ -369,21 +352,18 @@ public class TableViewEdit extends Application {
                         Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-                    XYChartDataUtil.addSeries(Defaults.bucklingCurve.getPhysicalLengths(), Defaults.bucklingCurve.getLoadFactors());
-                    LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (Defaults.bucklingCurve.getLoadFactors()[0]), XYChartDataUtil.getDataList());
+                    XYChartDataUtil.addSeries(bc.getPhysicalLengths(), bc.getLoadFactors());
+                    LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]), XYChartDataUtil.getDataList());
 
-                    
+                    Defaults.bucklingCurveList.add(bc);
 
-                    slider.setMin(Defaults.getBaseModel().getModelLength() / Double.parseDouble(bucklePoints.getText()));
-                    slider.setMax(Defaults.getBaseModel().getModelLength());
-                    slider.setValue(Defaults.getBaseModel().getModelLength() / Double.parseDouble(bucklePoints.getText()));
-
+                   
                     Stage s = new Stage();
 
                     s.getIcons().add(ic);
                     chart.start(s);
-                    slider.setMinorTickCount(0);
-                    slider.setMajorTickUnit(Defaults.getBaseModel().getModelLength() / Double.parseDouble(bucklePoints.getText()));
+                  
+                    
                     disCalced = true;
 
                 }
@@ -441,6 +421,7 @@ public class TableViewEdit extends Application {
             public void handle(ActionEvent event) {
 
                 Node n = new Node(0, 0, Defaults.getBaseModel());
+                Defaults.getBaseModel().addNode(n);
                 NodeTableUtil.addNode(n);
                 draw();
                 TableViewEdit.println("Node " + n.getNodeId() + " added.");
@@ -506,9 +487,9 @@ public class TableViewEdit extends Application {
         bucklePoints.setMaxWidth(100);
 
         if (Defaults.bucklingAnalysis) {
-            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea, slider);
+            rightBox.getChildren().addAll(mvp.getPane(), buckleLable, bucklePoints, buckleBtn, textArea);
         } else {
-            rightBox.getChildren().addAll(mvp.getPane(), calcBtn, progInd, textArea/*, slider*/);
+            rightBox.getChildren().addAll(mvp.getPane(), calcBtn, progInd, textArea);
         }
 
         rightBox.setStyle("-fx-padding: 0;"

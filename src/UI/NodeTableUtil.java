@@ -19,9 +19,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
  */
 public class NodeTableUtil {
 
-    private static ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
+    private static ObservableList<Node> nodes = Defaults.getBaseModel().getNodeList();
     
-    private static Map<Integer , Node> nodeMap = new HashMap();
+    private static Map<Integer , Node> nodeMap = Defaults.getBaseModel().getNodeMap();
 
     public static ObservableList<Node> getNodeList() {
         return nodes;

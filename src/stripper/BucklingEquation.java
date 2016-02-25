@@ -92,7 +92,7 @@ public class BucklingEquation {
                 Matrix Kg = sg.getKff();
 
                 calcBucklingVectorValueAndIndex(Ke, Kg);
-                bucklePoint.setSystemLoadFactor(r - 1, eigenMatrix.get(bucklingIndex, bucklingIndex));
+                bucklePoint.setSystemLoadFactor(r - 1, Math.abs(eigenMatrix.get(bucklingIndex, bucklingIndex)));
                 bucklePoint.setFreeParamVector(r - 1, eigenVectors.col(bucklingIndex));
 
             }
@@ -162,7 +162,7 @@ public class BucklingEquation {
 
         calcBucklingVectorValueAndIndex(Ke, Kg);
 
-        bucklePoint.setMinLoadFactor(eigenMatrix.get(bucklingIndex, bucklingIndex));
+        bucklePoint.setMinLoadFactor(Math.abs(eigenMatrix.get(bucklingIndex, bucklingIndex)));
         bucklePoint.setMinParamVector(eigenVectors.col(bucklingIndex));
 
         //Convert the free nodal param vector to a system nodal param vector
@@ -203,7 +203,8 @@ public class BucklingEquation {
         //ev.printf("eig vectors");
         double alphaMin = eigenMatrix.get(0, 0);
         for (int i = 0; i < eigenMatrix.cols(); i++) {
-            if ((eigenMatrix.get(i, i) <= alphaMin) && (eigenMatrix.get(i, i) >= 0)) {
+            if (Math.abs(eigenMatrix.get(i, i)) <= Math.abs(alphaMin)) 
+            {
                 alphaMin = eigenMatrix.get(i, i);
                 index = i;
 
