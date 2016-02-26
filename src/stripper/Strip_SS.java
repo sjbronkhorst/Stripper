@@ -7,7 +7,6 @@ package stripper;
  */
 import UI.Model;
 import UI.PointLoad;
-import UI.UIStrip;
 import linalg.Matrix;
 import linalg.Vector;
 

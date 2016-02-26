@@ -23,50 +23,50 @@ public class NodeTableUtil {
     
     //private static Map<Integer , Node> nodeMap = Defaults.getBaseModel().getNodeMap();
 
-    public static ObservableList<Node> getNodeList() {
-        return nodes;
-    }
-
-    public static void addNode(Node n) {
-        nodes.add(n);
-        //nodeMap.put(n.getNodeId(), n);
-    }
-    
-    public static void removeNode(Node n)
-    {
-        nodes.remove(n);
-       // nodeMap.remove(n.getNodeId());
-    }
-    
-    public static void clearNodes()
-    {
-        int i = nodes.size();
-        
-        
-        for (int j = 0;  j < i;j ++)
-        {
-           // nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
-            nodes.remove(0);
-            
-        }
-        
-        
-        
-    }
-    
-     public static Node getNode(int Id) {
-        for (Node n : nodes) {
-
-            if (n.getNodeId() == Id) {
-                return n;
-            }
-
-        }
-
-        System.out.println("No such node");
-        return null;
-    }
-     
+//    public static ObservableList<Node> getNodeList() {
+//        return nodes;
+//    }
+//
+//    public static void addNode(Node n) {
+//        nodes.add(n);
+//        //nodeMap.put(n.getNodeId(), n);
+//    }
+//    
+//    public static void removeNode(Node n)
+//    {
+//        nodes.remove(n);
+//       // nodeMap.remove(n.getNodeId());
+//    }
+//    
+//    public static void clearNodes()
+//    {
+//        int i = nodes.size();
+//        
+//        
+//        for (int j = 0;  j < i;j ++)
+//        {
+//           // nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
+//            nodes.remove(0);
+//            
+//        }
+//        
+//        
+//        
+//    }
+//    
+//     public static Node getNode(int Id) {
+//        for (Node n : nodes) {
+//
+//            if (n.getNodeId() == Id) {
+//                return n;
+//            }
+//
+//        }
+//
+//        System.out.println("No such node");
+//        return null;
+//    }
+//     
      
 
     public static TableColumn<Node, Integer> getIDColumn() {

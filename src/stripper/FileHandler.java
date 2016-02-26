@@ -7,7 +7,6 @@ package stripper;
 
 import UI.Defaults;
 import UI.TableViewEdit;
-import UI.UIStrip;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

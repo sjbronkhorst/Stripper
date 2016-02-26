@@ -83,7 +83,7 @@ public class BucklingEquation {
 
             for (int r = 1; r <= model.getFourierTerms(); r++) { // r = mode shape
 
-                Assembler a = new Assembler(strips, NodeTableUtil.getNodeList().size() * 4, localToGlobalConfNumbering);
+                Assembler a = new Assembler(strips, model.getNodeList().size() * 4, localToGlobalConfNumbering);
 
                 PartitionedSystem se = new PartitionedSystem(a.getK(r), status);
                 PartitionedSystem sg = new PartitionedSystem(a.getKg(r), status);
@@ -104,7 +104,7 @@ public class BucklingEquation {
                 //Convert the free nodal param vector to a system nodal param vector
                 Vector Uf = bucklePoint.getMinParamVector();
 
-                Vector Us = Vector.getVector(NodeTableUtil.getNodeList().size() * 4);
+                Vector Us = Vector.getVector(model.getNodeList().size() * 4);
 
                 Us.clear();
                 int count = 0;

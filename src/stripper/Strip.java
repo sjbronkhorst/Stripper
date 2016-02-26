@@ -152,7 +152,11 @@ public abstract class Strip {
     }
 
     public double getStripWidth() {
+        if(hasBothNodes())
+        {
         return Math.sqrt(Math.pow((node1.getXCoord() - node2.getXCoord()), 2) + Math.pow((node1.getZCoord() - node2.getZCoord()), 2));
+        }
+        return 0;
     }
 
     public double getStripThickness() {
@@ -160,7 +164,11 @@ public abstract class Strip {
     }
 
     public double getStripAngle() {
+        if(hasBothNodes())
+        {
         return Math.atan((node2.getZCoord() - node1.getZCoord()) / (node2.getXCoord() - node1.getXCoord()));
+        }
+        return 0;
     }
 
     public Material getMaterial() {

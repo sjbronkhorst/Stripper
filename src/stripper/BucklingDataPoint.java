@@ -5,6 +5,7 @@
  */
 package stripper;
 
+import UI.Defaults;
 import UI.NodeTableUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,12 +117,12 @@ public class BucklingDataPoint {
         
         for (int m = 0; m < nTerms; m++)
             {
-                freeParamVectors[m] = Vector.getVector(NodeTableUtil.getNodeList().size()*4);
+                freeParamVectors[m] = Vector.getVector(Defaults.getBaseModel().getNodeList().size()*4);
             }
         
         
         
-        for (int n = 0; n < NodeTableUtil.getNodeList().size(); n++)
+        for (int n = 0; n < Defaults.getBaseModel().getNodeList().size(); n++)
         {
             int startIndex = n*4*nTerms;
             

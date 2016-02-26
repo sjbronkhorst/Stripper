@@ -6,7 +6,6 @@
 package stripper;
 
 import UI.Model;
-import UI.UIStrip;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.Callable;

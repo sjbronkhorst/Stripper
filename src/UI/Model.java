@@ -166,9 +166,19 @@ public class Model {
     public void addStrip(Strip s) {
 
         Strip strip = this.fourierSeries.getStrip(this);
+        
+        if(s.hasBothNodes())
+        {
         strip.setNode1(getNode(s.getNode1Id()));
         strip.setNode2(getNode(s.getNode2Id()));
+        }
         strip.setStripThickness(s.getStripThickness());
+        strips.add(strip);
+    }
+    
+    public void addStrip() {
+
+        Strip strip = this.fourierSeries.getStrip(this);
         strips.add(strip);
     }
     
@@ -178,6 +188,16 @@ public class Model {
 
     public void addNode(Node n) {
         Node node = new Node(n.getXCoord(), n.getZCoord(), this);
+        
+        nodes.add(node);
+       
+    }
+    
+    
+     public void addNode() 
+     {
+        Node node = new Node(0,0, this);
+        
         nodes.add(node);
        
     }
@@ -193,6 +213,25 @@ public class Model {
 
         System.out.println("No such node");
         return null;
+    }
+    
+    public void removeNode(Node n)
+    {
+        nodes.remove(n);
+       
+    }
+    
+    public void clearNodes()
+    {
+        int i = nodes.size();
+        
+        
+        for (int j = 0;  j < i;j ++)
+        {
+           // nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
+            nodes.remove(0);
+            
+        }
     }
 
     public double getXBar() {
@@ -239,8 +278,8 @@ public class Model {
 
         }
 
-        Vector zVec = Vector.getVector(NodeTableUtil.getNodeList().size());
-        Vector xVec = Vector.getVector(NodeTableUtil.getNodeList().size());
+        Vector zVec = Vector.getVector(nodes.size());
+        Vector xVec = Vector.getVector(nodes.size());
 
         for (Strip s : strips) {
 

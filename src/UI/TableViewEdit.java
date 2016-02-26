@@ -110,7 +110,7 @@ public class TableViewEdit extends Application {
 
         stage.getIcons().add(ic);
 
-        TableView<Node> table = new TableView<>(NodeTableUtil.getNodeList());
+        TableView<Node> table = new TableView<>(Defaults.getBaseModel().getNodeList());
 // Make the TableView editable
         table.setEditable(true);
         // Add columns with appropriate editing features
@@ -122,9 +122,7 @@ public class TableViewEdit extends Application {
 
         //TableView<UIStrip> stripTable = new TableView<>(UIStripTableUtil.getStripList());
         TableView<Strip> stripTable = new TableView<>(Defaults.getBaseModel().getStripList());
-        
-       
-        
+
         stripTable.setEditable(true);
         addStripIdColumn(stripTable);
         addNode1Column(stripTable);
@@ -140,10 +138,6 @@ public class TableViewEdit extends Application {
         Button stripAddBtn = new Button("Add");
         Button stripRemoveBtn = new Button("Remove");
         Button stripPropertyBtn = new Button("Properties");
-
-       
-
-        
 
         setLengthBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -178,7 +172,6 @@ public class TableViewEdit extends Application {
 //                for (UIStrip s : UIStripTableUtil.getStripList()) {
 //                    s.setStripThickness(Double.parseDouble(thicknessField.textProperty().get()));
 //                }
-                
                 for (Strip s : Defaults.getBaseModel().getStripList()) {
                     s.setStripThickness(Double.parseDouble(thicknessField.textProperty().get()));
                 }
@@ -203,7 +196,7 @@ public class TableViewEdit extends Application {
 
                     s.getIcons().add(ic);
                     chart.start(s);
-                    
+
                 } else {
                     TableViewEdit.println("Nothing to plot");
                 }
@@ -215,23 +208,6 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-
-                
-                
-                //Defaults.getBaseModel().getNodeList().clear();
-//                Node.clearNumbering();
-//                for (Node n : NodeTableUtil.getNodeList()) {
-//                    Defaults.getBaseModel().addNode(n);
-//                }
-                
-                
-                //Defaults.getBaseModel().getStripList().clear();
-//                for (UIStrip s : StripTableUtil.getStripList()) {
-//
-//                    Defaults.getBaseModel().addStrip(s);
-//                }
-
-                
 
                 s = new SystemEquation(Defaults.getBaseModel());
 
@@ -278,14 +254,11 @@ public class TableViewEdit extends Application {
 //                for (Node n : NodeTableUtil.getNodeList()) {
 //                    Defaults.getBaseModel().addNode(n);
 //                }
-                
-                
                // Defaults.getBaseModel().getStripList().clear();
 //                for (UIStrip s : StripTableUtil.getStripList()) {
 //
 //                    Defaults.getBaseModel().addStrip(s);
 //                }
-
                 if (noEdgeLoads) {
                     println("ERROR : Some strips have no edge loads specified ! ");
                 } else {
@@ -298,40 +271,27 @@ public class TableViewEdit extends Application {
 
                         models[i] = new Model(Defaults.getBaseModel());
 
-                        
-                        
                         Node.clearNumbering();
-                        for (Node n : NodeTableUtil.getNodeList()) {
+                        for (Node n : Defaults.getBaseModel().getNodeList()) {
                             models[i].addNode(n);
                         }
-                        
-                        
-//                        for (UIStrip s : UIStripTableUtil.getStripList()) {
-//
-//                            models[i].addStrip(s);
-//
-//                        }
-                        
+
                         Strip.clearNumbering();
-                         for (Strip s : Defaults.getBaseModel().getStripList()) {
+                        for (Strip s : Defaults.getBaseModel().getStripList()) {
 
                             models[i].addStrip(s);
 
                         }
 
-                        
-
                         models[i].setModelLength(((double) (i + 1) / steps) * Defaults.getBaseModel().getModelLength());
 
                         b[i] = new BucklingEquation(models[i]);
 
-                       models[i].setBucklePoint(b[i].getBucklingData());
+                        models[i].setBucklePoint(b[i].getBucklingData());
 
                     }
-                 
-            
+
                     String[][] stringData = new String[models.length + 1][Defaults.getBaseModel().getFourierTerms() + 2];
-                    
 
                     stringData[0][0] = "Length";
                     stringData[0][stringData[0].length - 1] = "Minimum stress (Signature curve)";
@@ -339,9 +299,8 @@ public class TableViewEdit extends Application {
                     for (int i = 1; i < stringData[0].length - 1; i++) {
                         stringData[0][i] = "Buckling stress for half wave";
                     }
-                    
+
                     BucklingCurve bc = new BucklingCurve();
-                   
 
                     for (int i = 0; i < models.length; i++) {
 
@@ -353,7 +312,7 @@ public class TableViewEdit extends Application {
 
                         stringData[i + 1][0] = Double.toString(models[i].getBucklePoint().getPhysicalLength());
                         stringData[i + 1][Defaults.getBaseModel().getFourierTerms() + 1] = Double.toString(models[i].getBucklePoint().getMinLoadFactor());
-                        
+
                         bc.addModel(models[i]);
 
                     }
@@ -370,13 +329,11 @@ public class TableViewEdit extends Application {
 
                     Defaults.bucklingCurveList.add(bc);
 
-                   
                     Stage s = new Stage();
 
                     s.getIcons().add(ic);
                     chart.start(s);
-                  
-                    
+
                     disCalced = true;
 
                 }
@@ -419,14 +376,10 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-               Strip s = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
-                //////////////////////////////////////////////////////////
-                //UIStripTableUtil.addStrip(s);
-                               
-                Defaults.getBaseModel().addStrip(s);
-                
+                Defaults.getBaseModel().addStrip();
+
                 draw();
-                TableViewEdit.println("Strip " + s.getStripId() + " added.");
+                TableViewEdit.println("Strip added.");
 
             }
         });
@@ -436,11 +389,10 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                Node n = new Node(0, 0, Defaults.getBaseModel());
-                Defaults.getBaseModel().addNode(n);
-                NodeTableUtil.addNode(n);
+                Defaults.getBaseModel().addNode();
+
                 draw();
-                TableViewEdit.println("Node " + n.getNodeId() + " added.");
+                TableViewEdit.println("Node added.");
 
             }
         });
@@ -452,7 +404,8 @@ public class TableViewEdit extends Application {
                 Node n = table.getSelectionModel().getSelectedItem();
 
                 if (n != null) {
-                    NodeTableUtil.removeNode(n);
+
+                    Defaults.getBaseModel().removeNode(n);
                     TableViewEdit.println("Node " + n.getNodeId() + " removed.");
                 } else {
                     TableViewEdit.println("ERROR : No nodes selected !");
@@ -592,7 +545,8 @@ public class TableViewEdit extends Application {
             TableViewEdit.println("X-Coordinate changed for Node "
                     + node.getNodeId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            NodeTableUtil.getNodeList().get(row).setXCoord(e.getNewValue());
+            //Defaults.getBaseModel().getNodeList().get(row).setXCoord(e.getNewValue());
+            node.setXCoord(e.getNewValue());
             draw();
         });
 
@@ -613,7 +567,8 @@ public class TableViewEdit extends Application {
             TableViewEdit.println("Z-Coordinate changed for Node "
                     + node.getNodeId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            NodeTableUtil.getNodeList().get(row).setZCoord(e.getNewValue());
+            //NodeTableUtil.getNodeList().get(row).setZCoord(e.getNewValue());
+            node.setZCoord(e.getNewValue());
             draw();
         });
 
@@ -647,9 +602,8 @@ public class TableViewEdit extends Application {
                         + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
                 //UIStripTableUtil.getStripList().get(row).setNode1(NodeTableUtil.getNode(e.getNewValue()));
-                
-                Defaults.getBaseModel().getStripList().get(row).setNode1(NodeTableUtil.getNode(e.getNewValue()));
-                TableViewEdit.println("New node id " + NodeTableUtil.getNode(e.getNewValue()).getNodeId());
+                strip.setNode1(Defaults.getBaseModel().getNode(e.getNewValue()));
+                TableViewEdit.println("New node id " + strip.getNode1().getNodeId());
 
                 draw();
             } catch (Exception ex) {
@@ -681,9 +635,8 @@ public class TableViewEdit extends Application {
                         + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
                 //UIStripTableUtil.getStripList().get(row).setNode2(NodeTableUtil.getNode(e.getNewValue()));
-                
-                Defaults.getBaseModel().getStripList().get(row).setNode2(NodeTableUtil.getNode(e.getNewValue()));
-                TableViewEdit.println("New node id " + NodeTableUtil.getNode(e.getNewValue()).getNodeId());
+                strip.setNode2(Defaults.getBaseModel().getNode(e.getNewValue()));
+                TableViewEdit.println("New node id " + strip.getNode2().getNodeId());
 
                 draw();
             } catch (Exception ex) {
@@ -718,7 +671,6 @@ public class TableViewEdit extends Application {
 
                 //UIStripTableUtil.getStripList().get(row).setStripThickness(e.getNewValue());
                 Defaults.getBaseModel().getStripList().get(row).setStripThickness(e.getNewValue());
-                
 
                 draw();
             } catch (Exception ex) {

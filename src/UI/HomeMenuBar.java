@@ -53,6 +53,7 @@ public class HomeMenuBar {
         }
         
         
+        
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(editMenu);
         
@@ -87,13 +88,13 @@ public class HomeMenuBar {
                     Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                NodeTableUtil.clearNodes();
+                Defaults.getBaseModel().clearNodes();
                 
                 Defaults.getBaseModel().clearStrips();
 
                 Node.clearNumbering();
                 for (Node n : f.getNodeList()) {
-                    NodeTableUtil.addNode(n);
+                    Defaults.getBaseModel().addNode(n);
 
                 }
 

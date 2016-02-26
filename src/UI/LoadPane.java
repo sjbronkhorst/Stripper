@@ -137,7 +137,7 @@ public class LoadPane {
                 double xBar = Defaults.getBaseModel().getXBar();
                 double farthestFromCentroid = 0;
                 
-                for (Node n : NodeTableUtil.getNodeList())
+                for (Node n : Defaults.getBaseModel().getNodeList())
                 {
                     if(Math.abs(n.getXCoord() - xBar) > farthestFromCentroid)
                     {
@@ -166,7 +166,7 @@ public class LoadPane {
                 double zBar = Defaults.getBaseModel().getZBar();
                 double farthestFromCentroid = 0;
                 
-                for (Node n : NodeTableUtil.getNodeList())
+                for (Node n : Defaults.getBaseModel().getNodeList())
                 {
                     if(Math.abs(n.getZCoord() - zBar) > farthestFromCentroid)
                     {
