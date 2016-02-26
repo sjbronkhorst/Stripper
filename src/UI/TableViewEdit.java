@@ -120,7 +120,11 @@ public class TableViewEdit extends Application {
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        TableView<UIStrip> stripTable = new TableView<>(StripTableUtil.getStripList());
+        //TableView<UIStrip> stripTable = new TableView<>(UIStripTableUtil.getStripList());
+        TableView<Strip> stripTable = new TableView<>(Defaults.getBaseModel().getStripList());
+        
+       
+        
         stripTable.setEditable(true);
         addStripIdColumn(stripTable);
         addNode1Column(stripTable);
@@ -171,7 +175,11 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                for (UIStrip s : StripTableUtil.getStripList()) {
+//                for (UIStrip s : UIStripTableUtil.getStripList()) {
+//                    s.setStripThickness(Double.parseDouble(thicknessField.textProperty().get()));
+//                }
+                
+                for (Strip s : Defaults.getBaseModel().getStripList()) {
                     s.setStripThickness(Double.parseDouble(thicknessField.textProperty().get()));
                 }
 
@@ -298,14 +306,19 @@ public class TableViewEdit extends Application {
                         }
                         
                         
-                        for (UIStrip s : StripTableUtil.getStripList()) {
+//                        for (UIStrip s : UIStripTableUtil.getStripList()) {
+//
+//                            models[i].addStrip(s);
+//
+//                        }
+                        
+                        Strip.clearNumbering();
+                         for (Strip s : Defaults.getBaseModel().getStripList()) {
 
                             models[i].addStrip(s);
 
                         }
 
-                        
-                        
                         
 
                         models[i].setModelLength(((double) (i + 1) / steps) * Defaults.getBaseModel().getModelLength());
@@ -375,7 +388,7 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                UIStrip s = stripTable.getSelectionModel().getSelectedItem();
+                Strip s = stripTable.getSelectionModel().getSelectedItem();
 
                 TableViewEdit.println("Strip " + s.getStripId() + " properties :");
                 TableViewEdit.println("width = " + s.getStripWidth());
@@ -388,10 +401,10 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                UIStrip s = stripTable.getSelectionModel().getSelectedItem();
+                Strip s = stripTable.getSelectionModel().getSelectedItem();
 
                 if (s != null) {
-                    StripTableUtil.removeStrip(s);
+                    Defaults.getBaseModel().removeStrip(s);
                     TableViewEdit.println("Strip " + s.getStripId() + " removed.");
                 } else {
                     TableViewEdit.println("ERROR : No nodes selected !");
@@ -406,9 +419,12 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                UIStrip s = new UIStrip();
+               Strip s = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
                 //////////////////////////////////////////////////////////
-                StripTableUtil.addStrip(s);
+                //UIStripTableUtil.addStrip(s);
+                               
+                Defaults.getBaseModel().addStrip(s);
+                
                 draw();
                 TableViewEdit.println("Strip " + s.getStripId() + " added.");
 
@@ -604,17 +620,17 @@ public class TableViewEdit extends Application {
         table.getColumns().add(fNameCol);
     }
 
-    public void addStripIdColumn(TableView<UIStrip> table) {
+    public void addStripIdColumn(TableView<Strip> table) {
 // Id column is non-editable
         table.getColumns().add(StripTableUtil.getIDColumn());
     }
 
-    public void addNode1Column(TableView<UIStrip> table) {
+    public void addNode1Column(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Integer> fNameCol = StripTableUtil.getNode1Column();
+        TableColumn<Strip, Integer> fNameCol = StripTableUtil.getNode1Column();
 
         IntegerStringConverter converter = new IntegerStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Integer>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Integer>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             TableViewEdit.println("Press Enter to save changes, Esc to cancel");
@@ -625,13 +641,15 @@ public class TableViewEdit extends Application {
             try {
                 int row = e.getTablePosition().getRow();
 
-                UIStrip strip = e.getRowValue();
+                Strip strip = e.getRowValue();
 
                 TableViewEdit.println("First node changed for Strip "
                         + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-                StripTableUtil.getStripList().get(row).setNode1(NodeTableUtil.getNodeMap().get(e.getNewValue()));
-                TableViewEdit.println("New node id " + NodeTableUtil.getNodeMap().get(e.getNewValue()).getNodeId());
+                //UIStripTableUtil.getStripList().get(row).setNode1(NodeTableUtil.getNode(e.getNewValue()));
+                
+                Defaults.getBaseModel().getStripList().get(row).setNode1(NodeTableUtil.getNode(e.getNewValue()));
+                TableViewEdit.println("New node id " + NodeTableUtil.getNode(e.getNewValue()).getNodeId());
 
                 draw();
             } catch (Exception ex) {
@@ -643,12 +661,12 @@ public class TableViewEdit extends Application {
         table.getColumns().add(fNameCol);
     }
 
-    public void addNode2Column(TableView<UIStrip> table) {
+    public void addNode2Column(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Integer> fNameCol = StripTableUtil.getNode2Column();
+        TableColumn<Strip, Integer> fNameCol = StripTableUtil.getNode2Column();
 
         IntegerStringConverter converter = new IntegerStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Integer>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Integer>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             TableViewEdit.println("Press Enter to save changes, Esc to cancel");
@@ -657,12 +675,15 @@ public class TableViewEdit extends Application {
         fNameCol.setOnEditCommit(e -> {
             try {
                 int row = e.getTablePosition().getRow();
-                UIStrip strip = e.getRowValue();
+                Strip strip = e.getRowValue();
 
                 TableViewEdit.println("Second node changed for Strip "
                         + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-                StripTableUtil.getStripList().get(row).setNode2(NodeTableUtil.getNodeMap().get(e.getNewValue()));
+                //UIStripTableUtil.getStripList().get(row).setNode2(NodeTableUtil.getNode(e.getNewValue()));
+                
+                Defaults.getBaseModel().getStripList().get(row).setNode2(NodeTableUtil.getNode(e.getNewValue()));
+                TableViewEdit.println("New node id " + NodeTableUtil.getNode(e.getNewValue()).getNodeId());
 
                 draw();
             } catch (Exception ex) {
@@ -674,12 +695,12 @@ public class TableViewEdit extends Application {
         table.getColumns().add(fNameCol);
     }
 
-    public void addThicknessColumn(TableView<UIStrip> table) {
+    public void addThicknessColumn(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getStripThicknessColumn();
+        TableColumn<Strip, Double> fNameCol = StripTableUtil.getStripThicknessColumn();
 
         DoubleStringConverter converter = new DoubleStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Double>forTableColumn(converter));
 
         table.getColumns().add(fNameCol);
 
@@ -690,12 +711,14 @@ public class TableViewEdit extends Application {
         fNameCol.setOnEditCommit(e -> {
             try {
                 int row = e.getTablePosition().getRow();
-                UIStrip strip = e.getRowValue();
+                Strip strip = e.getRowValue();
 
                 TableViewEdit.println("Thickness changed for Strip "
                         + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-                StripTableUtil.getStripList().get(row).setStripThickness(e.getNewValue());
+                //UIStripTableUtil.getStripList().get(row).setStripThickness(e.getNewValue());
+                Defaults.getBaseModel().getStripList().get(row).setStripThickness(e.getNewValue());
+                
 
                 draw();
             } catch (Exception ex) {

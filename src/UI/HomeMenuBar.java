@@ -64,7 +64,9 @@ public class HomeMenuBar {
                 FileHandler f = new FileHandler();
 
                 try {
-                    f.writeGeom(NodeTableUtil.getNodeList(), StripTableUtil.getStripList());
+                    //f.writeGeom(NodeTableUtil.getNodeList(), UIStripTableUtil.getStripList());
+                     f.writeGeom(Defaults.getBaseModel().getNodeList(), Defaults.getBaseModel().getStripList());
+                     
                 } catch (IOException ex) {
                     Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -86,15 +88,20 @@ public class HomeMenuBar {
                 }
 
                 NodeTableUtil.clearNodes();
-                StripTableUtil.clearStrips();
+                
+                Defaults.getBaseModel().clearStrips();
 
+                Node.clearNumbering();
                 for (Node n : f.getNodeList()) {
                     NodeTableUtil.addNode(n);
 
                 }
 
-                for (UIStrip s : f.getStripList()) {
-                    StripTableUtil.addStrip(s);
+                
+                Strip.clearNumbering();
+                for (Strip s : f.getStripList()) {
+                  
+                    Defaults.getBaseModel().addStrip(s);
                 }
 
                 viewer.draw();

@@ -38,7 +38,7 @@ public class FileHandler {
 
     private Map<Integer, Node> nodeMap = new HashMap<>();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
-    private ObservableList<UIStrip> strips = FXCollections.<UIStrip>observableArrayList();
+    private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
     private Material mat;
     private FileChooser fileDialog = new FileChooser();
 
@@ -46,7 +46,37 @@ public class FileHandler {
 
     }
 
-    public void writeGeom(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
+//    public void writeGeom(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
+//        fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
+//        File file = fileDialog.showSaveDialog(null);
+//
+//        if (file != null) {
+//
+//            FileWriter fw = new FileWriter(file);
+//
+//            BufferedWriter bw = new BufferedWriter(fw);
+//
+//            for (Node node : nodes) {
+//                bw.append("n " + node.getXCoord() + " " + node.getZCoord());
+//                bw.newLine();
+//            }
+//
+//            for (UIStrip strip : strips) {
+//                bw.append("e " + strip.getNode1Id() + " " + strip.getNode2Id());
+//                bw.newLine();
+//            }
+//
+//            //bw.append("TEST STRING");
+//            bw.close();
+//            fw.close();
+//        }
+//        fileDialog.getExtensionFilters().clear();
+//    }
+    
+    
+    
+    
+     public void writeGeom(ObservableList<Node> nodes, ObservableList<Strip> strips) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showSaveDialog(null);
 
@@ -61,7 +91,7 @@ public class FileHandler {
                 bw.newLine();
             }
 
-            for (UIStrip strip : strips) {
+            for (Strip strip : strips) {
                 bw.append("e " + strip.getNode1Id() + " " + strip.getNode2Id());
                 bw.newLine();
             }
@@ -72,12 +102,16 @@ public class FileHandler {
         }
         fileDialog.getExtensionFilters().clear();
     }
+     
+     
+     
+     
 
     public ObservableList<Node> getNodeList() {
         return nodes;
     }
 
-    public ObservableList<UIStrip> getStripList() {
+    public ObservableList<Strip> getStripList() {
         return strips;
     }
 
@@ -89,8 +123,7 @@ public class FileHandler {
 
             Node.clearNumbering();
             Strip.clearNumbering();
-            UIStrip.clearNumbering();
-
+            
             FileReader fr = new FileReader(file);
 
             BufferedReader br = new BufferedReader(fr);
@@ -133,7 +166,11 @@ public class FileHandler {
 
                         if (n1 != null && n2 != null) {
 
-                            strips.add(new UIStrip(n1, n2));   
+                            
+                            Strip strip = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
+                            strip.setNode1(n1);
+                            strip.setNode2(n2);
+                            strips.add(strip);   
                         }
                     } else {
                         TableViewEdit.println("File syntax error");

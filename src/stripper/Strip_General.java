@@ -40,33 +40,33 @@ public class Strip_General extends Strip {
        
     }
 
-    public Strip_General(UIStrip uiStrip, Model model) {
-        if (!uiStrip.hasBothNodes()) {
-
-            hasNode1 = false;
-            hasNode2 = false;
-            this.node1Id.set(0);
-            this.node2Id.set(0);
-        } else {
-            setNode1(uiStrip.getNode1());
-            setNode2(uiStrip.getNode2());
-
-            setUdlX(uiStrip.getUdlX());
-            setUdlY(uiStrip.getUdlY());
-            setUdlZ(uiStrip.getUdlZ());
-            
-            setEdgeTractionAtNode1(uiStrip.getF1());
-            setEdgeTractionAtNode2(uiStrip.getF2());
-
-            this.stripId.set(uiStrip.getStripId());
-
-            this.pointLoads = uiStrip.getPointLoadList();
-            this.t = uiStrip.getStripThickness();
-            
-        }
-        
-        this.model = model;
-    }
+//    public Strip_General(UIStrip uiStrip, Model model) {
+//        if (!uiStrip.hasBothNodes()) {
+//
+//            hasNode1 = false;
+//            hasNode2 = false;
+//            this.node1Id.set(0);
+//            this.node2Id.set(0);
+//        } else {
+//            setNode1(uiStrip.getNode1());
+//            setNode2(uiStrip.getNode2());
+//
+//            setUdlX(uiStrip.getUdlX());
+//            setUdlY(uiStrip.getUdlY());
+//            setUdlZ(uiStrip.getUdlZ());
+//            
+//            setEdgeTractionAtNode1(uiStrip.getF1());
+//            setEdgeTractionAtNode2(uiStrip.getF2());
+//
+//            this.stripId.set(uiStrip.getStripId());
+//
+//            this.pointLoads = uiStrip.getPointLoadList();
+//            this.t.set(uiStrip.getStripThickness());
+//            
+//        }
+//        
+//        this.model = model;
+//    }
 
     public boolean integralLastComputed(int m, int n) {
 
@@ -591,7 +591,7 @@ public class Strip_General extends Strip {
         M.set(K43, 3, 2);
         M.set(K44, 3, 3);
 
-        M.scale(super.t);
+        M.scale(super.t.doubleValue());
 
         return M;
     }
@@ -745,4 +745,12 @@ public class Strip_General extends Strip {
 //
 //        return K;
 //    }
+    
+    
+    
+    
+      @Override
+    public String toString() {
+        return "Strip General " + stripId.getValue().toString() + "     t = " + getStripThickness() + "     L = " + getStripLength() + "        "+ node1.toString() + "     "+ node2.toString();
+    }
 }

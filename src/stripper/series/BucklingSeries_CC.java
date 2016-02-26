@@ -5,6 +5,10 @@
  */
 package stripper.series;
 
+import UI.Model;
+import stripper.Strip;
+import stripper.Strip_General;
+
 /**
  *This Series function satisfies the C-C boundary conditions for a Strip a priori.
  * Because it only satisfies the boundary conditions a priori, it can be not be used for both static analysis.
@@ -113,4 +117,10 @@ public class BucklingSeries_CC extends BucklingSeries {
         }
     }
 
+    @Override
+    public Strip getStrip(Model m) {
+        return new Strip_General(m);
+    }
+
+    
 }

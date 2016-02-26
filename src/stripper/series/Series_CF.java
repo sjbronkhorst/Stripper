@@ -5,6 +5,7 @@
  */
 package stripper.series;
 
+import UI.Model;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -15,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
+import stripper.Strip;
+import stripper.Strip_General;
 
 /**
  *
@@ -398,5 +401,11 @@ public class Series_CF extends Series{
     {
         return false;
     }
+    
+     @Override
+    public Strip getStrip(Model m) {
+        return new Strip_General(m);
+    }
+
 
 }

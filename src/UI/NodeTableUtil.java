@@ -21,7 +21,7 @@ public class NodeTableUtil {
 
     private static ObservableList<Node> nodes = Defaults.getBaseModel().getNodeList();
     
-    private static Map<Integer , Node> nodeMap = Defaults.getBaseModel().getNodeMap();
+    //private static Map<Integer , Node> nodeMap = Defaults.getBaseModel().getNodeMap();
 
     public static ObservableList<Node> getNodeList() {
         return nodes;
@@ -29,13 +29,13 @@ public class NodeTableUtil {
 
     public static void addNode(Node n) {
         nodes.add(n);
-        nodeMap.put(n.getNodeId(), n);
+        //nodeMap.put(n.getNodeId(), n);
     }
     
     public static void removeNode(Node n)
     {
         nodes.remove(n);
-        nodeMap.remove(n.getNodeId());
+       // nodeMap.remove(n.getNodeId());
     }
     
     public static void clearNodes()
@@ -45,7 +45,7 @@ public class NodeTableUtil {
         
         for (int j = 0;  j < i;j ++)
         {
-            nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
+           // nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
             nodes.remove(0);
             
         }
@@ -53,6 +53,21 @@ public class NodeTableUtil {
         
         
     }
+    
+     public static Node getNode(int Id) {
+        for (Node n : nodes) {
+
+            if (n.getNodeId() == Id) {
+                return n;
+            }
+
+        }
+
+        System.out.println("No such node");
+        return null;
+    }
+     
+     
 
     public static TableColumn<Node, Integer> getIDColumn() {
         TableColumn<Node, Integer> idColumn = new TableColumn("Node ID");
@@ -81,9 +96,9 @@ public class NodeTableUtil {
 
     }
     
-    public static Map<Integer , Node> getNodeMap()
-    {
-        return nodeMap;
-    }
+//    public static Map<Integer , Node> getNodeMap()
+//    {
+//        return nodeMap;
+//    }
 
 }

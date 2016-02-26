@@ -5,7 +5,10 @@
  */
 package stripper.series;
 
+import UI.Model;
 import org.apache.commons.math3.analysis.UnivariateFunction;
+import stripper.Strip;
+import stripper.Strip_SS;
 
 /**
  *
@@ -140,6 +143,11 @@ public class Series_SS extends Series{
     {
         return false;
     }
+     @Override
+    public Strip getStrip(Model m) {
+        return new Strip_SS(m);
+    }
+
 
    
 

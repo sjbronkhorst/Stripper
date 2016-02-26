@@ -19,16 +19,16 @@ import linalg.*;
 import stripper.materials.Material;
 import stripper.series.Series;
 
-
 /**
  *
  * @author SJ
  */
 public abstract class Strip {
 
-    protected double t, beta; // thickness , angle
-      
+    protected double beta; // thickness , angle
+
    // protected Series Y;
+    protected final ReadOnlyDoubleWrapper t = new ReadOnlyDoubleWrapper(this, "t", 0.0);
 
     protected static AtomicInteger stripSequence = new AtomicInteger(0);
 
@@ -46,12 +46,11 @@ public abstract class Strip {
     protected Node node1;
     protected Node node2;
     // Edge load size at node.
-    protected double f1 , f2; 
-    
-    protected Model model;
-    
 
-   
+    protected final ReadOnlyDoubleWrapper f1 = new ReadOnlyDoubleWrapper(this, "f1", 0.157);
+    protected final ReadOnlyDoubleWrapper f2 = new ReadOnlyDoubleWrapper(this, "f2", 0.157);
+
+    protected Model model;
 
     protected boolean hasNode1, hasNode2;
 
@@ -109,12 +108,10 @@ public abstract class Strip {
         hasNode1 = true;
 
     }
-    
-      public boolean hasBothNodes() {
+
+    public boolean hasBothNodes() {
         return (hasNode1 && hasNode2);
     }
-      
-      
 
     public void setNode2(Node n) {
         node2 = n;
@@ -159,7 +156,7 @@ public abstract class Strip {
     }
 
     public double getStripThickness() {
-        return t;
+        return t.doubleValue();
     }
 
     public double getStripAngle() {
@@ -240,9 +237,6 @@ public abstract class Strip {
             F.set(getStripWidth() / 2.0, 6);
             F.set(-getStripWidth() * getStripWidth() / 12.0, 7);
 
-            
-            
-            
             F.scale(Y.getYmIntegral(m, a) * udlZ.doubleValue());
         }
 
@@ -366,6 +360,7 @@ public abstract class Strip {
         Matrix D = Matrix.getMatrix(3, 3);
         D.clear();
         Material mat = model.getModelMaterial();
+        double t = this.t.doubleValue();
 
         double Ex = mat.getEx();
         double Ey = mat.getEy();
@@ -434,8 +429,8 @@ public abstract class Strip {
         return N;
     }
 
-     /**
-     * 
+    /**
+     *
      * @param m fourier term number
      * @return the parameter vector associated with m
      */
@@ -488,7 +483,6 @@ public abstract class Strip {
         Vector param = Vector.getVector(4);
         double a = model.getModelLength();
         Matrix Nplane = Matrix.getMatrix(2, 4);
-        
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
 
@@ -498,27 +492,23 @@ public abstract class Strip {
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(1), 1);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(4), 2);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(5), 3);
-            
+
             Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
             f.add(Nplane.multiply(param));
-            
-            
 
         }
-        
+
         param.release();
         Nplane.release();
-        
 
         return f;
     }
-    
-     public Vector getGlobalPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
+
+    public Vector getGlobalPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector f = Vector.getVector(2);
         Vector param = Vector.getVector(4);
         double a = model.getModelLength();
         Matrix Nplane = Matrix.getMatrix(2, 4);
-        
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
 
@@ -528,31 +518,25 @@ public abstract class Strip {
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(1), 1);
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(4), 2);
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(5), 3);
-            
+
             Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
             f.add(Nplane.multiply(param));
-            
-            
 
         }
-        
+
         param.release();
         Nplane.release();
-        
 
         return f;
     }
-    
-     public Vector getBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
+
+    public Vector getBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector w = Vector.getVector(2);
         Vector param = Vector.getVector(4);
         double a = model.getModelLength();
         Matrix Nbend = Matrix.getMatrix(2, 4);
-        
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
-
-                   
 
             param.clear();
 
@@ -560,32 +544,25 @@ public abstract class Strip {
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(3), 1);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(6), 2);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(7), 3);
-            
+
             Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
             w.add(Nbend.multiply(param));
-            
-            
 
         }
-        
+
         param.release();
         Nbend.release();
-        
 
         return w;
     }
-     
-     
-     public Vector getGlobalBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
+
+    public Vector getGlobalBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector w = Vector.getVector(2);
         Vector param = Vector.getVector(4);
         double a = model.getModelLength();
         Matrix Nbend = Matrix.getMatrix(2, 4);
-        
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
-
-                   
 
             param.clear();
 
@@ -593,17 +570,14 @@ public abstract class Strip {
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(3), 1);
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(6), 2);
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(7), 3);
-            
+
             Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
             w.add(Nbend.multiply(param));
-            
-            
 
         }
-        
+
         param.release();
         Nbend.release();
-        
 
         return w;
     }
@@ -641,8 +615,8 @@ public abstract class Strip {
     }
 
     public Matrix getMembraneGeometricStiffnessMatrix(int m, int n) {
-        double T1 = f1 * getStripThickness();
-        double T2 = f2 * getStripThickness();
+        double T1 = f1.doubleValue() * getStripThickness();
+        double T2 = f2.doubleValue() * getStripThickness();
         double b = getStripWidth();
         Series Y = model.getFourierSeries();
         double a = model.getModelLength();
@@ -683,12 +657,11 @@ public abstract class Strip {
     }
 
     public Matrix getBendingGeometricStiffnessMatrix(int m, int n) {
-                
-        double T1 = f1 * getStripThickness();
-        double T2 = f2 * getStripThickness();
+
+        double T1 = f1.doubleValue() * getStripThickness();
+        double T2 = f2.doubleValue() * getStripThickness();
         Series Y = model.getFourierSeries();
-        
-        
+
         double b = getStripWidth();
 
         double[] I = Y.getIntegralValues(m, n);
@@ -751,33 +724,75 @@ public abstract class Strip {
 
     public abstract Matrix getStiffnessMatrix(int n, int m);
 
-   
-
-    
-    
     public void setEdgeTractionAtNode1(double f1) {
-        this.f1 = f1;
-        
+        this.f1.set(f1);
+
+    }
+
+    public void setEdgeTractionAtNode2(double f2) {
+        this.f2.set(f2);
+
+    }
+
+    public double getEdgeTractionAtNode1() {
+        return f1.doubleValue();
+
+    }
+
+    public double getEdgeTractionAtNode2() {
+        return f2.doubleValue();
+
+    }
+
+    public void setStripThickness(double thickness) {
+        this.t.set(thickness);
+    }
+
+    public DoubleProperty thicknessProperty() {
+        return t;
+    }
+
+    public double getCrossSectionalArea() {
+        return getStripThickness() * getStripWidth();
+    }
+
+    public Point2D.Double getCrossSectionalCentroid() {
+        return new Point2D.Double((node1.getXCoord() + node2.getXCoord()) / 2.0, (node1.getZCoord() + node2.getZCoord()) / 2.0);
+    }
+
+    public double getXBar() {
+        return getCrossSectionalCentroid().getX();
+    }
+
+    public double getZBar() {
+        return getCrossSectionalCentroid().getY();
     }
     
-     public void setEdgeTractionAtNode2(double f2) {
-        this.f2 = f2;
-        
+    public void clone(Strip strip)
+    {
+          if (!strip.hasBothNodes()) {
+
+            hasNode1 = false;
+            hasNode2 = false;
+            this.node1Id.set(0);
+            this.node2Id.set(0);
+        } else {
+            setNode1(strip.getNode1());
+            setNode2(strip.getNode2());
+
+            setUdlX(strip.getUdlX());
+            setUdlY(strip.getUdlY());
+            setUdlZ(strip.getUdlZ());
+            
+            setEdgeTractionAtNode1(strip.getEdgeTractionAtNode1());
+            setEdgeTractionAtNode2(strip.getEdgeTractionAtNode2());
+
+            this.stripId.set(strip.getStripId());
+
+            this.pointLoads = strip.getPointLoadList();
+            this.t.set(strip.getStripThickness());
+            
+        }
     }
-     
-          public double getEdgeTractionAtNode1() {
-        return f1;
-        
-    }
-    
-      public double getEdgeTractionAtNode2() {
-        return f2;
-        
-    }
-     
-     
-     
-     
-       
 
 }

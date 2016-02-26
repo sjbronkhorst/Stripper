@@ -23,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import stripper.Strip;
 import stripper.series.Series;
 
 /**
@@ -53,7 +54,25 @@ public class FourierEditor extends Application {
                 
               if(seriesChoice.getSelectionModel().selectedIndexProperty().get() >= 0)
                 { 
+                    
+                    
             Defaults.getBaseModel().setFourierSeries(seriesChoice.getItems().get((int)newValue));
+            
+            Strip.clearNumbering();
+            
+                    for (Strip s : Defaults.getBaseModel().getStripList())
+                    {
+                        Strip strip = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
+                        
+                        strip.clone(s);
+                        s = strip;
+                        
+                        System.out.println(s.toString());
+                    }
+            
+            
+            
+            
             
                     TableViewEdit.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
                 }

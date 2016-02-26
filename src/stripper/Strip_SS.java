@@ -40,33 +40,33 @@ public class Strip_SS extends Strip {
         
     }
 
-    public Strip_SS(UIStrip uiStrip, Model model) {
-        if (!uiStrip.hasBothNodes()) {
-
-            hasNode1 = false;
-            hasNode2 = false;
-            this.node1Id.set(0);
-            this.node2Id.set(0);
-        } else {
-            setNode1(uiStrip.getNode1());
-            setNode2(uiStrip.getNode2());
-
-            setUdlX(uiStrip.getUdlX());
-            setUdlY(uiStrip.getUdlY());
-            setUdlZ(uiStrip.getUdlZ());
-            
-            setEdgeTractionAtNode1(uiStrip.getF1());
-            setEdgeTractionAtNode2(uiStrip.getF2());
-           
-
-            this.stripId.set(uiStrip.getStripId());
-
-            this.pointLoads = uiStrip.getPointLoadList();
-            this.t = uiStrip.getStripThickness();
-            
-        }
-        this.model = model;
-       }
+//    public Strip_SS(UIStrip uiStrip, Model model) {
+//        if (!uiStrip.hasBothNodes()) {
+//
+//            hasNode1 = false;
+//            hasNode2 = false;
+//            this.node1Id.set(0);
+//            this.node2Id.set(0);
+//        } else {
+//            setNode1(uiStrip.getNode1());
+//            setNode2(uiStrip.getNode2());
+//
+//            setUdlX(uiStrip.getUdlX());
+//            setUdlY(uiStrip.getUdlY());
+//            setUdlZ(uiStrip.getUdlZ());
+//            
+//            setEdgeTractionAtNode1(uiStrip.getF1());
+//            setEdgeTractionAtNode2(uiStrip.getF2());
+//           
+//
+//            this.stripId.set(uiStrip.getStripId());
+//
+//            this.pointLoads = uiStrip.getPointLoadList();
+//            this.t.set(uiStrip.getStripThickness());
+//            
+//        }
+//        this.model = model;
+//       }
 
    
     public Matrix getBendingStiffnessMatrix(int m, int n) {
@@ -74,6 +74,7 @@ public class Strip_SS extends Strip {
         Matrix S = Matrix.getMatrix(4, 4);
         Material mat = model.getModelMaterial();
         double a = model.getModelLength();
+        double t = this.t.doubleValue();
 
         if (m == n) {
 
@@ -218,4 +219,11 @@ public class Strip_SS extends Strip {
         return K;
     }
 
+    
+    
+    
+      @Override
+    public String toString() {
+        return "Strip S-S " + stripId.getValue().toString() + "     t = " + getStripThickness() + "     L = " + getStripLength() + "        "+ node1.toString() + "     "+ node2.toString();
+    }
 }

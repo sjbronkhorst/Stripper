@@ -5,6 +5,7 @@
  */
 package stripper.series;
 
+import UI.Model;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -16,6 +17,8 @@ import java.util.logging.Logger;
 import linalg.Matrix;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
+import stripper.Strip;
+import stripper.Strip_General;
 
 /**
  *This Series function satisfies the C-C boundary conditions for a Strip.
@@ -517,6 +520,12 @@ public class Series_CC extends Series {
     public boolean onlySupportsBuckling()
     {
         return false;
+    }
+
+    
+     @Override
+    public Strip getStrip(Model m) {
+        return new Strip_General(m);
     }
 
 }

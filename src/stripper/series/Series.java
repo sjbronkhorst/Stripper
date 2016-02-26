@@ -6,8 +6,10 @@
 package stripper.series;
 
 
+import UI.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import stripper.Strip;
 
 /**
  *
@@ -110,5 +112,7 @@ public abstract class Series {
     
     public abstract boolean onlySupportsBuckling();
    
+    public abstract Strip getStrip(Model m);
+    
  
 }

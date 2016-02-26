@@ -19,6 +19,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
 import stripper.Node;
+import stripper.Strip;
 
 /**
  *
@@ -31,7 +32,7 @@ import stripper.Node;
  */
 public class LoadPane {
 
-    private ChoiceBox<UIStrip> stripChoice = new ChoiceBox<>(StripTableUtil.getStripList());
+    private ChoiceBox<Strip> stripChoice = new ChoiceBox<>(Defaults.getBaseModel().getStripList());
     private Label titleLabel = new Label("Select a Strip to edit its point loads :");
     private Label udlLabel = new Label("UDL (in element local coordinates) :");
     private Label udlZLabel = new Label("Z-magnitude");
@@ -42,7 +43,7 @@ public class LoadPane {
     private TextField udlXTextF = new TextField();
     private TextField udlYTextF = new TextField();
 
-    private TableView<UIStrip> loadTable = new TableView<>(StripTableUtil.getStripList());
+    private TableView<Strip> loadTable = new TableView<>(Defaults.getBaseModel().getStripList());
 
     private TableView<PointLoad> pointLoadTable = new TableView<>(PointLoadTableUtil.getLoadList());
 
@@ -145,10 +146,10 @@ public class LoadPane {
                                        
                 }
                          
-                for(UIStrip s : StripTableUtil.getStripList())
+                for(Strip s : Defaults.getBaseModel().getStripList())
                 {
-                    s.setF1( 100*(s.getNode1().getXCoord() - xBar)/farthestFromCentroid);
-                    s.setF2( 100*(s.getNode2().getXCoord() - xBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode1(100*(s.getNode1().getXCoord() - xBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode2(100*(s.getNode2().getXCoord() - xBar)/farthestFromCentroid);
                 }
                 
                                 
@@ -174,10 +175,10 @@ public class LoadPane {
                                        
                 }
                          
-                for(UIStrip s : StripTableUtil.getStripList())
+                for(Strip s : Defaults.getBaseModel().getStripList())
                 {
-                    s.setF1( 100*(s.getNode1().getZCoord() - zBar)/farthestFromCentroid);
-                    s.setF2( 100*(s.getNode2().getZCoord() - zBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode1(100*(s.getNode1().getZCoord() - zBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode2(100*(s.getNode2().getZCoord() - zBar)/farthestFromCentroid);
                 }
                 
                                 
@@ -198,12 +199,12 @@ public class LoadPane {
         return pane;
     }
 
-    public void addUdlZ(TableView<UIStrip> table) {
+    public void addUdlZ(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getUDLZColumn();
+        TableColumn<Strip, Double> fNameCol = StripTableUtil.getUDLZColumn();
 
         DoubleStringConverter converter = new DoubleStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Double>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -212,12 +213,12 @@ public class LoadPane {
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
 
-            UIStrip strip = e.getRowValue();
+            Strip strip = e.getRowValue();
 
             System.out.println("Z UDL changed for UIStrip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            StripTableUtil.getStripList().get(row).setUdlZ(e.getNewValue());
+            Defaults.getBaseModel().getStripList().get(row).setUdlZ(e.getNewValue());
 
             viewer.draw();
         });
@@ -225,12 +226,12 @@ public class LoadPane {
         table.getColumns().add(fNameCol);
     }
 
-    public void addUdlX(TableView<UIStrip> table) {
+    public void addUdlX(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getUDLXColumn();
+        TableColumn<Strip, Double> fNameCol = StripTableUtil.getUDLXColumn();
 
         DoubleStringConverter converter = new DoubleStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Double>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -239,12 +240,12 @@ public class LoadPane {
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
 
-            UIStrip strip = e.getRowValue();
+            Strip strip = e.getRowValue();
 
             System.out.println("X UDL changed for UIStrip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            StripTableUtil.getStripList().get(row).setUdlX(e.getNewValue());
+            Defaults.getBaseModel().getStripList().get(row).setUdlX(e.getNewValue());
 
             viewer.draw();
         });
@@ -252,12 +253,12 @@ public class LoadPane {
         table.getColumns().add(fNameCol);
     }
 
-    public void addUdlY(TableView<UIStrip> table) {
+    public void addUdlY(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getUDLYColumn();
+        TableColumn<Strip, Double> fNameCol = StripTableUtil.getUDLYColumn();
 
         DoubleStringConverter converter = new DoubleStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Double>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -266,12 +267,12 @@ public class LoadPane {
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
 
-            UIStrip strip = e.getRowValue();
+            Strip strip = e.getRowValue();
 
             System.out.println("Y UDL changed for UIStrip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            StripTableUtil.getStripList().get(row).setUdlY(e.getNewValue());
+            Defaults.getBaseModel().getStripList().get(row).setUdlY(e.getNewValue());
 
             viewer.draw();
         });
@@ -279,7 +280,7 @@ public class LoadPane {
         table.getColumns().add(fNameCol);
     }
 
-    public void addStripIdColumn(TableView<UIStrip> table) {
+    public void addStripIdColumn(TableView<Strip> table) {
 // Id column is non-editable
         table.getColumns().add(StripTableUtil.getIDColumn());
     }
@@ -370,12 +371,12 @@ public class LoadPane {
         table.getColumns().add(fNameCol);
     }
 
-    public void addF1(TableView<UIStrip> table) {
+    public void addF1(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getF1Column();
+        TableColumn<Strip, Double> fNameCol = StripTableUtil.getF1Column();
 
         DoubleStringConverter converter = new DoubleStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Double>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -384,12 +385,12 @@ public class LoadPane {
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
 
-            UIStrip strip = e.getRowValue();
+            Strip strip = e.getRowValue();
 
             System.out.println("Edge load at first node changed for UIStrip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            StripTableUtil.getStripList().get(row).setF1(e.getNewValue());
+            Defaults.getBaseModel().getStripList().get(row).setEdgeTractionAtNode1(e.getNewValue());
 
             viewer.draw();
         });
@@ -397,12 +398,12 @@ public class LoadPane {
         table.getColumns().add(fNameCol);
     }
 
-    public void addF2(TableView<UIStrip> table) {
+    public void addF2(TableView<Strip> table) {
 
-        TableColumn<UIStrip, Double> fNameCol = StripTableUtil.getF2Column();
+        TableColumn<Strip, Double> fNameCol = StripTableUtil.getF2Column();
 
         DoubleStringConverter converter = new DoubleStringConverter();
-        fNameCol.setCellFactory(TextFieldTableCell.<UIStrip, Double>forTableColumn(converter));
+        fNameCol.setCellFactory(TextFieldTableCell.<Strip, Double>forTableColumn(converter));
 
         fNameCol.setOnEditStart(e -> {
             System.out.println("Press Enter to save changes, Esc to cancel");
@@ -411,12 +412,12 @@ public class LoadPane {
         fNameCol.setOnEditCommit(e -> {
             int row = e.getTablePosition().getRow();
 
-            UIStrip strip = e.getRowValue();
+            Strip strip = e.getRowValue();
 
             System.out.println("Edge load at first node changed for UIStrip "
                     + strip.getStripId() + " at row " + (row + 1) + " to " + e.getNewValue());
 
-            StripTableUtil.getStripList().get(row).setF2(e.getNewValue());
+            Defaults.getBaseModel().getStripList().get(row).setEdgeTractionAtNode2(e.getNewValue());
 
             viewer.draw();
         });
