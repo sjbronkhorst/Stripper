@@ -38,10 +38,12 @@ public class LoadPane {
     private Label udlZLabel = new Label("Z-magnitude");
     private Label udlXLabel = new Label("X-magnitude");
     private Label udlYLabel = new Label("Y-magnitude");
+    private Label maxStressLabel = new Label("Maximum Centreline Stress :");
 
-    private TextField udlZTextF = new TextField();
-    private TextField udlXTextF = new TextField();
-    private TextField udlYTextF = new TextField();
+//    private TextField udlZTextF = new TextField();
+//    private TextField udlXTextF = new TextField();
+//    private TextField udlYTextF = new TextField();
+     private TextField maxStressTextF = new TextField("355");
 
     private TableView<Strip> loadTable = new TableView<>(Defaults.getBaseModel().getStripList());
 
@@ -53,6 +55,7 @@ public class LoadPane {
     private Button pointLoadRemoveBtn = new Button("Remove");
     private Button momentXSetBtn = new Button("Mx");
     private Button momentZSetBtn = new Button("Mz");
+     private Button constantLoadSetBtn = new Button("P");
 
     private boolean bucklingAnalysis;
 
@@ -148,8 +151,8 @@ public class LoadPane {
                          
                 for(Strip s : Defaults.getBaseModel().getStripList())
                 {
-                    s.setEdgeTractionAtNode1(100*(s.getNode1().getXCoord() - xBar)/farthestFromCentroid);
-                    s.setEdgeTractionAtNode2(100*(s.getNode2().getXCoord() - xBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText())*(s.getNode1().getXCoord() - xBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText())*(s.getNode2().getXCoord() - xBar)/farthestFromCentroid);
                 }
                 
                                 
@@ -177,8 +180,25 @@ public class LoadPane {
                          
                 for(Strip s : Defaults.getBaseModel().getStripList())
                 {
-                    s.setEdgeTractionAtNode1(100*(s.getNode1().getZCoord() - zBar)/farthestFromCentroid);
-                    s.setEdgeTractionAtNode2(100*(s.getNode2().getZCoord() - zBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText())*(s.getNode1().getZCoord() - zBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText())*(s.getNode2().getZCoord() - zBar)/farthestFromCentroid);
+                }
+                
+                                
+                viewer.draw();
+            }
+        });
+        
+         constantLoadSetBtn.setOnAction(new EventHandler<ActionEvent>() 
+        {
+
+            @Override
+            public void handle(ActionEvent event) {
+                   
+                for(Strip s : Defaults.getBaseModel().getStripList())
+                {
+                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText()));
+                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText()));
                 }
                 
                                 
@@ -192,7 +212,8 @@ public class LoadPane {
         VBox pane = new VBox(10);
 
         if (bucklingAnalysis) {
-            pane.getChildren().addAll(udlLabel, loadTable,momentXSetBtn,momentZSetBtn);
+            udlLabel.setText("Edge tractions :");
+            pane.getChildren().addAll(udlLabel, loadTable,maxStressLabel,maxStressTextF,constantLoadSetBtn,momentXSetBtn,momentZSetBtn);
         } else {
             pane.getChildren().addAll(udlLabel, loadTable, titleLabel, stripChoice, pointLoadTable, pointLoadAddBtn, pointLoadRemoveBtn);
         }

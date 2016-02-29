@@ -10,7 +10,6 @@
  */
 package UI;
 
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +19,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
+import stripper.DSM.DSMCalcs;
 import stripper.FileHandler;
 import stripper.Node;
 import stripper.Strip;
@@ -32,31 +32,30 @@ public class HomeMenuBar {
 
     private Menu fileMenu = new Menu("File");
     private Menu editMenu = new Menu("Edit");
+    private Menu dsmMenu = new Menu("DSM");
     private MenuBar menuBar = new MenuBar();
-    
-    
-    
+
     private MenuItem geomFileRead = new MenuItem("Open Geometry File...");
     private MenuItem geomFileWrite = new MenuItem("Save Geometry As...");
     private MenuItem materialEdit = new MenuItem("Material");
     private MenuItem setBC = new MenuItem("Fourier series");
     private MenuItem makePath = new MenuItem("Path");
+    private MenuItem dsmCalcs = new MenuItem("Calc...");
 
-    public HomeMenuBar(TableViewEdit viewer , boolean hasPath) {
+    public HomeMenuBar(TableViewEdit viewer, boolean hasPath) {
 
         fileMenu.getItems().addAll(geomFileRead, geomFileWrite);
-        editMenu.getItems().addAll(materialEdit , setBC);
-        
-        if(hasPath)
-        {
+        editMenu.getItems().addAll(materialEdit, setBC);
+        dsmMenu.getItems().add(dsmCalcs);
+
+        if (hasPath) {
             editMenu.getItems().add(makePath);
         }
-        
-        
-        
+
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(editMenu);
-        
+        menuBar.getMenus().add(dsmMenu);
+
         geomFileWrite.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -66,8 +65,8 @@ public class HomeMenuBar {
 
                 try {
                     //f.writeGeom(NodeTableUtil.getNodeList(), UIStripTableUtil.getStripList());
-                     f.writeGeom(Defaults.getBaseModel().getNodeList(), Defaults.getBaseModel().getStripList());
-                     
+                    f.writeGeom(Defaults.getBaseModel().getNodeList(), Defaults.getBaseModel().getStripList());
+
                 } catch (IOException ex) {
                     Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -89,7 +88,7 @@ public class HomeMenuBar {
                 }
 
                 Defaults.getBaseModel().clearNodes();
-                
+
                 Defaults.getBaseModel().clearStrips();
 
                 Node.clearNumbering();
@@ -98,10 +97,9 @@ public class HomeMenuBar {
 
                 }
 
-                
                 Strip.clearNumbering();
                 for (Strip s : f.getStripList()) {
-                  
+
                     Defaults.getBaseModel().addStrip(s);
                 }
 
@@ -109,7 +107,7 @@ public class HomeMenuBar {
 
             }
         });
-        
+
         materialEdit.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -118,17 +116,17 @@ public class HomeMenuBar {
                 matEdit.start(new Stage());
             }
         });
-        
+
         setBC.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
                 FourierEditor fEdit = new FourierEditor();
                 fEdit.start(new Stage());
-               
+
             }
         });
-        
+
         makePath.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -136,6 +134,24 @@ public class HomeMenuBar {
                 PathMaker pathM = new PathMaker();
                 try {
                     pathM.start(new Stage());
+                } catch (Exception ex) {
+                    Logger.getLogger(HomeMenuBar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        dsmCalcs.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+//                DSMCalcs d = new DSMCalcs(355, 355*DSMCalcs.getLocalFactor(), 355*DSMCalcs.getDistortionalFactor(), 355*DSMCalcs.getGlobalFactor());
+//                double Mne = d.getNominalFlexuralStrength(false);
+                
+                
+                DSMWindow d = new DSMWindow();
+                try {
+                    d.start(new Stage());
                 } catch (Exception ex) {
                     Logger.getLogger(HomeMenuBar.class.getName()).log(Level.SEVERE, null, ex);
                 }

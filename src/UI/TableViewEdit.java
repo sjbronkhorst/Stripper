@@ -181,28 +181,28 @@ public class TableViewEdit extends Application {
             }
         });
 
-        plotBtn.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-
-                if (disCalced) {
-
-                    XYChartDataUtil.addSeries(s.getxData(), s.getyData());
-
-                    LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
-
-                    Stage s = new Stage();
-
-                    s.getIcons().add(ic);
-                    chart.start(s);
-
-                } else {
-                    TableViewEdit.println("Nothing to plot");
-                }
-
-            }
-        });
+//        plotBtn.setOnAction(new EventHandler<ActionEvent>() {
+//
+//            @Override
+//            public void handle(ActionEvent event) {
+//
+//                if (disCalced) {
+//
+//                    XYChartDataUtil.addSeries(s.getxData(), s.getyData());
+//
+//                    LineChartWindow chart = new LineChartWindow("Displacement along member", "Displacement along member", "Distance along member", "Displacement", 0, Double.parseDouble(modelLengthField.textProperty().get()), XYChartDataUtil.getDataList());
+//
+//                    Stage s = new Stage();
+//
+//                    s.getIcons().add(ic);
+//                    chart.start(s);
+//
+//                } else {
+//                    TableViewEdit.println("Nothing to plot");
+//                }
+//
+//            }
+//        });
 
         calcBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -324,8 +324,8 @@ public class TableViewEdit extends Application {
                         Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-                    XYChartDataUtil.addSeries(bc.getPhysicalLengths(), bc.getLoadFactors());
-                    LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]), XYChartDataUtil.getDataList());
+                    XYChartDataUtil.addCurve(bc);
+                    LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]));
 
                     Defaults.bucklingCurveList.add(bc);
 

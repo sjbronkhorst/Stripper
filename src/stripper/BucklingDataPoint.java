@@ -9,6 +9,8 @@ import UI.Defaults;
 import UI.NodeTableUtil;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import linalg.Vector;
 
 /**
@@ -17,10 +19,10 @@ import linalg.Vector;
  */
 public class BucklingDataPoint {
 
-    double physicalLength;
+    private ReadOnlyDoubleWrapper physicalLength = new ReadOnlyDoubleWrapper(this, "physicalLength", 0.0);
     double[] systemLoadFactors;
     Vector[] freeParamVectors;
-    double minLoadFactor;
+    private ReadOnlyDoubleWrapper minLoadFactor = new ReadOnlyDoubleWrapper(this, "minLoadFactor", 0.0);
     Vector minParamVector;
     int minIndex;
 
@@ -28,7 +30,7 @@ public class BucklingDataPoint {
     
 
     public BucklingDataPoint(double physicalLength, int nTerms) {
-        this.physicalLength = physicalLength;
+        this.physicalLength.set(physicalLength); 
         this.nTerms = nTerms;
 
         systemLoadFactors = new double[nTerms];
@@ -37,7 +39,7 @@ public class BucklingDataPoint {
     }
 
     public double getPhysicalLength() {
-        return physicalLength;
+        return physicalLength.get();
     }
 
     public double getSystemLoadFactor(int m) {
@@ -49,7 +51,7 @@ public class BucklingDataPoint {
     }
 
     public double getMinLoadFactor() {
-        return minLoadFactor;
+        return minLoadFactor.get();
     }
 
     public Vector getMinParamVector() {
@@ -66,12 +68,22 @@ public class BucklingDataPoint {
     }
 
     public void setMinLoadFactor(double minLoadFactor) {
-        this.minLoadFactor = minLoadFactor;
+        this.minLoadFactor.set(minLoadFactor); 
     }
 
     public void setMinParamVector(Vector minParamVector) {
         this.minParamVector = minParamVector;
        
+    }
+    
+    public DoubleProperty physicalLengthProperty()
+    {
+        return physicalLength;
+    }
+    
+    public DoubleProperty minLoadFactorProperty()
+    {
+        return minLoadFactor;
     }
     
    

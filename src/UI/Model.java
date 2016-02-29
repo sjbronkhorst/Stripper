@@ -173,6 +173,8 @@ public class Model {
         strip.setNode2(getNode(s.getNode2Id()));
         }
         strip.setStripThickness(s.getStripThickness());
+        strip.setEdgeTractionAtNode1(s.getEdgeTractionAtNode1());
+        strip.setEdgeTractionAtNode2(s.getEdgeTractionAtNode2());
         strips.add(strip);
     }
     

@@ -759,6 +759,16 @@ public abstract class Strip {
     public DoubleProperty thicknessProperty() {
         return t;
     }
+    
+    public DoubleProperty f1Property()
+    {
+        return f1;
+    }
+    
+    public DoubleProperty f2Property()
+    {
+        return f2;
+    }
 
     public double getCrossSectionalArea() {
         return getStripThickness() * getStripWidth();
