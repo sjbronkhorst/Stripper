@@ -298,6 +298,17 @@ public class Model {
 
         zVec.scale(scale);
         xVec.scale(scale);
+        
+        
+        
+        
+        if(zVec.get(0) > 0) // Arbitrary rule to draw all vectors in same direction
+        {
+            zVec.scale(-1);
+            xVec.scale(-1);
+        }
+        
+        
 
         for (Node n : nodes) {
 
