@@ -118,7 +118,6 @@ public class Model {
 //    public Map<Integer, Node> getNodeMap() {
 //        return nodeMap;
 //    }
-
     /**
      * Strips should only be added to the model once all data is known e.g.
      * boundary conditions
@@ -142,66 +141,53 @@ public class Model {
 //        }
 //
 //    }
-    
-     public void clearStrips()
-    {
+    public void clearStrips() {
         int i = strips.size();
-        
-        
-        for (int j = 0;  j < i;j ++)
-        {
-             strips.remove(0);
-            
+
+        for (int j = 0; j < i; j++) {
+            strips.remove(0);
+
         }
-        
+
     }
-     
-       public void removeStrip(Strip n)
-    {
+
+    public void removeStrip(Strip n) {
         strips.remove(n);
-        
-                
+
     }
 
     public void addStrip(Strip s) {
 
         Strip strip = this.fourierSeries.getStrip(this);
-        
-        if(s.hasBothNodes())
-        {
-        strip.setNode1(getNode(s.getNode1Id()));
-        strip.setNode2(getNode(s.getNode2Id()));
+
+        if (s.hasBothNodes()) {
+            strip.setNode1(getNode(s.getNode1Id()));
+            strip.setNode2(getNode(s.getNode2Id()));
         }
         strip.setStripThickness(s.getStripThickness());
         strip.setEdgeTractionAtNode1(s.getEdgeTractionAtNode1());
         strip.setEdgeTractionAtNode2(s.getEdgeTractionAtNode2());
         strips.add(strip);
     }
-    
+
     public void addStrip() {
 
         Strip strip = this.fourierSeries.getStrip(this);
         strips.add(strip);
     }
-    
-    
-    
-    
 
     public void addNode(Node n) {
         Node node = new Node(n.getXCoord(), n.getZCoord(), this);
-        
+
         nodes.add(node);
-       
+
     }
-    
-    
-     public void addNode() 
-     {
-        Node node = new Node(0,0, this);
-        
+
+    public void addNode() {
+        Node node = new Node(0, 0, this);
+
         nodes.add(node);
-       
+
     }
 
     public Node getNode(int Id) {
@@ -216,23 +202,19 @@ public class Model {
         System.out.println("No such node");
         return null;
     }
-    
-    public void removeNode(Node n)
-    {
+
+    public void removeNode(Node n) {
         nodes.remove(n);
-       
+
     }
-    
-    public void clearNodes()
-    {
+
+    public void clearNodes() {
         int i = nodes.size();
-        
-        
-        for (int j = 0;  j < i;j ++)
-        {
-           // nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
+
+        for (int j = 0; j < i; j++) {
+            // nodeMap.remove(nodes.get(0).getNodeId(), nodes.get(0));
             nodes.remove(0);
-            
+
         }
     }
 
@@ -260,6 +242,90 @@ public class Model {
         }
 
         return sumAz / sumA;
+    }
+
+    public double getIxx() {
+
+        //I = sum(Ixx +Ad^2)
+        double I = 0;
+        double xbar = getXBar();
+
+        for (Strip s : strips) {
+            double d = xbar - s.getXBar();
+
+            I = I + s.getIxx() + s.getCrossSectionalArea() * d * d;
+        }
+
+        return I;
+    }
+
+    public double getIzz() {
+
+        //I = sum(Ixx +Ad^2)
+        double I = 0;
+        double zbar = getZBar();
+
+        for (Strip s : strips) {
+            double d = zbar - s.getZBar();
+
+            I = I + s.getIzz() + s.getCrossSectionalArea() * d * d;
+        }
+
+        return I;
+    }
+
+    public double getIxz() // product of inertia
+    {
+
+        // I = Ixz + Adxdy
+        double I = 0;
+        double zbar = getZBar();
+        double xbar = getXBar();
+
+        for (Strip s : strips) {
+            double dz = zbar - s.getZBar();
+            double dx = xbar - s.getXBar();
+
+            I = I + s.getIxz() + s.getCrossSectionalArea() * dx * dz;
+        }
+
+        return I;
+
+    }
+
+    public double getPrincipalAxisAngle() {
+        double Ixz = getIxz();
+        double Ixx = getIxx();
+        double Izz = getIzz();
+
+        return Math.atan((-Ixz * 2.0) / (Ixx - Izz)) / 2.0;
+    }
+
+    public double getIxxPrincipal() {
+        double Ixz = getIxz();
+        double Ixx = getIxx();
+        double Izz = getIzz();
+        double theta = getPrincipalAxisAngle();
+
+        return ((Ixx + Izz) / 2.0) + ((Ixx - Izz) / 2.0)*Math.cos(2*theta) - Ixz * Math.sin(2 * theta);
+        
+    }
+
+    public double getIzzPrincipal() {
+         double Ixz = getIxz();
+        double Ixx = getIxx();
+        double Izz = getIzz();
+        double theta = getPrincipalAxisAngle();
+
+        return ((Ixx + Izz) / 2.0) - ((Ixx - Izz) / 2.0)*Math.cos(2*theta) + Ixz * Math.sin(2 * theta);
+    }
+
+    public double getZx() {
+        return getIxx() / getXBar();
+    }
+
+    public double getZz() {
+        return getIzz() / getZBar();
     }
 
     public void setDisplacedState(BucklingDataPoint point) {
@@ -298,17 +364,12 @@ public class Model {
 
         zVec.scale(scale);
         xVec.scale(scale);
-        
-        
-        
-        
-        if(zVec.get(0) > 0) // Arbitrary rule to draw all vectors in same direction
+
+        if (zVec.get(0) > 0) // Arbitrary rule to draw all vectors in same direction
         {
             zVec.scale(-1);
             xVec.scale(-1);
         }
-        
-        
 
         for (Node n : nodes) {
 

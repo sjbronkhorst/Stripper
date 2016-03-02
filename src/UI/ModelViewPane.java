@@ -683,12 +683,18 @@ public class ModelViewPane {
                 }
             }
 
-            if (s.getEdgeTractionAtNode1()!= 0 || s.getEdgeTractionAtNode2() != 0) {
+            if (s.getEdgeTractionAtNode1() != 0 || s.getEdgeTractionAtNode2() != 0) {
 
                 for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
 
                     PointLoad pl = new PointLoad();
-                    pl.setXCoord((double) (i));
+
+                    if (x1 != x2) {
+                        pl.setXCoord((double) (i) * Math.abs(x2 - x1) / (x2 - x1));
+                    } else {
+                        pl.setXCoord((double) (i));
+                    }
+
                     pl.setYCoord(0.0);
                     pl.setMagnitude(((s.getEdgeTractionAtNode2() - s.getEdgeTractionAtNode1()) / s.getStripWidth()) * i + s.getEdgeTractionAtNode1());
 
@@ -964,23 +970,22 @@ public class ModelViewPane {
                 }
             }
 
-            if (s.getEdgeTractionAtNode1() != 0 || s.getEdgeTractionAtNode2() != 0) {
-
-                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
-
-                    PointLoad pl = new PointLoad();
-                    pl.setXCoord((double) (i));
-                    pl.setYCoord(0.0);
-                    pl.setMagnitude(((s.getEdgeTractionAtNode2() - s.getEdgeTractionAtNode1()) / s.getStripWidth()) * i + s.getEdgeTractionAtNode1());
-
-                    if (pl.getMagnitude() != 0.0) {
-                        addYArrowAt(x1, y1, theta, pl);
-                    }
-
-                }
-
-            }
-
+//            if (s.getEdgeTractionAtNode1() != 0 || s.getEdgeTractionAtNode2() != 0) {
+//
+//                for (int i = 0; i <= (int) (s.getStripWidth()); i = i + 10) {
+//
+//                    PointLoad pl = new PointLoad();
+//                    pl.setXCoord((double) (i));
+//                    pl.setYCoord(0.0);
+//                    pl.setMagnitude(((s.getEdgeTractionAtNode2() - s.getEdgeTractionAtNode1()) / s.getStripWidth()) * i + s.getEdgeTractionAtNode1());
+//
+//                    if (pl.getMagnitude() != 0.0) {
+//                        addYArrowAt(x1, y1, theta, pl);
+//                    }
+//
+//                }
+//
+//            }
         }
 
         ////////////////////////////////////////////
@@ -1012,15 +1017,15 @@ public class ModelViewPane {
                 blueStuff.setSpecularColor(Color.BLACK);
 
                 Sphere s = new Sphere(-camera2.getTranslateZ() / 100);
-                s.translateXProperty().set(n.getXCoord()+n.getDisplacedXCoord());
-                s.translateYProperty().set(n.getZCoord()+n.getDisplacedZCoord());
+                s.translateXProperty().set(n.getXCoord() + n.getDisplacedXCoord());
+                s.translateYProperty().set(n.getZCoord() + n.getDisplacedZCoord());
 
                 if (nodeLabelCheck.isSelected()) {
                     Text t = new Text(Integer.toString(n.getNodeId()));
                     t.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
 
-                    t.translateXProperty().set(n.getXCoord()+n.getDisplacedXCoord() + 10);
-                    t.translateYProperty().set(n.getZCoord()+n.getDisplacedZCoord() + 10);
+                    t.translateXProperty().set(n.getXCoord() + n.getDisplacedXCoord() + 10);
+                    t.translateYProperty().set(n.getZCoord() + n.getDisplacedZCoord() + 10);
 
                     nodeGroup2.getChildren().add(t);
 

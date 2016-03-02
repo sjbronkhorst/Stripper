@@ -73,7 +73,7 @@ public static void setGlobalFactor(double val)
         Mne = getMne(braced);
       
 
-        Mnl = getMnl(getMne(true));
+        Mnl = getMnl(Mne);
         Mnd = getMnd();
 
         System.out.println("--------------------------------------------------");
@@ -97,6 +97,7 @@ public static void setGlobalFactor(double val)
         double Mne = 0;
 
         if (!braced) {
+                        
             if (Mcre < 0.56 * My) {
                 System.out.println("Mne = Mcre if Mcre < 0.56⋅My        (Eq. 1.2.2-1)");
                 Mne = Mcre;
@@ -170,11 +171,12 @@ public static void setGlobalFactor(double val)
 
         return Mnd;
     }
-
+  
+    
     public static void main(String[] args) {
-        DSMCalcs d = new DSMCalcs(126.55, 85, 108, 218.93);
+        DSMCalcs d = new DSMCalcs(126.55, 85, 108, 218.93); // yield , local , dist , global
 
-        double Mne = d.getNominalFlexuralStrength(false);
+        double Mne = d.getNominalFlexuralStrength(true);
 
     }
 

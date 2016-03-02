@@ -46,6 +46,7 @@ import stripper.BucklingDataPoint;
 import stripper.BucklingEquation;
 import stripper.EigenValueFixer;
 import stripper.FileHandler;
+import stripper.MyMath;
 import stripper.Path;
 
 import stripper.Strip;
@@ -158,9 +159,22 @@ public class TableViewEdit extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-
-                println("x Bar = " + Defaults.getBaseModel().getXBar());
-                println("z Bar = " + Defaults.getBaseModel().getZBar());
+                
+                println("---------------------------------------------------------------------------------------------- ");
+                println("Cross section properties : ");
+                println(" ");
+                println("x Bar = " + MyMath.round(Defaults.getBaseModel().getXBar(),2));
+                println("z Bar = " + MyMath.round(Defaults.getBaseModel().getZBar(),2));
+                
+                println("Ixx = " + MyMath.round(Defaults.getBaseModel().getIxx(),2));
+                println("Izz = " + MyMath.round(Defaults.getBaseModel().getIzz(),2));
+                println("Ixz = " + MyMath.round(Defaults.getBaseModel().getIxz(),2));
+                
+                println("principal axis angle = " + MyMath.round(Defaults.getBaseModel().getPrincipalAxisAngle(),2) + "  radians");
+                println("Ixx Principal = " + MyMath.round(Defaults.getBaseModel().getIxxPrincipal(),2));
+                println("Izz Principal = " + MyMath.round(Defaults.getBaseModel().getIzzPrincipal(),2));
+                println("---------------------------------------------------------------------------------------------- ");
+                
             }
         });
 

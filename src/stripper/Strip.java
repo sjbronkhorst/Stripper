@@ -786,6 +786,51 @@ public abstract class Strip {
         return getCrossSectionalCentroid().getY();
     }
     
+    public double getIxx()
+    {
+        double cos = Math.cos(getStripAngle());
+        double sin = Math.sin(getStripAngle());
+        
+        double b = getStripWidth();
+        double d = getStripThickness();
+        
+        
+        return (b*d/12.0)*(d*d*cos*cos + b*b*sin*sin);
+    }
+    
+    public double getIzz() // Iyy in redbook
+    {
+        double cos = Math.cos(getStripAngle());
+        double sin = Math.sin(getStripAngle());
+        
+        double d = getStripWidth();
+        double b = getStripThickness();
+        
+        
+        return (b*d/12.0)*(d*d*cos*cos + b*b*sin*sin);
+    }
+    
+    public double getIxz() // Product of inertia
+    {
+        return -Math.tan(2*getStripAngle())*(getIxx() - getIzz())/2.0;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public void clone(Strip strip)
     {
           if (!strip.hasBothNodes()) {
