@@ -10,6 +10,7 @@
  */
 package UI;
 
+import static UI.TableViewEdit.println;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import stripper.DSM.DSMCalcs;
 import stripper.FileHandler;
+import stripper.MyMath;
 import stripper.Node;
 import stripper.Strip;
 
@@ -33,20 +35,31 @@ public class HomeMenuBar {
     private Menu fileMenu = new Menu("File");
     private Menu editMenu = new Menu("Edit");
     private Menu dsmMenu = new Menu("DSM");
+    private Menu modelMenu = new Menu("Model");
     private MenuBar menuBar = new MenuBar();
 
     private MenuItem geomFileRead = new MenuItem("Open Geometry File...");
     private MenuItem geomFileWrite = new MenuItem("Save Geometry As...");
     private MenuItem materialEdit = new MenuItem("Material");
     private MenuItem setBC = new MenuItem("Fourier series");
+    
+    private MenuItem transLateToPrincipal = new MenuItem("Translate centroid to match origin");
+    private MenuItem rotateToPrincipal = new MenuItem("Rotate model to match principal axis angle");
+    private MenuItem modelPropertiesBtn = new MenuItem("Properties");
+    
+     
+    
     private MenuItem makePath = new MenuItem("Path");
     private MenuItem dsmCalcs = new MenuItem("Calc...");
 
     public HomeMenuBar(TableViewEdit viewer, boolean hasPath) {
 
         fileMenu.getItems().addAll(geomFileRead, geomFileWrite);
-        editMenu.getItems().addAll(materialEdit, setBC);
+        editMenu.getItems().addAll(materialEdit, setBC , modelMenu);
         dsmMenu.getItems().add(dsmCalcs);
+        modelMenu.getItems().addAll(modelPropertiesBtn,transLateToPrincipal,rotateToPrincipal);
+        
+        
 
         if (hasPath) {
             editMenu.getItems().add(makePath);
@@ -155,6 +168,48 @@ public class HomeMenuBar {
                 } catch (Exception ex) {
                     Logger.getLogger(HomeMenuBar.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        });
+        
+        
+        transLateToPrincipal.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                Defaults.getBaseModel().matchCentroidToOrigin();
+                viewer.draw();
+            }
+        });
+        
+         rotateToPrincipal.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                Defaults.getBaseModel().matchPrincipalAxisRotation();
+                 viewer.draw();
+            }
+        });
+         
+          modelPropertiesBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                
+                println("---------------------------------------------------------------------------------------------- ");
+                println("Cross section properties : ");
+                println(" ");
+                println("Centroid x = " + MyMath.round(Defaults.getBaseModel().getCrossSectionalCentroid().getX(),2));
+                println("Centroid z = " + MyMath.round(Defaults.getBaseModel().getCrossSectionalCentroid().getY(),2));
+                
+                println("Ixx = " + MyMath.round(Defaults.getBaseModel().getIxx(),2));
+                println("Izz = " + MyMath.round(Defaults.getBaseModel().getIzz(),2));
+                println("Ixz = " + MyMath.round(Defaults.getBaseModel().getIxz(),2));
+                
+                println("principal axis angle = " + MyMath.round(Defaults.getBaseModel().getPrincipalAxisAngle(),2) + "  radians");
+                println("Ixx Principal = " + MyMath.round(Defaults.getBaseModel().getIxxPrincipal(),2));
+                println("Izz Principal = " + MyMath.round(Defaults.getBaseModel().getIzzPrincipal(),2));
+                println("---------------------------------------------------------------------------------------------- ");
+                
             }
         });
 

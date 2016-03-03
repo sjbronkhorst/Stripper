@@ -51,8 +51,8 @@ public class BucklingCurve {
         this.distortionalFactor = distortionalFactor;
     }
 
-    public BucklingCurve() {
-        name.set("Curve " + bcNum);
+    public BucklingCurve(String name) {
+        this.name.set(name);
         bcNum++;
     }
 

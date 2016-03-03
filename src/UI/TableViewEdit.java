@@ -73,7 +73,9 @@ public class TableViewEdit extends Application {
     TextField bucklePoints = new TextField("100");
     Button setLengthBtn = new Button("set");
     Button setThicknessBtn = new Button("set");
-    Button modelPropertiesBtn = new Button("Model properties");
+//    Button modelPropertiesBtn = new Button("Model properties");
+//    Button centroidToOriginBtn = new Button("Translate centroid to match origin");
+//    Button principalRotateBtn = new Button("Rotate model to match principal axis angle");
 
     ProgressBar progInd = new ProgressBar(0);
 
@@ -155,29 +157,6 @@ public class TableViewEdit extends Application {
             }
         });
 
-        modelPropertiesBtn.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                
-                println("---------------------------------------------------------------------------------------------- ");
-                println("Cross section properties : ");
-                println(" ");
-                println("x Bar = " + MyMath.round(Defaults.getBaseModel().getXBar(),2));
-                println("z Bar = " + MyMath.round(Defaults.getBaseModel().getZBar(),2));
-                
-                println("Ixx = " + MyMath.round(Defaults.getBaseModel().getIxx(),2));
-                println("Izz = " + MyMath.round(Defaults.getBaseModel().getIzz(),2));
-                println("Ixz = " + MyMath.round(Defaults.getBaseModel().getIxz(),2));
-                
-                println("principal axis angle = " + MyMath.round(Defaults.getBaseModel().getPrincipalAxisAngle(),2) + "  radians");
-                println("Ixx Principal = " + MyMath.round(Defaults.getBaseModel().getIxxPrincipal(),2));
-                println("Izz Principal = " + MyMath.round(Defaults.getBaseModel().getIzzPrincipal(),2));
-                println("---------------------------------------------------------------------------------------------- ");
-                
-            }
-        });
-
         setThicknessBtn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -217,7 +196,6 @@ public class TableViewEdit extends Application {
 //
 //            }
 //        });
-
         calcBtn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -260,6 +238,8 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
+                 
+                 
                 //  ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
                 boolean noEdgeLoads = false;
 
@@ -268,7 +248,7 @@ public class TableViewEdit extends Application {
 //                for (Node n : NodeTableUtil.getNodeList()) {
 //                    Defaults.getBaseModel().addNode(n);
 //                }
-               // Defaults.getBaseModel().getStripList().clear();
+                // Defaults.getBaseModel().getStripList().clear();
 //                for (UIStrip s : StripTableUtil.getStripList()) {
 //
 //                    Defaults.getBaseModel().addStrip(s);
@@ -314,7 +294,8 @@ public class TableViewEdit extends Application {
                         stringData[0][i] = "Buckling stress for half wave";
                     }
 
-                    BucklingCurve bc = new BucklingCurve();
+                   StringChoicePrompt scp = new StringChoicePrompt(stage, "Type a name for the buckling curve : ");
+                    BucklingCurve bc = new BucklingCurve(scp.getResult());
 
                     for (int i = 0; i < models.length; i++) {
 
@@ -502,7 +483,7 @@ public class TableViewEdit extends Application {
         Label lengthLabel = new Label("Model length :");
         Label thicknessLabel = new Label("Plate thickness :");
 
-        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox, lengthLabel, modelLengthField, setLengthBtn, thicknessLabel, thicknessField, setThicknessBtn, modelPropertiesBtn);
+        tableBox.getChildren().addAll(nodeLabel, nodeBox, stripLabel, stripBox, lengthLabel, modelLengthField, setLengthBtn, thicknessLabel, thicknessField, setThicknessBtn);
 
         geometryTab.setContent(tableBox);
 

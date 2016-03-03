@@ -24,65 +24,52 @@ import javafx.stage.Window;
  *
  * @author SJ
  */
-class AnalysisChoicePrompt {
+class StringChoicePrompt {
 
-    private boolean bucklingAnalysis;
+    private String returnString;
 
-    AnalysisChoicePrompt(Window owner) {
+    StringChoicePrompt(Window owner , String title) {
         final Stage dialog = new Stage();
+        
 
-        dialog.setTitle("Choose the type of analysis...");
+        dialog.setTitle(title);
         dialog.initOwner(owner);
         dialog.initStyle(StageStyle.UTILITY);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.setX(owner.getX() + owner.getWidth());
         dialog.setY(owner.getY());
 
-        final Button buckleChoiceBtn = new Button("Buckling Analysis");
-        final Button staticChoiceBtn = new Button("Static Analysis");
+        final Button okBtn = new Button("OK");
+        TextField tf = new TextField();
+        
 
-        buckleChoiceBtn.setOnAction(new EventHandler<ActionEvent>() {
+        okBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                bucklingAnalysis = true;
+                returnString = tf.getText();
                 dialog.close();
-
+                
             }
         });
+        
+        
 
-        staticChoiceBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                bucklingAnalysis = false;
-                dialog.close();
+       
 
-            }
-        });
-
-        final HBox layout = new HBox(10);
+        final VBox layout = new VBox(10);
         layout.setPrefSize(400, 150);
         layout.setAlignment(Pos.CENTER);
 
-        layout.getChildren().setAll(
-                buckleChoiceBtn,
-                staticChoiceBtn
-        );
-        
-        
+        layout.getChildren().setAll(tf,okBtn);
 
         dialog.setScene(new Scene(layout));
-        dialog.centerOnScreen();
+        dialog.centerOnScreen();        
         dialog.showAndWait();
-        
-        
-        
-       
-        
 
         
     }
 
-    public boolean getResult() {
-        return bucklingAnalysis;
+    public String getResult() {
+        return returnString;
     }
 }

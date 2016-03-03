@@ -5,6 +5,7 @@
  */
 package UI;
 
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -178,6 +179,7 @@ public class Model {
 
     public void addNode(Node n) {
         Node node = new Node(n.getXCoord(), n.getZCoord(), this);
+        node.setStatus(n.getStatus());
 
         nodes.add(node);
 
@@ -218,7 +220,7 @@ public class Model {
         }
     }
 
-    public double getXBar() {
+    private double getCentroidX() {
         double sumAx = 0;
         double sumA = 0;
 
@@ -231,7 +233,7 @@ public class Model {
         return sumAx / sumA;
     }
 
-    public double getZBar() {
+    private double getCentroidZ() {
         double sumAz = 0;
         double sumA = 0;
 
@@ -244,11 +246,15 @@ public class Model {
         return sumAz / sumA;
     }
 
+    public Point2D.Double getCrossSectionalCentroid() {
+        return new Point2D.Double(getCentroidX(), getCentroidZ());
+    }
+
     public double getIxx() {
 
         //I = sum(Ixx +Ad^2)
         double I = 0;
-        double xbar = getXBar();
+        double xbar = getCentroidX();
 
         for (Strip s : strips) {
             double d = xbar - s.getXBar();
@@ -263,7 +269,7 @@ public class Model {
 
         //I = sum(Ixx +Ad^2)
         double I = 0;
-        double zbar = getZBar();
+        double zbar = getCentroidZ();
 
         for (Strip s : strips) {
             double d = zbar - s.getZBar();
@@ -279,8 +285,8 @@ public class Model {
 
         // I = Ixz + Adxdy
         double I = 0;
-        double zbar = getZBar();
-        double xbar = getXBar();
+        double zbar = getCentroidZ();
+        double xbar = getCentroidX();
 
         for (Strip s : strips) {
             double dz = zbar - s.getZBar();
@@ -307,25 +313,52 @@ public class Model {
         double Izz = getIzz();
         double theta = getPrincipalAxisAngle();
 
-        return ((Ixx + Izz) / 2.0) + ((Ixx - Izz) / 2.0)*Math.cos(2*theta) - Ixz * Math.sin(2 * theta);
-        
+        return ((Ixx + Izz) / 2.0) + ((Ixx - Izz) / 2.0) * Math.cos(2 * theta) - Ixz * Math.sin(2 * theta);
+
     }
 
     public double getIzzPrincipal() {
-         double Ixz = getIxz();
+        double Ixz = getIxz();
         double Ixx = getIxx();
         double Izz = getIzz();
         double theta = getPrincipalAxisAngle();
 
-        return ((Ixx + Izz) / 2.0) - ((Ixx - Izz) / 2.0)*Math.cos(2*theta) + Ixz * Math.sin(2 * theta);
+        return ((Ixx + Izz) / 2.0) - ((Ixx - Izz) / 2.0) * Math.cos(2 * theta) + Ixz * Math.sin(2 * theta);
     }
 
-    public double getZx() {
-        return getIxx() / getXBar();
+//    public double getZx() {
+//        return getIxx() / getXBar();
+//    }
+//
+//    public double getZz() {
+//        return getIzz() / getZBar();
+//    }
+    public void matchCentroidToOrigin() {
+        double xOff = getCentroidX();
+        double zOff = getCentroidZ();
+
+        for (Node n : nodes) {
+            n.setXCoord(n.getXCoord() - xOff);
+            n.setZCoord(n.getZCoord() - zOff);
+
+        }
+
     }
 
-    public double getZz() {
-        return getIzz() / getZBar();
+    public void matchPrincipalAxisRotation() {
+        matchCentroidToOrigin();
+        double theta = getPrincipalAxisAngle();
+
+        for (Node n : nodes) {
+
+            double oldX = n.getXCoord();
+            double oldZ = n.getZCoord();
+
+            n.setXCoord(oldX * Math.cos(theta) - oldZ * Math.sin(theta));
+            n.setZCoord(oldZ * Math.cos(theta) + oldX * Math.sin(theta));
+
+        }
+
     }
 
     public void setDisplacedState(BucklingDataPoint point) {

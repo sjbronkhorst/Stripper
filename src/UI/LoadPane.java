@@ -137,22 +137,22 @@ public class LoadPane {
             @Override
             public void handle(ActionEvent event) {
                 
-                double xBar = Defaults.getBaseModel().getXBar();
+                double xOff = Defaults.getBaseModel().getCrossSectionalCentroid().getX();
                 double farthestFromCentroid = 0;
                 
                 for (Node n : Defaults.getBaseModel().getNodeList())
                 {
-                    if(Math.abs(n.getXCoord() - xBar) > farthestFromCentroid)
+                    if(Math.abs(n.getXCoord() - xOff) > farthestFromCentroid)
                     {
-                        farthestFromCentroid = n.getXCoord() - xBar;
+                        farthestFromCentroid = n.getXCoord() - xOff;
                     }
                                        
                 }
                          
                 for(Strip s : Defaults.getBaseModel().getStripList())
                 {
-                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText())*(s.getNode1().getXCoord() - xBar)/farthestFromCentroid);
-                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText())*(s.getNode2().getXCoord() - xBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText())*(s.getNode1().getXCoord() - xOff)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText())*(s.getNode2().getXCoord() - xOff)/farthestFromCentroid);
                 }
                 
                                 
@@ -166,22 +166,22 @@ public class LoadPane {
             @Override
             public void handle(ActionEvent event) {
                 
-                double zBar = Defaults.getBaseModel().getZBar();
+                double zOff = Defaults.getBaseModel().getCrossSectionalCentroid().getY();
                 double farthestFromCentroid = 0;
                 
                 for (Node n : Defaults.getBaseModel().getNodeList())
                 {
-                    if(Math.abs(n.getZCoord() - zBar) > farthestFromCentroid)
+                    if(Math.abs(n.getZCoord() - zOff) > farthestFromCentroid)
                     {
-                        farthestFromCentroid = n.getZCoord() - zBar;
+                        farthestFromCentroid = n.getZCoord() - zOff;
                     }
                                        
                 }
                          
                 for(Strip s : Defaults.getBaseModel().getStripList())
                 {
-                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText())*(s.getNode1().getZCoord() - zBar)/farthestFromCentroid);
-                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText())*(s.getNode2().getZCoord() - zBar)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode1(Double.parseDouble(maxStressTextF.getText())*(s.getNode1().getZCoord() - zOff)/farthestFromCentroid);
+                    s.setEdgeTractionAtNode2(Double.parseDouble(maxStressTextF.getText())*(s.getNode2().getZCoord() - zOff)/farthestFromCentroid);
                 }
                 
                                 

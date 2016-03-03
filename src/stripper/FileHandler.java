@@ -86,12 +86,12 @@ public class FileHandler {
             BufferedWriter bw = new BufferedWriter(fw);
 
             for (Node node : nodes) {
-                bw.append("n " + node.getXCoord() + " " + node.getZCoord());
+                bw.append("n " + node.getXCoord() + "," + node.getZCoord());
                 bw.newLine();
             }
 
             for (Strip strip : strips) {
-                bw.append("e " + strip.getNode1Id() + " " + strip.getNode2Id());
+                bw.append("e," + strip.getNode1Id() + "," + strip.getNode2Id() + "," + strip.getStripThickness());
                 bw.newLine();
             }
 
@@ -149,7 +149,7 @@ public class FileHandler {
                     s[i] = br2.readLine();
                     //TableViewEdit.println(s[i]);
 
-                    String[] words = s[i].split(" ");
+                    String[] words = s[i].split(",");
 
                     // TableViewEdit.println("words 0 " +words[0]);
                     if (words[0].equals("n")) {
@@ -162,6 +162,8 @@ public class FileHandler {
                         Node n1 = nodeMap.get(Integer.parseInt(words[1]));
 
                         Node n2 = nodeMap.get(Integer.parseInt(words[2]));
+                        
+                        double thickness = Double.parseDouble(words[3]);
 
                         if (n1 != null && n2 != null) {
 
@@ -169,6 +171,7 @@ public class FileHandler {
                             Strip strip = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
                             strip.setNode1(n1);
                             strip.setNode2(n2);
+                            strip.setStripThickness(thickness);
                             strips.add(strip);   
                         }
                     } else {

@@ -426,6 +426,32 @@ public class ModelViewPane {
             }
         });
 
+        box2D.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+
+                pressedX = event.getSceneX();
+                pressedY = event.getSceneY();
+                pressedPoint = new Point3D(pressedX, pressedY, camera2.getTranslateZ());
+            }
+        });
+
+        box2D.setOnMouseDragged(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+
+                Point3D newPoint = new Point3D(event.getSceneX(), event.getSceneY(), camera2.getTranslateZ());
+
+                double dx = newPoint.getX() - pressedPoint.getX();
+                double dy = newPoint.getY() - pressedPoint.getY();
+
+                twoDGroup.getTransforms().add(new Translate(dx, dy));
+                pressedPoint = newPoint;
+            }
+        });
+
         btnList.add(zoomBtn);
         btnList.add(dezoomBtn);
         btnList.add(upBtn);
@@ -470,6 +496,27 @@ public class ModelViewPane {
             camera.setFarClip(camera.getTranslateZ() * 2);
             camera.setFieldOfView(35);
             scene3d.setCamera(camera);
+            draw();
+
+        });
+
+        box2D.addEventHandler(ScrollEvent.SCROLL, (ScrollEvent e) -> {
+
+            double notches = e.getDeltaY();
+
+            if (notches > 0) {
+                camera2.setTranslateZ(camera2.getTranslateZ() + 50);
+
+            } else {
+                camera2.setTranslateZ(camera2.getTranslateZ() - 50);
+
+            }
+
+            camera2.setNearClip(0.1);
+            camera2.setFarClip(camera2.getTranslateZ() * 2);
+            camera2.setFieldOfView(35);
+            scene2d.setCamera(camera2);
+            draw2();
 
         });
 
@@ -736,7 +783,7 @@ public class ModelViewPane {
                 blueStuff.setDiffuseColor(Color.BLUE);
                 blueStuff.setSpecularColor(Color.BLACK);
 
-                Sphere s = new Sphere(-camera.getTranslateZ() / 100);
+                Sphere s = new Sphere(-(5.0 / 1000.0) * camera.getTranslateZ());
                 s.translateXProperty().set(n.getXCoord());
                 s.translateYProperty().set(n.getZCoord());
 
@@ -915,7 +962,7 @@ public class ModelViewPane {
             b.setTranslateX((x1 + x2) / 2.0);
             b.setTranslateY((y1 + y2) / 2.0);
 
-            Cylinder c = createConnection(new Point3D(x3, y3, 0), new Point3D(x4, y4, 0), s.getStripThickness());
+            Cylinder c = createConnection(new Point3D(x3, y3, 0), new Point3D(x4, y4, 0), -(s.getStripThickness() / 1000.0) * camera2.getTranslateZ());
 
             stripGroup2.getChildren().add(c);
 
@@ -1016,7 +1063,7 @@ public class ModelViewPane {
                 blueStuff.setDiffuseColor(Color.BLUE);
                 blueStuff.setSpecularColor(Color.BLACK);
 
-                Sphere s = new Sphere(-camera2.getTranslateZ() / 100);
+                Sphere s = new Sphere(-(5.0 / 1000.0) * camera2.getTranslateZ());
                 s.translateXProperty().set(n.getXCoord() + n.getDisplacedXCoord());
                 s.translateYProperty().set(n.getZCoord() + n.getDisplacedZCoord());
 
@@ -1044,37 +1091,29 @@ public class ModelViewPane {
 
             //////////////////////////////
             //CREATE 3D AXIS
-            axisGroup2.getChildren().add(createConnection(origin, new Point3D(100, 0, 0)));
-            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 100, 0)));
-            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 0, 100)));
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(100, 0, 0), -(1.0 / 1000.0) * camera2.getTranslateZ()));
+            axisGroup2.getChildren().add(createConnection(origin, new Point3D(0, 100, 0), -(1.0 / 1000.0) * camera2.getTranslateZ()));
 
             Text xText = new Text("X");
-            xText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            xText.setFont(Font.font("Calibri", FontWeight.BOLD, -(30.0 / 1000.0) * camera2.getTranslateZ()));
             xText.translateXProperty().set(110);
+
             axisGroup2.getChildren().add(xText);
 
             Text yText = new Text("Z");
-            yText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
+            yText.setFont(Font.font("Calibri", FontWeight.BOLD, -(30.0 / 1000.0) * camera2.getTranslateZ()));
             yText.translateYProperty().set(110);
             axisGroup2.getChildren().add(yText);
 
-            Text zText = new Text("Y");
-            zText.setFont(Font.font("Calibri", FontWeight.BOLD, 30));
-            zText.translateZProperty().set(110);
-            axisGroup2.getChildren().add(zText);
-
-            Box arrowHeadX = new Box(10, 10, 10);
+            Box arrowHeadX = new Box(-(10.0 / 1000.0) * camera2.getTranslateZ(), -(10.0 / 1000.0) * camera2.getTranslateZ(), -(10.0 / 1000.0) * camera2.getTranslateZ());
             arrowHeadX.setMaterial(yellowStuff);
-            Box arrowHeadY = new Box(10, 10, 10);
+            Box arrowHeadY = new Box(-(10.0 / 1000.0) * camera2.getTranslateZ(), -(10.0 / 1000.0) * camera2.getTranslateZ(), -(10.0 / 1000.0) * camera2.getTranslateZ());
             arrowHeadY.setMaterial(yellowStuff);
-            Box arrowHeadZ = new Box(10, 10, 10);
-            arrowHeadZ.setMaterial(yellowStuff);
 
             arrowHeadX.setTranslateX(100);
             arrowHeadY.setTranslateY(100);
-            arrowHeadZ.setTranslateZ(100);
 
-            axisGroup2.getChildren().addAll(arrowHeadX, arrowHeadY, arrowHeadZ);
+            axisGroup2.getChildren().addAll(arrowHeadX, arrowHeadY);
         }
 
     }
