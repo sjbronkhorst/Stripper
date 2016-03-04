@@ -1,14 +1,23 @@
 package UI;
 
+import com.sun.javafx.iio.ImageStorage;
+import com.sun.javafx.iio.ImageStorage.ImageType;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -19,6 +28,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -29,11 +39,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javax.imageio.ImageIO;
+import javax.jws.soap.SOAPBinding;
 import stripper.BucklingCurve;
 import stripper.BucklingDataPoint;
 import stripper.DSM.DSMCalcs;
+import stripper.MyMath;
 import stripper.Node;
 //
 
@@ -170,7 +185,7 @@ public class LineChartWindow extends Application {
                     MenuItem distortional = new MenuItem("Set as Distortional buckling value");
                     MenuItem global = new MenuItem("Set as Global buckling value");
                     MenuItem cancel = new MenuItem("Cancel...");
-                    
+
                     System.out.println(seriesTable.getSelectionModel().getSelectedItem().toString());
                     System.out.println(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
 
@@ -178,9 +193,11 @@ public class LineChartWindow extends Application {
 
                         @Override
                         public void handle(ActionEvent event) {
-                            
+
                             seriesTable.getSelectionModel().getSelectedItem().setLocalFactor(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
-                            
+
+                           DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Local buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
+
                         }
                     });
 
@@ -189,6 +206,8 @@ public class LineChartWindow extends Application {
                         @Override
                         public void handle(ActionEvent event) {
                             seriesTable.getSelectionModel().getSelectedItem().setDistortionalFactor(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
+                             DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Distortional buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
+
                         }
                     });
 
@@ -197,6 +216,8 @@ public class LineChartWindow extends Application {
                         @Override
                         public void handle(ActionEvent event) {
                             seriesTable.getSelectionModel().getSelectedItem().setGlobalFactor(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
+                             DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Global buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
+
                         }
                     });
 
@@ -233,6 +254,14 @@ public class LineChartWindow extends Application {
 //ObservableList<XYChart.Series<Number,Number>> chartData = XYChartDataUtil.getDataList();
         chart.setData(chartData);
         chart.setAnimated(false);
+        chart.getStylesheets().add("Style.css");
+        chart.getStyleClass().addAll("chart");
+
+        yAxis.getStylesheets().add("Style.css");
+        yAxis.getStyleClass().addAll("axis");
+
+        xAxis.getStylesheets().add("Style.css");
+        xAxis.getStyleClass().addAll("axis");
 
         yUpperTf.setText(Double.toString(yUpperBound));
         yLowerTf.setText(Double.toString(yLowerBound));
@@ -279,6 +308,22 @@ public class LineChartWindow extends Application {
 
                 yAxis.setTickUnit((yUpperBound - yLowerBound) / 10.0);
 
+            }
+        });
+        chart.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+                WritableImage img = chart.snapshot(new SnapshotParameters(), null);
+
+                FileChooser fileDialog = new FileChooser();
+                fileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
+                File file = fileDialog.showSaveDialog(null);
+
+                try {
+                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", file);
+                } catch (Exception s) {
+                }
             }
         });
     }

@@ -53,7 +53,6 @@ public class DSMWindow extends Application {
     TextField mcreTf = new TextField("");
     TextField cbTf = new TextField("1");
     TextField phibTf = new TextField("0.9");
-    
 
     Label pyLabel = new Label("Py = fy * A = STILL INCORRECT");
     Label pcrlLabel = new Label("Pcrl = ");
@@ -80,11 +79,10 @@ public class DSMWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
-        
+
         cbTf.setTooltip(new Tooltip("Bending coefficent dependent on moment gradient"));
-        phibTf.setTooltip(new Tooltip("φb = 0.9 for pre-qualified sections (DSM Section\n" +
-"1.1.1.2) else, φb = 0.8 "));
+        phibTf.setTooltip(new Tooltip("φb = 0.9 for pre-qualified sections (DSM Section\n"
+                + "1.1.1.2) else, φb = 0.8 "));
 
         GridPane flexuralPane = new GridPane();
 
@@ -102,7 +100,7 @@ public class DSMWindow extends Application {
 
         flexuralPane.add(cbLabel, 0, 4);
         flexuralPane.add(cbTf, 1, 4);
-        
+
         flexuralPane.add(phibLabel, 0, 5);
         flexuralPane.add(phibTf, 1, 5);
 
@@ -132,9 +130,17 @@ public class DSMWindow extends Application {
             public void handle(ActionEvent event) {
 
                 calcArea.clear();
-                DSMCalcs d = new DSMCalcs(Double.parseDouble(myTf.getText()), Double.parseDouble(mcrlTf.getText()), Double.parseDouble(mcrdTf.getText()),
-                        Double.parseDouble(mcreTf.getText()),Double.parseDouble(cbTf.getText()) ,Double.parseDouble(phibTf.getText()));
-                d.setTextArea(calcArea);
+                
+                DSMCalcs d = new DSMCalcs();
+
+                d.setMy(Double.parseDouble(myTf.getText()));
+                d.setMcrl(Double.parseDouble(mcrlTf.getText()));
+                d.setMcrd(Double.parseDouble(mcrdTf.getText()));
+                d.setMcre(Double.parseDouble(mcreTf.getText()));
+                d.setCb(Double.parseDouble(cbTf.getText()));
+                d.setPhiB(Double.parseDouble(phibTf.getText()));
+                
+                //d.setTextArea(calcArea);
                 d.getNominalFlexuralStrength(flexBracedCheck.isSelected());
             }
         });
