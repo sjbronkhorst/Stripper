@@ -33,6 +33,7 @@ public class Model {
     private double modelLength = 100;
     private int fourierTerms = 1;
     private Series fourierSeries = Series.getSerieslList().get(0);
+    private double maxAllowableStress = modelMaterial.getFy();
 
     private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
@@ -44,6 +45,7 @@ public class Model {
         modelLength = modelToClone.getModelLength();
         fourierTerms = modelToClone.getFourierTerms();
         fourierSeries = modelToClone.getFourierSeries();
+        maxAllowableStress = modelToClone.maxAllowableStress;
 
     }
 
@@ -219,6 +221,16 @@ public class Model {
 
         }
     }
+    
+    public void setAllowableStress(double stress)
+    {
+        this.maxAllowableStress=stress;
+    }
+    
+    public double getAllowableStress()
+    {
+        return maxAllowableStress;
+    }
 
     private double getCentroidX() {
         double sumAx = 0;
@@ -248,6 +260,18 @@ public class Model {
 
     public Point2D.Double getCrossSectionalCentroid() {
         return new Point2D.Double(getCentroidX(), getCentroidZ());
+    }
+    
+    public double getCrossSectionalArea()
+    {
+        double A = 0;
+        
+        for (Strip s : strips)
+        {
+         A+=s.getCrossSectionalArea();
+        }
+        
+        return A;
     }
 
     public double getIxx() {

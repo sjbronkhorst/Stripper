@@ -43,7 +43,7 @@ public class LoadPane {
 //    private TextField udlZTextF = new TextField();
 //    private TextField udlXTextF = new TextField();
 //    private TextField udlYTextF = new TextField();
-     private TextField maxStressTextF = new TextField("355");
+     private TextField maxStressTextF = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getFy()));
 
     private TableView<Strip> loadTable = new TableView<>(Defaults.getBaseModel().getStripList());
 
@@ -157,6 +157,7 @@ public class LoadPane {
                 
                                 
                 viewer.draw();
+                Defaults.getBaseModel().setAllowableStress(Double.parseDouble(maxStressTextF.getText()));
             }
         });
         
@@ -186,6 +187,7 @@ public class LoadPane {
                 
                                 
                 viewer.draw();
+                Defaults.getBaseModel().setAllowableStress(Double.parseDouble(maxStressTextF.getText()));
             }
         });
         
@@ -203,6 +205,7 @@ public class LoadPane {
                 
                                 
                 viewer.draw();
+                Defaults.getBaseModel().setAllowableStress(Double.parseDouble(maxStressTextF.getText()));
             }
         });
 

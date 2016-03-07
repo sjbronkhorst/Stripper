@@ -49,6 +49,11 @@ public class MaterialEditor extends Application {
     Label gLabel = new Label("Shear Modulus (G) : ");
     TextField gField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getG()));
 
+    
+    Label fyLabel = new Label("Yield Stress (G) : ");
+    TextField fyField = new TextField(Double.toString(Defaults.getBaseModel().getModelMaterial().getFy()));
+
+    
     @Override
     public void start(Stage primaryStage) {
        
@@ -62,7 +67,7 @@ public class MaterialEditor extends Application {
                 FileHandler f = new FileHandler();
                 
                 
-                Material mat = new Material_User(nameField.getText(), Double.parseDouble(exField.getText()), Double.parseDouble(eyField.getText()), Double.parseDouble(vxField.getText()), Double.parseDouble(vyField.getText()), Double.parseDouble(gField.getText()));
+                Material mat = new Material_User(nameField.getText(), Double.parseDouble(exField.getText()), Double.parseDouble(eyField.getText()), Double.parseDouble(vxField.getText()), Double.parseDouble(vyField.getText()), Double.parseDouble(gField.getText()), Double.parseDouble(fyField.getText()));
                 f.writeMaterial(mat);
                             
                 Defaults.getBaseModel().setModelMaterial(f.getMaterial());
@@ -77,6 +82,7 @@ public class MaterialEditor extends Application {
                 
                 gField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getG()));
 
+                fyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getFy()));
             }
         });
 
@@ -106,6 +112,8 @@ public class MaterialEditor extends Application {
                 vyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getVy()));
                 
                 gField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getG()));
+                
+                fyField.setText(Double.toString(Defaults.getBaseModel().getModelMaterial().getFy()));
             }
         });
 
@@ -116,8 +124,9 @@ public class MaterialEditor extends Application {
         HBox h3 = new HBox(vxLabel,vxField);
         HBox h4 = new HBox(vyLabel,vyField);
         HBox h5 = new HBox(gLabel,gField);
-        HBox h6 = new HBox(loadBtn,saveBtn);
-        root.getChildren().addAll(h,h1,h2,h3,h4,h5,h6);
+        HBox h6 = new HBox(fyLabel,fyField);
+        HBox h7 = new HBox(loadBtn,saveBtn);
+        root.getChildren().addAll(h,h1,h2,h3,h4,h5,h6,h7);
 
         Scene scene = new Scene(root, 300, 250);
 

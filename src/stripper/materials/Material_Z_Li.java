@@ -18,5 +18,6 @@ public class Material_Z_Li extends Material {
         vx = 0.3;
         vy = 0.3;
         G = 81000;
+        fy = 355;
     }
 }

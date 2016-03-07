@@ -328,7 +328,8 @@ public class FileHandler {
             double vx = Double.parseDouble(br.readLine());
             double vy = Double.parseDouble(br.readLine());
             double G = Double.parseDouble(br.readLine());
-            mat = new Material_User(name, Ex, Ey, vx, vy, G);
+            double fy = Double.parseDouble(br.readLine());
+            mat = new Material_User(name, Ex, Ey, vx, vy, G , fy);
             
             br.close();
             fr.close();

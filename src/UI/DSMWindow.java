@@ -58,11 +58,13 @@ public class DSMWindow extends Application {
     Label pcrlLabel = new Label("Pcrl = ");
     Label pcrdLabel = new Label("Pcrd = ");
     Label pcreLabel = new Label("Pcre = ");
+    Label phicLabel = new Label("φc = ");
 
     TextField pyTf = new TextField("");
     TextField pcrlTf = new TextField("");
     TextField pcrdTf = new TextField("");
     TextField pcreTf = new TextField("");
+    TextField phicTf = new TextField("0.9");
 
     TextArea calcArea = new TextArea();
 
@@ -120,9 +122,12 @@ public class DSMWindow extends Application {
 
         axialPane.add(pcreLabel, 0, 3);
         axialPane.add(pcreTf, 1, 3);
+        
+        axialPane.add(phicLabel, 0, 4);
+        axialPane.add(phicTf, 1, 4);
 
-        axialPane.add(axialBracedCheck, 0, 4);
-        axialPane.add(axialCalcBtn, 1, 4);
+        axialPane.add(axialBracedCheck, 0, 5);
+        axialPane.add(axialCalcBtn, 1, 5);
 
         flexuralCalcBtn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -132,6 +137,7 @@ public class DSMWindow extends Application {
                 calcArea.clear();
                 
                 DSMCalcs d = new DSMCalcs();
+                d.setTextArea(calcArea);
 
                 d.setMy(Double.parseDouble(myTf.getText()));
                 d.setMcrl(Double.parseDouble(mcrlTf.getText()));
@@ -153,13 +159,36 @@ public class DSMWindow extends Application {
                 if (flexCurveChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
                     BucklingCurve bc = flexCurveChoice.getItems().get((int) newValue);
 
-                    myTf.setText(" ");
+                    myTf.setText(" " + bc.getModels().get(0).getAllowableStress());
                     mcrlTf.setText(" " + bc.getLocalFactor());
                     mcrdTf.setText(" " + bc.getDistortionalFactor());
                     mcreTf.setText(" " + bc.getGlobalFactor());
                 }
             }
         });
+        
+        axialCalcBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                calcArea.clear();
+                
+                DSMCalcs d = new DSMCalcs();
+                d.setTextArea(calcArea);
+
+                d.setPy(Double.parseDouble(pyTf.getText()));
+                d.setPcrl(Double.parseDouble(pcrlTf.getText()));
+                d.setPcrd(Double.parseDouble(pcrdTf.getText()));
+                d.setPcre(Double.parseDouble(pcreTf.getText()));
+                d.setPhiC(Double.parseDouble(phicTf.getText()));
+                
+                //d.setTextArea(calcArea);
+                d.getNominalCompressiveStrength(axialBracedCheck.isSelected());
+            }
+        });
+        
+        
 
         axialCurveChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
@@ -168,11 +197,13 @@ public class DSMWindow extends Application {
 
                 if (flexCurveChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
                     BucklingCurve bc = flexCurveChoice.getItems().get((int) newValue);
+                    
+                    double Py = bc.getModels().get(0).getAllowableStress()*bc.getModels().get(0).getCrossSectionalArea();
 
-                    pyTf.setText(" ");
-                    pcrlTf.setText(" " + bc.getLocalFactor());
-                    pcrdTf.setText(" " + bc.getDistortionalFactor());
-                    pcreTf.setText(" " + bc.getGlobalFactor());
+                    pyTf.setText("" + Py);
+                    pcrlTf.setText("" + bc.getLocalFactor()*Py);
+                    pcrdTf.setText("" + bc.getDistortionalFactor()*Py);
+                    pcreTf.setText("" + bc.getGlobalFactor()*Py);
                 }
             }
         });

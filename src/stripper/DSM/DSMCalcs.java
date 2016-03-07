@@ -17,17 +17,17 @@ public class DSMCalcs {
 
     public static void setLocalFactor(double val) {
         local = val;
-        System.out.println("Local value = " + local);
+        //calcArea.appendText("Local value = " + local);
     }
 
     public static void setDistortionalFactor(double val) {
         distortional = val;
-        System.out.println("Distortional value = " + distortional);
+        //calcArea.appendText("Distortional value = " + distortional);
     }
 
     public static void setGlobalFactor(double val) {
         global = val;
-        System.out.println("Global value = " + global);
+        //calcArea.appendText("Global value = " + global);
     }
 
     public static double getLocalFactor() {
@@ -45,7 +45,7 @@ public class DSMCalcs {
     private double My, Mcrl, Mcrd, Mcre, Cb, phiB;
 
     private double Py, Pcrl, Pcrd, Pcre, phiC;
-    //private TextArea calcArea = new TextArea();
+    private TextArea calcArea = new TextArea();
 
     public void setMy(double My) {
         this.My = My;
@@ -71,9 +71,9 @@ public class DSMCalcs {
         this.phiB = phiB;
     }
 
-//    public void setTextArea(TextArea textArea) {
-//        this.calcArea = textArea;
-//    }
+    public void setTextArea(TextArea textArea) {
+        this.calcArea = textArea;
+    }
     public void setPy(double Py) {
         this.Py = Py;
     }
@@ -100,50 +100,50 @@ public class DSMCalcs {
         double Mnl = 0;
         double Mnd = 0;
 
-        System.out.println("Mcre = " + Mcre + "\n");
-        System.out.println("Cb = " + Cb + "\n");
+        calcArea.appendText("Mcre = " + Mcre + "\n");
+        calcArea.appendText("Cb = " + Cb + "\n");
         Mcre = Cb * Mcre;
-        System.out.println("Mcre := Cb⋅Mcre = " + Mcre + "\n");
+        calcArea.appendText("Mcre := Cb⋅Mcre = " + Mcre + "\n");
 
         Mne = getMne(braced);
 
         Mnl = getMnl(Mne);
         Mnd = getMnd();
 
-        System.out.println("--------------------------------------------------" + "\n");
-        System.out.println("Predicted flexural strength per DSM 1.3" + "\n");
-        System.out.println("--------------------------------------------------" + "\n");
+        calcArea.appendText("--------------------------------------------------" + "\n");
+        calcArea.appendText("Predicted flexural strength per DSM 1.3" + "\n");
+        calcArea.appendText("--------------------------------------------------" + "\n");
         double Mn = Math.min(Math.min(Mne, Mnl), Mnd);
 
-        System.out.println("Mne = " + Mne + "\n");
-        System.out.println("Mnl = " + Mnl + "\n");
-        System.out.println("Mnd = " + Mnd + "\n");
-        System.out.println("per DSM 1.2.2, Mn is the minimum of Mne, Mnl, Mnd.\n");
-        System.out.println("Mn = " + Mn + "\n");
+        calcArea.appendText("Mne = " + Mne + "\n");
+        calcArea.appendText("Mnl = " + Mnl + "\n");
+        calcArea.appendText("Mnd = " + Mnd + "\n");
+        calcArea.appendText("per DSM 1.2.2, Mn is the minimum of Mne, Mnl, Mnd.\n");
+        calcArea.appendText("Mn = " + Mn + "\n");
 
-        System.out.println("LRFD : φb = " + phiB + "\n");
-        System.out.println("φb⋅Mn = " + phiB * Mn + "\n");
+        calcArea.appendText("LRFD : φb = " + phiB + "\n");
+        calcArea.appendText("φb⋅Mn = " + phiB * Mn + "\n");
 
         return Mn;
     }
 
     public double getMne(boolean braced) {
-        System.out.println("--------------------------------------------------\n");
-        System.out.println("Lateral-torsional buckling check per DSM 1.2.2.1\n");
-        System.out.println("--------------------------------------------------\n");
+        calcArea.appendText("--------------------------------------------------\n");
+        calcArea.appendText("Lateral-torsional buckling check per DSM 1.2.2.1\n");
+        calcArea.appendText("--------------------------------------------------\n");
         double Mne = 0;
 
         if (!braced) {
 
             if (Mcre < 0.56 * My) {
-                System.out.println("Mne = Mcre if Mcre < 0.56⋅My        (Eq. 1.2.2-1)\n");
+                calcArea.appendText("Mne = Mcre if Mcre < 0.56⋅My        (Eq. 1.2.2-1)\n");
                 Mne = Mcre;
             } else if (Mcre <= 2.78 * My) {
-                System.out.println("2.78⋅My ≥ Mcre ≥ 0.56⋅My     (Eq. 1.2.2-2)\n");
+                calcArea.appendText("2.78⋅My ≥ Mcre ≥ 0.56⋅My     (Eq. 1.2.2-2)\n");
 
                 Mne = (10.0 / 9.0) * My * (1 - ((10.0 * My) / (36.0 * Mcre)));
             } else if (Mcre > 2.78 * My) {
-                System.out.println("Mne = My if Mcre > 2.78⋅My        (Eq. 1.2.2-3)\n");
+                calcArea.appendText("Mne = My if Mcre > 2.78⋅My        (Eq. 1.2.2-3)\n");
                 Mne = My;
             }
 
@@ -151,61 +151,61 @@ public class DSMCalcs {
         if (braced) {
             Mne = My;
 
-            System.out.println("For a fully braced member lateral-torsional\n"
+            calcArea.appendText("For a fully braced member lateral-torsional\n"
                     + "buckling will not occur and thus Mne = My, Mnl and Mnd must still be checked.\n");
         }
 
-        System.out.println("Mne = " + Mne + "\n");
+        calcArea.appendText("Mne = " + Mne + "\n");
 
-        System.out.println("\n");
+        calcArea.appendText("\n");
         return Mne;
     }
 
     public double getMnl(double Mne) {
-        System.out.println("--------------------------------------------------\n");
-        System.out.println("Local buckling check per DSM 1.2.2.2\n");
-        System.out.println("--------------------------------------------------\n");
+        calcArea.appendText("--------------------------------------------------\n");
+        calcArea.appendText("Local buckling check per DSM 1.2.2.2\n");
+        calcArea.appendText("--------------------------------------------------\n");
 
         double Mnl = 0;
 
         double lambda = Math.sqrt(Mne / Mcrl);
-        System.out.println("λl = " + lambda + " (Eq. 1.2.2-7)\n");
+        calcArea.appendText("λl = " + lambda + " (Eq. 1.2.2-7)\n");
 
         if (lambda <= 0.776) {
             Mnl = Mne;
-            System.out.println("Mnl = Mne if λl ≤ 0.776         Eq. 1.2.2-5\n");
+            calcArea.appendText("Mnl = Mne if λl ≤ 0.776         Eq. 1.2.2-5\n");
 
         } else {
             Mnl = ((1.0 - 0.15 * Math.pow(Mcrl / Mne, 0.4)) * Math.pow(Mcrl / Mne, 0.4) * Mne);
-            System.out.println("If  λl > 0.776      Eq. 1.2.2-6\n");
+            calcArea.appendText("If  λl > 0.776      Eq. 1.2.2-6\n");
         }
 
-        System.out.println("Mnl = " + Mnl + "\n");
-        System.out.println("\n");
+        calcArea.appendText("Mnl = " + Mnl + "\n");
+        calcArea.appendText("\n");
 
         return Mnl;
     }
 
     public double getMnd() {
-        System.out.println("--------------------------------------------------\n");
-        System.out.println("Distortional buckling check per DSM 1.2.2.3\n");
-        System.out.println("--------------------------------------------------\n");
+        calcArea.appendText("--------------------------------------------------\n");
+        calcArea.appendText("Distortional buckling check per DSM 1.2.2.3\n");
+        calcArea.appendText("--------------------------------------------------\n");
         double Mnd = 0;
 
         double lambda = Math.sqrt(My / Mcrd);
-        System.out.println("λd = " + lambda + " (Eq. 1.2.2-10)\n");
+        calcArea.appendText("λd = " + lambda + " (Eq. 1.2.2-10)\n");
 
         if (lambda <= 0.673) {
             Mnd = My;
-            System.out.println("Mnd = My if λd ≤ 0.673  (Eq. 1.2.2-8)\n");
+            calcArea.appendText("Mnd = My if λd ≤ 0.673  (Eq. 1.2.2-8)\n");
         } else {
             Mnd = ((1.0 - 0.22 * Math.pow(Mcrd / My, 0.5)) * Math.pow(Mcrd / My, 0.5) * My);
-            System.out.println("if λd > 0.673  (Eq. 1.2.2-9)\n");
+            calcArea.appendText("if λd > 0.673  (Eq. 1.2.2-9)\n");
 
         }
 
-        System.out.println("Mnd = " + Mnd + "\n");
-        System.out.println("\n");
+        calcArea.appendText("Mnd = " + Mnd + "\n");
+        calcArea.appendText("\n");
 
         return Mnd;
     }
@@ -215,53 +215,53 @@ public class DSMCalcs {
         double Pnl = 0;
         double Pnd = 0;
 
-        //System.out.println("Pcre = " + Pcre + "\n");
-        //System.out.println("Cb = " + Cb + "\n");
+        //calcArea.appendText("Pcre = " + Pcre + "\n");
+        //calcArea.appendText("Cb = " + Cb + "\n");
         //Pcre = Cb * Pcre;
-        //System.out.println("Mcre := Cb⋅Mcre = " + Mcre + "\n");
+        //calcArea.appendText("Mcre := Cb⋅Mcre = " + Mcre + "\n");
 
         Pne = getPne(braced);
 
         Pnl = getPnl(Pne);
         Pnd = getPnd();
 
-        System.out.println("--------------------------------------------------" + "\n");
-        System.out.println("Predicted compressive strength per DSM 1.2" + "\n");
-        System.out.println("--------------------------------------------------" + "\n");
+        calcArea.appendText("--------------------------------------------------" + "\n");
+        calcArea.appendText("Predicted compressive strength per DSM 1.2" + "\n");
+        calcArea.appendText("--------------------------------------------------" + "\n");
         double Pn = Math.min(Math.min(Pne, Pnl), Pnd);
 
-        System.out.println("Pne = " + Pne + "\n");
-        System.out.println("Pnl = " + Pnl + "\n");
-        System.out.println("Pnd = " + Pnd + "\n");
-        System.out.println("per DSM 1.2.1, Pn is the minimum of Pne, Pnl, Pnd.\n");
-        System.out.println("Pn = " + Pn + "\n");
+        calcArea.appendText("Pne = " + Pne + "\n");
+        calcArea.appendText("Pnl = " + Pnl + "\n");
+        calcArea.appendText("Pnd = " + Pnd + "\n");
+        calcArea.appendText("per DSM 1.2.1, Pn is the minimum of Pne, Pnl, Pnd.\n");
+        calcArea.appendText("Pn = " + Pn + "\n");
 
-        System.out.println("LRFD : φc = " + phiC + "\n");
-        System.out.println("φb⋅Mn = " + phiC * Pn + "\n");
+        calcArea.appendText("LRFD : φc = " + phiC + "\n");
+        calcArea.appendText("φb⋅Mn = " + phiC * Pn + "\n");
 
         return Pn;
     }
 
     public double getPne(boolean braced) {
-        System.out.println("--------------------------------------------------\n");
-        System.out.println("Lateral-torsional buckling check per DSM 1.2.1.1\n");
-        System.out.println("--------------------------------------------------\n");
+        calcArea.appendText("--------------------------------------------------\n");
+        calcArea.appendText("Lateral-torsional buckling check per DSM 1.2.1.1\n");
+        calcArea.appendText("--------------------------------------------------\n");
 
         double Pne = 0;
 
         if (!braced) {
 
             double lambda = Math.sqrt(Py / Pcre);
-            System.out.println("λc = " + lambda + " (Eq. 1.2.1-1)\n");
+            calcArea.appendText("λc = " + lambda + " (Eq. 1.2.1-1)\n");
 
             if (lambda <= 1.5) {
                 Pne = Math.pow(0.658, lambda * lambda) * Py;
-                System.out.println("Pne = 0.658λc^2⋅Py if λc ≤ 1.5 (Eq. 1.2.1-2)\n");
+                calcArea.appendText("Pne = 0.658λc^2⋅Py if λc ≤ 1.5 (Eq. 1.2.1-2)\n");
 
             }
             if (lambda > 1.5) {
                 Pne = (0.877 / (lambda * lambda)) * Py;
-                System.out.println("Pne = (0.877/λc^2)*Py if λc > 1.5 (Eq. 1.2.1-3)\n");
+                calcArea.appendText("Pne = (0.877/λc^2)*Py if λc > 1.5 (Eq. 1.2.1-3)\n");
             }
 
         }
@@ -269,62 +269,62 @@ public class DSMCalcs {
         if (braced) {
             Pne = Py;
 
-            System.out.println("For a fully braced member lateral-torsional\n"
+            calcArea.appendText("For a fully braced member lateral-torsional\n"
                     + "buckling will not occur and thus Pne = Py, Mnl and Mnd must still be checked.\n");
         }
 
-        System.out.println("Pne = " + Pne + "\n");
+        calcArea.appendText("Pne = " + Pne + "\n");
 
-        System.out.println("\n");
+        calcArea.appendText("\n");
 
         return Pne;
     }
 
     public double getPnl(double Pne) {
-        System.out.println("--------------------------------------------------\n");
-        System.out.println("Local buckling check per DSM 1.2.1.2\n");
-        System.out.println("--------------------------------------------------\n");
+        calcArea.appendText("--------------------------------------------------\n");
+        calcArea.appendText("Local buckling check per DSM 1.2.1.2\n");
+        calcArea.appendText("--------------------------------------------------\n");
 
         double Pnl = 0;
 
         double lambda = Math.sqrt(Pne / Pcrl);
-        System.out.println("λl = " + lambda + " (Eq. 1.2.1-7)\n");
+        calcArea.appendText("λl = " + lambda + " (Eq. 1.2.1-7)\n");
 
         if (lambda <= 0.776) {
             Pnl = Pne;
-            System.out.println("Pnl = Pne if λl ≤ 0.776         Eq. 1.2.1-5\n");
+            calcArea.appendText("Pnl = Pne if λl ≤ 0.776         Eq. 1.2.1-5\n");
 
         } else {
             Pnl = ((1.0 - 0.15 * Math.pow(Pcrl / Pne, 0.4)) * Math.pow(Pcrl / Pne, 0.4) * Pne);
-            System.out.println("If  λl > 0.776      Eq. 1.2.1-6\n");
+            calcArea.appendText("If  λl > 0.776      Eq. 1.2.1-6\n");
         }
 
-        System.out.println("Pnl = " + Pnl + "\n");
-        System.out.println("\n");
+        calcArea.appendText("Pnl = " + Pnl + "\n");
+        calcArea.appendText("\n");
 
         return Pnl;
     }
 
     public double getPnd() {
-        System.out.println("--------------------------------------------------\n");
-        System.out.println("Distortional buckling check per DSM 1.2.1.3\n");
-        System.out.println("--------------------------------------------------\n");
+        calcArea.appendText("--------------------------------------------------\n");
+        calcArea.appendText("Distortional buckling check per DSM 1.2.1.3\n");
+        calcArea.appendText("--------------------------------------------------\n");
         double Pnd = 0;
 
         double lambda = Math.sqrt(Py / Pcrd);
-        System.out.println("λd = " + lambda + " (Eq. 1.2.1-10)\n");
+        calcArea.appendText("λd = " + lambda + " (Eq. 1.2.1-10)\n");
 
         if (lambda <= 0.561) {
             Pnd = Py;
-            System.out.println("Pnd = Py if λd ≤ 0.0.561  (Eq. 1.2.1-8)\n");
+            calcArea.appendText("Pnd = Py if λd ≤ 0.0.561  (Eq. 1.2.1-8)\n");
         } else {
             Pnd = ((1.0 - 0.25 * Math.pow(Pcrd / Py, 0.6)) * Math.pow(Pcrd / Py, 0.6) * Py);
-            System.out.println("if λd > 0.0.561  (Eq. 1.2.1-9)\n");
+            calcArea.appendText("if λd > 0.0.561  (Eq. 1.2.1-9)\n");
 
         }
 
-        System.out.println("Pnd = " + Pnd + "\n");
-        System.out.println("\n");
+        calcArea.appendText("Pnd = " + Pnd + "\n");
+        calcArea.appendText("\n");
 
         return Pnd;
     }

@@ -11,13 +11,14 @@ package stripper.materials;
  */
 public class Material_User extends Material {
     
-    public Material_User(String name, double Ex, double Ey, double vx, double vy, double G) {
+    public Material_User(String name, double Ex, double Ey, double vx, double vy, double G , double fy) {
         this.name = name;
         this.Ex = Ex;
         this.Ey = Ey;
         this.vx = vx;
         this.vy = vy;
         this.G = G;
+        this.fy = fy;
     }
     
 }

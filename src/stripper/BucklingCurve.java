@@ -117,6 +117,11 @@ public class BucklingCurve {
         System.out.println("No such Model");
         return null;
     }
+    
+    public List<Model> getModels()
+    {
+        return modelList;
+    }
 
     public String getName() {
         return name.get();

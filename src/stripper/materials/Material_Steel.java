@@ -12,11 +12,12 @@ package stripper.materials;
 public class Material_Steel extends Material {
 
     public Material_Steel() {
-        name  = "Steel";
+        name  = "S355";
         Ex = 210000;
         Ey = 210000;
         vx = 0.3;
         vy = 0.3;
         G = 81000;
+        fy = 354;
     }
 }

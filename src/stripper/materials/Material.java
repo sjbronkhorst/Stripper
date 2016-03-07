@@ -12,7 +12,7 @@ package stripper.materials;
 public abstract class Material {
 
     protected String name;
-    protected double Ex, Ey, vx, vy, G;
+    protected double Ex, Ey, vx, vy, G , fy;
 
     
 
@@ -22,6 +22,7 @@ public abstract class Material {
         vx = 1;
         vy = 1;
         G = 1;
+        fy = 1;
     }
 
     public String getName() {
@@ -55,6 +56,11 @@ public abstract class Material {
 
     public double getG() {
         return G;
+    }
+    
+    public double getFy()
+    {
+        return fy;
     }
 
    
