@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import org.apache.poi.xwpf.usermodel.Borders;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.TextAlignment;
+import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import stripper.materials.Material;
 import stripper.materials.Material_User;
 
@@ -339,6 +347,44 @@ public class FileHandler {
     public Material getMaterial()
     {
         return mat;
+    }
+    
+    public static void createReport(String heading) throws FileNotFoundException, IOException
+    {
+        
+        XWPFDocument doc = new XWPFDocument();
+
+        XWPFParagraph p1 = doc.createParagraph();
+        p1.setAlignment(ParagraphAlignment.CENTER);
+        //p1.setBorderBottom(Borders.DOUBLE);
+        //p1.setBorderTop(Borders.DOUBLE);
+
+        //p1.setBorderRight(Borders.DOUBLE);
+        //p1.setBorderLeft(Borders.DOUBLE);
+        //p1.setBorderBetween(Borders.SINGLE);
+
+        //p1.setVerticalAlignment(TextAlignment.TOP);
+
+        
+        XWPFRun r1 = p1.createRun();
+        r1.setBold(true);
+        r1.setText(heading);
+        r1.setBold(true);
+        r1.setFontFamily("Arial");
+        r1.setUnderline(UnderlinePatterns.SINGLE);
+        r1.setTextPosition(100);
+        
+        FileOutputStream out = new FileOutputStream("simple.docx");
+        doc.write(out);
+        out.close();
+        
+    }
+    
+    public static void main (String []args) throws IOException
+    {
+        FileHandler.createReport("HEADING !!!!!!!!");
+        
+        
     }
     
 }
