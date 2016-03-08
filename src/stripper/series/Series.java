@@ -15,7 +15,7 @@ import stripper.Strip;
  *
  * @author SJ
  */
-public abstract class Series {
+public abstract class Series{
 
     protected double a; // Series domain length i.e. length of strip
     protected boolean isSimplySupported;

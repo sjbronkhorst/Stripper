@@ -41,6 +41,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import serialize.SerializeUtils;
 import stripper.BucklingCurve;
 import stripper.BucklingDataPoint;
 import stripper.BucklingEquation;
@@ -330,6 +331,9 @@ public class TableViewEdit extends Application {
                     chart.start(s);
 
                     disCalced = true;
+                    
+                    FileHandler.serialize(Defaults.getBaseModel(), "baseModel.Model");
+                    
 
                 }
             }

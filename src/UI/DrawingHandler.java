@@ -25,10 +25,12 @@ import stripper.MyMath;
  */
 public class DrawingHandler {
 
-    public static void createBucklingCurveSnapShot(LineChart<Number, Number> chart, Pane boxImagePane, String text1, String text2) {
+    public static File createBucklingCurveSnapShot(LineChart<Number, Number> chart, Pane boxImagePane, String text1, String text2) {
 
         WritableImage chartImg = chart.snapshot(new SnapshotParameters(), null);
         WritableImage modelImg = boxImagePane.snapshot(new SnapshotParameters(), null);
+
+        File file = new File("image.png");
 
         try {
 
@@ -44,15 +46,11 @@ public class DrawingHandler {
             gO.setFont(new Font("SansSerif", Font.BOLD, 20));
 
            // gO.drawString("Local buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), (int) chart.getWidth() - (int) mvp.box2D.getWidth() - 75, 100);
-
            // gO.drawString("Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2), (int) chart.getWidth() - (int) mvp.box2D.getWidth() - 75, 125);
-
             gO.drawString(text1, (int) chart.getWidth() - (int) boxImagePane.getWidth() - 75, 100);
             gO.drawString(text2, (int) chart.getWidth() - (int) boxImagePane.getWidth() - 75, 125);
-
-            FileChooser fileDialog = new FileChooser();
-            fileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
-            File file = fileDialog.showSaveDialog(null);
+            
+            
 
             try {
                 ImageIO.write(source, "png", file);
@@ -62,6 +60,7 @@ public class DrawingHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return file;
 
     }
 

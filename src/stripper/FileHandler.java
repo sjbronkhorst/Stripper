@@ -6,28 +6,47 @@
 package stripper;
 
 import UI.Defaults;
+import UI.Model;
 import UI.TableViewEdit;
+import UI.TestClass;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.Borders;
+import org.apache.poi.xwpf.usermodel.BreakType;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.TextAlignment;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
+import serialize.ResourceLoader;
 import stripper.materials.Material;
 import stripper.materials.Material_User;
 
@@ -79,11 +98,7 @@ public class FileHandler {
 //        }
 //        fileDialog.getExtensionFilters().clear();
 //    }
-    
-    
-    
-    
-     public void writeGeom(ObservableList<Node> nodes, ObservableList<Strip> strips) throws IOException {
+    public void writeGeom(ObservableList<Node> nodes, ObservableList<Strip> strips) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showSaveDialog(null);
 
@@ -109,10 +124,6 @@ public class FileHandler {
         }
         fileDialog.getExtensionFilters().clear();
     }
-     
-     
-     
-     
 
     public ObservableList<Node> getNodeList() {
         return nodes;
@@ -130,7 +141,7 @@ public class FileHandler {
 
             Node.clearNumbering();
             Strip.clearNumbering();
-            
+
             FileReader fr = new FileReader(file);
 
             BufferedReader br = new BufferedReader(fr);
@@ -170,17 +181,16 @@ public class FileHandler {
                         Node n1 = nodeMap.get(Integer.parseInt(words[1]));
 
                         Node n2 = nodeMap.get(Integer.parseInt(words[2]));
-                        
+
                         double thickness = Double.parseDouble(words[3]);
 
                         if (n1 != null && n2 != null) {
 
-                            
                             Strip strip = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
                             strip.setNode1(n1);
                             strip.setNode2(n2);
                             strip.setStripThickness(thickness);
-                            strips.add(strip);   
+                            strips.add(strip);
                         }
                     } else {
                         TableViewEdit.println("File syntax error");
@@ -232,7 +242,7 @@ public class FileHandler {
             fileDialog.getExtensionFilters().clear();
         }
     }
-    
+
     public void writeCSV(String[][][] data) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Comma Separated Values", "*.csv"));
         int cols = data[0][0].length;
@@ -246,18 +256,16 @@ public class FileHandler {
 
                 FileWriter fw = new FileWriter(file);
                 BufferedWriter bw = new BufferedWriter(fw);
-                for (int k = 0; k < data.length; k++) 
-                {
-                    
-                
-                for (int i = 0; i < rows; i++) {
-                    for (int j = 0; j < cols; j++) {
-                        bw.append(data[k][i][j] + ";");
+                for (int k = 0; k < data.length; k++) {
 
+                    for (int i = 0; i < rows; i++) {
+                        for (int j = 0; j < cols; j++) {
+                            bw.append(data[k][i][j] + ";");
+
+                        }
+                        bw.newLine();
                     }
-                    bw.newLine();
-                }
-                
+
                 }
 
                 bw.close();
@@ -273,12 +281,11 @@ public class FileHandler {
             fileDialog.getExtensionFilters().clear();
         }
     }
-    
-    public void writeMaterial(Material mat)
-    {
-         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
-         
-         File file = fileDialog.showSaveDialog(null);
+
+    public void writeMaterial(Material mat) {
+        fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
+
+        File file = fileDialog.showSaveDialog(null);
 
         if (file != null) {
 
@@ -298,8 +305,7 @@ public class FileHandler {
                 bw.append(Double.toString(mat.getVy()));
                 bw.newLine();
                 bw.append(Double.toString(mat.getG()));
-               
-               
+
                 bw.close();
                 fw.close();
 
@@ -312,24 +318,22 @@ public class FileHandler {
 
             fileDialog.getExtensionFilters().clear();
         }
-        
+
         this.mat = mat;
-         
+
     }
-    
-    public void readMaterial()throws FileNotFoundException, IOException, IllegalStateException {
+
+    public void readMaterial() throws FileNotFoundException, IOException, IllegalStateException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
-         
-         File file = fileDialog.showOpenDialog(null);
+
+        File file = fileDialog.showOpenDialog(null);
 
         if (file != null) {
-
-            
 
             FileReader fr = new FileReader(file);
 
             BufferedReader br = new BufferedReader(fr);
-           
+
             String name = br.readLine();
             double Ex = Double.parseDouble(br.readLine());
             double Ey = Double.parseDouble(br.readLine());
@@ -337,54 +341,255 @@ public class FileHandler {
             double vy = Double.parseDouble(br.readLine());
             double G = Double.parseDouble(br.readLine());
             double fy = Double.parseDouble(br.readLine());
-            mat = new Material_User(name, Ex, Ey, vx, vy, G , fy);
-            
+            mat = new Material_User(name, Ex, Ey, vx, vy, G, fy);
+
             br.close();
             fr.close();
-            
+            fileDialog.getExtensionFilters().clear();
+
         }
     }
-    public Material getMaterial()
-    {
+
+    public Material getMaterial() {
         return mat;
     }
-    
-    public static void createReport(String heading) throws FileNotFoundException, IOException
-    {
-        
+
+    public void createReport(String designerName, String projectName,File crossSectionImg, File img1,File img2,File img3,Model model, String filePath) throws FileNotFoundException, IOException, InvalidFormatException {
+
+        //Start of document
         XWPFDocument doc = new XWPFDocument();
+        
+        XWPFTable poiTable = doc.createTable(1, 3);
 
-        XWPFParagraph p1 = doc.createParagraph();
+        //Paragraph 1
+        XWPFParagraph p1 = poiTable.getRow(0).getCell(0).getParagraphs().get(0);
         p1.setAlignment(ParagraphAlignment.CENTER);
-        //p1.setBorderBottom(Borders.DOUBLE);
-        //p1.setBorderTop(Borders.DOUBLE);
-
-        //p1.setBorderRight(Borders.DOUBLE);
-        //p1.setBorderLeft(Borders.DOUBLE);
-        //p1.setBorderBetween(Borders.SINGLE);
-
-        //p1.setVerticalAlignment(TextAlignment.TOP);
+        p1.setVerticalAlignment(TextAlignment.CENTER);
+        p1.setSpacingAfter(0);
+         
+        boldText(p1, "Designer: ");
+        text(p1, designerName);
+        
+        //Project
+        XWPFParagraph p8 = poiTable.getRow(0).getCell(1).getParagraphs().get(0);
+        p8.setAlignment(ParagraphAlignment.CENTER);
+        p8.setVerticalAlignment(TextAlignment.CENTER);
+        p8.setSpacingAfter(0);
+        boldText(p8,"Project: ");
+        text(p8, projectName);
 
         
-        XWPFRun r1 = p1.createRun();
-        r1.setBold(true);
-        r1.setText(heading);
-        r1.setBold(true);
-        r1.setFontFamily("Arial");
-        r1.setUnderline(UnderlinePatterns.SINGLE);
-        r1.setTextPosition(100);
+        XWPFParagraph p9 = poiTable.getRow(0).getCell(2).getParagraphs().get(0);
+        p9.setAlignment(ParagraphAlignment.CENTER);
+        p9.setVerticalAlignment(TextAlignment.CENTER);
+        p9.setSpacingAfter(0);
         
-        FileOutputStream out = new FileOutputStream("simple.docx");
+        boldText(p9,"Date: ");
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        
+        text(p9,dateFormat.format(date));
+
+       
+         
+        CTTbl table = poiTable.getCTTbl();
+        CTTblPr pr = table.getTblPr();
+        CTTblWidth tblW = pr.getTblW();
+        tblW.setW(BigInteger.valueOf(5000));
+        tblW.setType(STTblWidth.PCT);
+        pr.setTblW(tblW);
+        table.setTblPr(pr);
+        
+        XWPFParagraph modelParagraph = doc.createParagraph();
+        modelParagraph.setAlignment(ParagraphAlignment.LEFT);
+        lineBreak(modelParagraph);
+        boldText(modelParagraph,"Model Properties:", true);
+        lineBreak(modelParagraph);
+        boldText(modelParagraph, "File Path: ");
+        text(modelParagraph,"C:\\Users\\SJ\\Documents\\NetBeansProjects\\Stripper");
+        lineBreak(modelParagraph);
+        boldText(modelParagraph, "Maximum allowable stress: ");
+        text(modelParagraph, Double.toString(model.getAllowableStress()));
+        lineBreak(modelParagraph);
+        boldText(modelParagraph, "Cross-sectional Area: ");
+        text(modelParagraph, Double.toString(model.getCrossSectionalArea()));
+        lineBreak(modelParagraph);
+        
+        boldText(modelParagraph, "Ixx: ");
+        text(modelParagraph, Double.toString(model.getIxx()));
+        lineBreak(modelParagraph);
+        
+        boldText(modelParagraph, "Ixx (principal): ");
+        text(modelParagraph, Double.toString(model.getIxxPrincipal()));
+        lineBreak(modelParagraph);
+        
+        boldText(modelParagraph, "Izz: ");
+        text(modelParagraph, Double.toString(model.getIzz()));
+        lineBreak(modelParagraph);
+        
+        boldText(modelParagraph, "Izz (principal): ");
+        text(modelParagraph, Double.toString(model.getIzzPrincipal()));
+                
+        XWPFParagraph materialParagraph = doc.createParagraph();
+        materialParagraph.setAlignment(ParagraphAlignment.LEFT);
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Material Properties: " , true);
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Material name: ");
+        text(materialParagraph, model.getModelMaterial().getName());
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Young's Modulus (Ex): ");
+        text(materialParagraph, ""+model.getModelMaterial().getEx());
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Young's Modulus (Ey): ");
+        text(materialParagraph, ""+model.getModelMaterial().getEy());
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Poisson Ratio (vx): ");
+        text(materialParagraph, ""+model.getModelMaterial().getVx());
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Poisson Ratio (vy): ");
+        text(materialParagraph, ""+model.getModelMaterial().getVy());
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Shear Modulus (G): ");
+        text(materialParagraph, ""+model.getModelMaterial().getG());
+        lineBreak(materialParagraph);
+        boldText(materialParagraph, "Yield Stress: ");
+        text(materialParagraph, ""+model.getModelMaterial().getFy());
+        lineBreak(materialParagraph);
+        
+        
+        if(crossSectionImg !=null)
+        {
+        boldText(doc.createParagraph(), "Cross-Section: ",true);
+        fullWidthPicture(doc, crossSectionImg);
+        }
+        pageBreak(doc.createParagraph());
+        
+        if(img1 !=null)
+        {
+        text(doc.createParagraph(), "IMG 1");
+        fullWidthPicture(doc, img1);
+        }
+        
+        if(img2 != null)
+        {
+           text(doc.createParagraph(), "IMG 2");
+        fullWidthPicture(doc, img2); 
+        }
+        
+        if(img3!=null)
+        {
+        text(doc.createParagraph(), "IMG 3");
+        fullWidthPicture(doc, img3);
+        }
+
+        //fileDialog.getExtensionFilters().add(new ExtensionFilter("MS Word", "*.docx"));
+        //File file = fileDialog.showSaveDialog(null);
+        File file = new File(filePath);
+
+        FileOutputStream out = new FileOutputStream(file);
         doc.write(out);
         out.close();
+        fileDialog.getExtensionFilters().clear();
         
+
     }
     
-    public static void main (String []args) throws IOException
+    private void boldText(XWPFParagraph paragraph , String text)
     {
-        FileHandler.createReport("HEADING !!!!!!!!");
-        
-        
+        XWPFRun r = paragraph.createRun();
+        r.setText(text);
+        r.setBold(true);
     }
     
+     private void boldText(XWPFParagraph paragraph , String text , boolean underline)
+    {
+        XWPFRun r = paragraph.createRun();
+        r.setText(text);
+        r.setBold(true);
+        
+        if(underline)
+        {
+            r.setUnderline(UnderlinePatterns.SINGLE);
+        }
+    }
+     
+     private void lineBreak(XWPFParagraph paragraph )
+     {
+         XWPFRun r = paragraph.createRun();
+         r.addCarriageReturn();
+     }
+     
+     private void pageBreak(XWPFParagraph paragraph )
+     {
+         XWPFRun r = paragraph.createRun();
+         r.addBreak(BreakType.PAGE);
+     }
+     
+     private void text(XWPFParagraph paragraph , String text)
+    {
+        XWPFRun r = paragraph.createRun();
+        r.setText(text);
+        
+    }
+     
+     private void fullWidthPicture(XWPFDocument doc , File imgFile) throws InvalidFormatException, IOException
+     {
+         XWPFParagraph p2 = doc.createParagraph();
+        p2.setAlignment(ParagraphAlignment.LEFT);
+        XWPFRun imageRun = p2.createRun();
+        imageRun.setTextPosition(10);
+        imageRun.setText("        ");
+        imageRun.setFontSize(1);
+        imageRun.addPicture(new FileInputStream(imgFile), XWPFDocument.PICTURE_TYPE_PNG, "image", Units.toEMU(469), Units.toEMU(274));
+        p2.setBorderBottom(Borders.SINGLE);
+        p2.setBorderTop(Borders.SINGLE);
+        p2.setBorderRight(Borders.SINGLE);
+        p2.setBorderLeft(Borders.SINGLE);
+
+        
+         
+     }
+     
+     public static void serialize(Object obj , String fileName)
+     {
+        try{
+
+			File f = ResourceLoader.getFileUserDirectory(fileName);
+			FileOutputStream fout = new FileOutputStream(f);
+
+			ObjectOutputStream oos = new ObjectOutputStream(fout); 
+			oos.writeObject(obj);
+
+			oos.close();
+			System.out.println("Done serialising...");
+
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+     }
+    
+   public static Object deserialze(String givenfileName){
+
+		Object in;
+
+		try{
+
+			File f = ResourceLoader.getFileUserDirectory(givenfileName);
+			FileInputStream fin = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fin);
+			in  = ois.readObject();
+			ois.close();
+
+			System.out.println("Done deserialising...");
+
+			return  in;
+
+		}catch(Exception ex){
+			ex.printStackTrace();
+			return null;
+		} 
+	} 
+
 }

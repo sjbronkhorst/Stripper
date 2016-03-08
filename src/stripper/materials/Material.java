@@ -5,11 +5,13 @@
  */
 package stripper.materials;
 
+
+
 /**
  *
  * @author SJ
  */
-public abstract class Material {
+public abstract class Material{
 
     protected String name;
     protected double Ex, Ey, vx, vy, G , fy;

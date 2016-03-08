@@ -6,6 +6,7 @@
 package stripper;
 
 import UI.Model;
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
@@ -16,7 +17,7 @@ import linalg.Vector;
  *
  * @author SJ
  */
-public class Node {
+public class Node{
 
     private static AtomicInteger nodeSequence = new AtomicInteger(0);
 

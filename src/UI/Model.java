@@ -6,6 +6,7 @@
 package UI;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -27,7 +28,7 @@ import stripper.series.Series;
  *
  * @author SJ
  */
-public class Model {
+public class Model implements Serializable{
 
     private Material modelMaterial = new Material_Steel();
     private double modelLength = 100;
