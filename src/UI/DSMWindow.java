@@ -5,6 +5,8 @@
  */
 package UI;
 
+import Utils.XYChartDataUtil;
+import Utils.StringChoicePrompt;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +34,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import stripper.BucklingCurve;
-import stripper.DSM.DSMCalcs;
-import stripper.FileHandler;
+import fsm.BucklingCurve;
+import DSM.DSMCalcs;
+import Utils.FileHandler;
 
 /**
  *

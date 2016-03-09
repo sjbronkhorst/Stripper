@@ -13,16 +13,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import linalg.Matrix;
 import linalg.Vector;
-import stripper.BucklingCurve;
-import stripper.BucklingDataPoint;
-import stripper.Node;
-import stripper.Strip;
-import stripper.Strip_General;
-import stripper.Strip_SS;
-import stripper.materials.Material;
-import stripper.materials.Material_Steel;
-import stripper.materials.Material_Z_Li;
-import stripper.series.Series;
+import fsm.BucklingCurve;
+import fsm.BucklingDataPoint;
+import fsm.Node;
+import fsm.Strip;
+import fsm.Strip_General;
+import fsm.Strip_SS;
+import fsm.material.Material;
+import fsm.material.Material_Steel;
+import fsm.material.Material_Z_Li;
+import fsm.series.Series;
 
 /**
  *
@@ -86,7 +86,7 @@ public class Model implements Serializable{
 
     public void setFourierTerms(int fourierTerms) {
         this.fourierTerms = fourierTerms;
-        TableViewEdit.println("Fourier terms set to " + fourierTerms);
+        Main.println("Fourier terms set to " + fourierTerms);
     }
 
     public Series getFourierSeries() {

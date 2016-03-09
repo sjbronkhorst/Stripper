@@ -1,5 +1,7 @@
 package UI;
 
+import Utils.XYChartDataUtil;
+import Utils.DrawingHandler;
 import com.sun.javafx.iio.ImageStorage;
 import com.sun.javafx.iio.ImageStorage.ImageType;
 import java.awt.Font;
@@ -47,12 +49,12 @@ import javafx.stage.WindowEvent;
 import javax.imageio.ImageIO;
 import javax.jws.soap.SOAPBinding;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import stripper.BucklingCurve;
-import stripper.BucklingDataPoint;
-import stripper.DSM.DSMCalcs;
-import stripper.FileHandler;
-import stripper.MyMath;
-import stripper.Node;
+import fsm.BucklingCurve;
+import fsm.BucklingDataPoint;
+import DSM.DSMCalcs;
+import Utils.FileHandler;
+import Utils.MyMath;
+import fsm.Node;
 //
 
 public class LineChartWindow extends Application {
@@ -84,11 +86,7 @@ public class LineChartWindow extends Application {
 
     NumberAxis yAxis = new NumberAxis();
 
-    public static void main(String[] args) {
-
-//Application.launch(args);
-    }
-
+    
     public LineChartWindow(String windowTitle, String chartTitle, String xLabel, String yLabel, double lowerBound, double upperBound) {
 
         this.windowTitle = windowTitle;

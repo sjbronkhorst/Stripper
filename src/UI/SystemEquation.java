@@ -5,7 +5,7 @@
  */
 package UI;
 
-import stripper.Assembler;
+import fsm.Assembler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,14 +13,14 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import linalg.Matrix;
 import linalg.Vector;
-import stripper.Cholesky;
-import stripper.Converter;
-import stripper.CoupledMatrix_1;
-import stripper.CoupledVector_1;
-import stripper.Node;
-import stripper.PartitionedSystem;
-import stripper.Strip;
-import stripper.series.Series;
+import Utils.Cholesky;
+import fsm.Converter;
+import fsm.CoupledMatrix;
+import fsm.CoupledVector;
+import fsm.Node;
+import fsm.PartitionedSystem;
+import fsm.Strip;
+import fsm.series.Series;
 
 /**
  *
@@ -102,7 +102,7 @@ public class SystemEquation {
 
         Series Y = model.getFourierSeries();
 
-        TableViewEdit.println("Series simply suppported : " + Y.isSimplySupported());
+        Main.println("Series simply suppported : " + Y.isSimplySupported());
 
         if (Y.isSimplySupported()) {
 
@@ -150,9 +150,9 @@ public class SystemEquation {
 
         } else {
 
-            CoupledMatrix_1 cK = new CoupledMatrix_1(nodes.size(), model.getFourierTerms());
-            CoupledVector_1 fK = new CoupledVector_1(nodes.size(), model.getFourierTerms());
-            CoupledVector_1 status = new CoupledVector_1(nodes.size(), model.getFourierTerms());
+            CoupledMatrix cK = new CoupledMatrix(nodes.size(), model.getFourierTerms());
+            CoupledVector fK = new CoupledVector(nodes.size(), model.getFourierTerms());
+            CoupledVector status = new CoupledVector(nodes.size(), model.getFourierTerms());
 
 //       Vector fK = Vector.getVector(8*nTerms);
 //       fK.clear();
@@ -179,7 +179,7 @@ public class SystemEquation {
 
             PartitionedSystem se = new PartitionedSystem(cK.getMatrix(), Converter.vecToBool(status.getVector()));
 
-            TableViewEdit.println("Assembly done, commencing cholesky");
+            Main.println("Assembly done, commencing cholesky");
 
             Cholesky chol = new Cholesky();
 
@@ -198,7 +198,7 @@ public class SystemEquation {
 
             }
 
-            TableViewEdit.println("Displacements calculated");
+            Main.println("Displacements calculated");
 
             for (Node n : nodes) {
 
@@ -217,7 +217,7 @@ public class SystemEquation {
                 }
             }
 
-            TableViewEdit.println("Done ...");
+            Main.println("Done ...");
 
         }
 

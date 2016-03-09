@@ -13,9 +13,9 @@ import javafx.application.Application;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import stripper.DSM.DSMCalcs;
-import stripper.FileHandler;
-import stripper.MyMath;
+import DSM.DSMCalcs;
+import Utils.FileHandler;
+import Utils.MyMath;
 
 /**
  *

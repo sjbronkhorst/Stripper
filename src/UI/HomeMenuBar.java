@@ -10,7 +10,7 @@
  */
 package UI;
 
-import static UI.TableViewEdit.println;
+import static UI.Main.println;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,11 +20,11 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
-import stripper.DSM.DSMCalcs;
-import stripper.FileHandler;
-import stripper.MyMath;
-import stripper.Node;
-import stripper.Strip;
+import DSM.DSMCalcs;
+import Utils.FileHandler;
+import Utils.MyMath;
+import fsm.Node;
+import fsm.Strip;
 
 /**
  *
@@ -52,7 +52,7 @@ public class HomeMenuBar {
     private MenuItem makePath = new MenuItem("Path");
     private MenuItem dsmCalcs = new MenuItem("Calc...");
 
-    public HomeMenuBar(TableViewEdit viewer) {
+    public HomeMenuBar(Main viewer) {
 
         fileMenu.getItems().addAll(geomFileRead, geomFileWrite);
         editMenu.getItems().addAll(materialEdit, modelMenu);
@@ -92,7 +92,7 @@ public class HomeMenuBar {
                     f.writeGeom(Defaults.getBaseModel().getNodeList(), Defaults.getBaseModel().getStripList());
 
                 } catch (IOException ex) {
-                    Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -108,7 +108,7 @@ public class HomeMenuBar {
 
                     f.readGeom();
                 } catch (IOException ex) {
-                    Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 Defaults.getBaseModel().clearNodes();

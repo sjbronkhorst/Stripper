@@ -5,7 +5,7 @@
  */
 package UI;
 
-import stripper.Direction;
+import fsm.Direction;
 
 /**
  *

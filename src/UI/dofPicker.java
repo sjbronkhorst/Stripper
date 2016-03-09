@@ -18,8 +18,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
 import linalg.Vector;
-import stripper.Converter;
-import stripper.Node;
+import fsm.Converter;
+import fsm.Node;
 
 /**
  *
@@ -106,12 +106,5 @@ public class dofPicker extends Application {
         
     }
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws Exception {
-       dofPicker d = new dofPicker();
-       Stage s = new Stage();
-       d.start(s);
-    }
+  
 }

@@ -9,6 +9,7 @@
  */
 package UI;
 
+import Utils.ContinueWarning;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -23,8 +24,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import stripper.Strip;
-import stripper.series.Series;
+import fsm.Strip;
+import fsm.series.Series;
 
 /**
  *
@@ -74,7 +75,7 @@ public class FourierEditor extends Application {
             
             
             
-                    TableViewEdit.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
+                    Main.println("Fourier series changed from " + seriesChoice.getItems().get((int)oldValue) + " to " + seriesChoice.getItems().get((int)newValue));
                 }
               
               
@@ -84,7 +85,7 @@ public class FourierEditor extends Application {
                     try {
                         c.start(new Stage());
                     } catch (Exception ex) {
-                        Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     }
               }
               
@@ -94,7 +95,7 @@ public class FourierEditor extends Application {
                     try {
                         c.start(new Stage());
                     } catch (Exception ex) {
-                        Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                     }
               }
                 

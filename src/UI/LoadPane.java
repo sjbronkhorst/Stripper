@@ -5,6 +5,8 @@
  */
 package UI;
 
+import Utils.StripTableUtil;
+import Utils.PointLoadTableUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -18,8 +20,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
-import stripper.Node;
-import stripper.Strip;
+import fsm.Node;
+import fsm.Strip;
 
 /**
  *
@@ -49,7 +51,7 @@ public class LoadPane {
 
     private TableView<PointLoad> pointLoadTable = new TableView<>(PointLoadTableUtil.getLoadList());
 
-    private TableViewEdit viewer;
+    private Main viewer;
 
     private Button pointLoadAddBtn = new Button("Add");
     private Button pointLoadRemoveBtn = new Button("Remove");
@@ -59,7 +61,7 @@ public class LoadPane {
 
     private boolean bucklingAnalysis;
 
-    public LoadPane(TableViewEdit viewer, boolean bucklingAnalysis) {
+    public LoadPane(Main viewer, boolean bucklingAnalysis) {
 
         this.bucklingAnalysis = bucklingAnalysis;
 

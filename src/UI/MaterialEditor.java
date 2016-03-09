@@ -20,9 +20,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import stripper.FileHandler;
-import stripper.materials.Material;
-import stripper.materials.Material_User;
+import Utils.FileHandler;
+import fsm.material.Material;
+import fsm.material.Material_User;
 
 /**
  *
@@ -135,11 +135,6 @@ public class MaterialEditor extends Application {
         primaryStage.show();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
+  
 
 }

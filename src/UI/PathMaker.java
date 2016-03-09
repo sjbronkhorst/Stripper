@@ -21,9 +21,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import stripper.FileHandler;
-import stripper.Path;
-import stripper.Strip;
+import Utils.FileHandler;
+import Utils.Path;
+import fsm.Strip;
 
 /**
  *
@@ -150,7 +150,7 @@ public class PathMaker extends Application {
                 try {
                     fh.writeCSV(fileData);
                 } catch (IOException ex) {
-                    TableViewEdit.println("File not found/available");
+                    Main.println("File not found/available");
                 }
 
             }

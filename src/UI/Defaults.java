@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import stripper.BucklingCurve;
-import stripper.materials.Material;
-import stripper.materials.Material_Steel;
-import stripper.materials.Material_Z_Li;
-import stripper.series.Series;
+import fsm.BucklingCurve;
+import fsm.material.Material;
+import fsm.material.Material_Steel;
+import fsm.material.Material_Z_Li;
+import fsm.series.Series;
 
 /**
  *

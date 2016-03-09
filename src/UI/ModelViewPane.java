@@ -53,8 +53,8 @@ import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import linalg.Vector;
 
-import stripper.Node;
-import stripper.Strip;
+import fsm.Node;
+import fsm.Strip;
 
 /**
  *

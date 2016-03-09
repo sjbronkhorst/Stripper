@@ -5,14 +5,14 @@
  */
 package UI;
 
-import stripper.Strip;
+import fsm.Strip;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import stripper.Direction;
+
 
 
 /**
