@@ -24,13 +24,16 @@ import stripper.MyMath;
  * @author SJ
  */
 public class DrawingHandler {
+    
+    private static int imgID = 0;
 
     public static File createBucklingCurveSnapShot(LineChart<Number, Number> chart, Pane boxImagePane, String text1, String text2) {
 
         WritableImage chartImg = chart.snapshot(new SnapshotParameters(), null);
         WritableImage modelImg = boxImagePane.snapshot(new SnapshotParameters(), null);
 
-        File file = new File("image.png");
+        File imageFile = new File(imgID + ".png");
+        imgID ++;
 
         try {
 
@@ -46,21 +49,38 @@ public class DrawingHandler {
             gO.setFont(new Font("SansSerif", Font.BOLD, 20));
 
            // gO.drawString("Local buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), (int) chart.getWidth() - (int) mvp.box2D.getWidth() - 75, 100);
-           // gO.drawString("Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2), (int) chart.getWidth() - (int) mvp.box2D.getWidth() - 75, 125);
+            // gO.drawString("Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2), (int) chart.getWidth() - (int) mvp.box2D.getWidth() - 75, 125);
             gO.drawString(text1, (int) chart.getWidth() - (int) boxImagePane.getWidth() - 75, 100);
             gO.drawString(text2, (int) chart.getWidth() - (int) boxImagePane.getWidth() - 75, 125);
-            
-            
 
             try {
-                ImageIO.write(source, "png", file);
+                ImageIO.write(source, "png", imageFile);
             } catch (Exception s) {
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return file;
+        
+        return imageFile;
+        
+
+    }
+
+    public static File createSnapshot(Pane boxImagePane) {
+        
+        File imageFile = new File(imgID + ".png");
+        imgID ++;
+        
+        WritableImage modelImg = boxImagePane.snapshot(new SnapshotParameters(), null);
+        BufferedImage source = SwingFXUtils.fromFXImage(modelImg, null);
+        try {
+            ImageIO.write(source, "png", imageFile);
+        } catch (Exception s) {
+        }
+        
+        return imageFile;
+        
 
     }
 

@@ -5,6 +5,7 @@
  */
 package UI;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,9 @@ public class Defaults
     private static Model baseModel = new Model();
     public static boolean ignoreCoupling = false;
     public static boolean bucklingAnalysis = false;
+    public static boolean dsmAnalysis = false;
     public static List<BucklingCurve> bucklingCurveList = new ArrayList<BucklingCurve>();
+   
    
     
     public static int getNumberOfTerms()

@@ -6,7 +6,6 @@
 package stripper;
 
 import UI.Model;
-import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;

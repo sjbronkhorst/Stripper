@@ -188,6 +188,9 @@ public class LineChartWindow extends Application {
                     MenuItem distortional = new MenuItem("Set as Distortional buckling value");
                     MenuItem global = new MenuItem("Set as Global buckling value");
                     MenuItem cancel = new MenuItem("Cancel...");
+                    
+                    
+                    BucklingCurve bc= seriesTable.getSelectionModel().getSelectedItem();
 
                     System.out.println(seriesTable.getSelectionModel().getSelectedItem().toString());
                     System.out.println(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
@@ -199,15 +202,8 @@ public class LineChartWindow extends Application {
 
                             seriesTable.getSelectionModel().getSelectedItem().setLocalFactor(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
 
-                            File f = DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Local buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
-                            FileHandler fh = new FileHandler();
-//                            try {
-//                                fh.createReport("local", f);
-//                            } catch (IOException ex) {
-//                                Logger.getLogger(LineChartWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                            } catch (InvalidFormatException ex) {
-//                                Logger.getLogger(LineChartWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                            }
+                            bc.localImage = DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Local buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
+                           
                         }
                     });
 
@@ -216,15 +212,8 @@ public class LineChartWindow extends Application {
                         @Override
                         public void handle(ActionEvent event) {
                             seriesTable.getSelectionModel().getSelectedItem().setDistortionalFactor(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
-                            File f = DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Distortional buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
-                            FileHandler fh = new FileHandler();
-//                            try {
-//                                fh.createReport("distortional", f);
-//                            } catch (IOException ex) {
-//                                Logger.getLogger(LineChartWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                            } catch (InvalidFormatException ex) {
-//                                Logger.getLogger(LineChartWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                            }
+                            bc.distortionalImage = DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Distortional buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
+                            
                         }
                     });
 
@@ -233,15 +222,8 @@ public class LineChartWindow extends Application {
                         @Override
                         public void handle(ActionEvent event) {
                             seriesTable.getSelectionModel().getSelectedItem().setGlobalFactor(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor());
-                            File f = DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Global buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
-                            FileHandler fh = new FileHandler();
-//                            try {
-//                                fh.createReport("global", f);
-//                            } catch (IOException ex) {
-//                                Logger.getLogger(LineChartWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                            } catch (InvalidFormatException ex) {
-//                                Logger.getLogger(LineChartWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                            }
+                            bc.globalImage = DrawingHandler.createBucklingCurveSnapShot(chart, mvp.box2D, "Global buckling factor = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getMinLoadFactor(), 2), "Physical length = " + MyMath.round(seriesDataTable.getSelectionModel().getSelectedItem().getPhysicalLength(), 2));
+                            
                         }
                     });
 
@@ -311,7 +293,7 @@ public class LineChartWindow extends Application {
         stage.setScene(scene);
         stage.setTitle(windowTitle);
         stage.show();
-        stage.setFullScreen(true);
+        stage.setMaximized(true);
 
         userScaleBtn.setOnAction(new EventHandler<ActionEvent>() {
 

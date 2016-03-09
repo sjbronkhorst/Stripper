@@ -6,6 +6,7 @@
 package stripper;
 
 import UI.Model;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -21,6 +22,7 @@ public class BucklingCurve {
     private List<Model> modelList = new ArrayList<>();
     private ReadOnlyStringWrapper name = new ReadOnlyStringWrapper(this, "");
     private static int bcNum = 0;
+     public File crossSectionImage , localImage , distortionalImage , globalImage;
 
 
     double localFactor = 0;

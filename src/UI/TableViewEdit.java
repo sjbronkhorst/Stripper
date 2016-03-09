@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -98,12 +99,19 @@ public class TableViewEdit extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        AnalysisChoicePrompt acp = new AnalysisChoicePrompt(stage);
+        BooleanChoicePrompt analysisChoice = new BooleanChoicePrompt(stage, "Choose Analysis Type: ", "Buckling Analysis", "Static Analysis");
+        println("Buckling analysis mode : " + Boolean.toString(analysisChoice.getResult()));
+        Defaults.bucklingAnalysis = analysisChoice.getResult();
 
-        println("Buckling analysis mode : " + Boolean.toString(acp.getResult()));
-        Defaults.bucklingAnalysis = acp.getResult();
+        if (Defaults.bucklingAnalysis) {
+            BooleanChoicePrompt dsmChoice = new BooleanChoicePrompt(stage, "DSM Design or Plate/Member Study?", "DSM Design", "Plate/Member Studies");
+            Defaults.dsmAnalysis = dsmChoice.getResult();
+            println("DSM Design mode : " + Boolean.toString(dsmChoice.getResult()));
+
+        }
+
         lp = new LoadPane(this, Defaults.bucklingAnalysis);
-        menuBar = new HomeMenuBar(this, !Defaults.bucklingAnalysis);
+        menuBar = new HomeMenuBar(this);
 
         progInd.setStyle("-fx-progress-color: blue;");
 
@@ -239,8 +247,6 @@ public class TableViewEdit extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                 
-                 
                 //  ModelProperties.setModelLength(Double.parseDouble(modelLengthField.textProperty().get()));
                 boolean noEdgeLoads = false;
 
@@ -295,7 +301,7 @@ public class TableViewEdit extends Application {
                         stringData[0][i] = "Buckling stress for half wave";
                     }
 
-                   StringChoicePrompt scp = new StringChoicePrompt(stage, "Type a name for the buckling curve : ");
+                    StringChoicePrompt scp = new StringChoicePrompt(stage, "Type a name for the buckling curve : ");
                     BucklingCurve bc = new BucklingCurve(scp.getResult());
 
                     for (int i = 0; i < models.length; i++) {
@@ -313,27 +319,28 @@ public class TableViewEdit extends Application {
 
                     }
 
-                    FileHandler f = new FileHandler();
-                    try {
-                        f.writeCSV(stringData);
-                    } catch (IOException ex) {
-                        Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                    if (!Defaults.dsmAnalysis) {
+                        FileHandler f = new FileHandler();
+                        try {
+                            f.writeCSV(stringData);
+                        } catch (IOException ex) {
+                            Logger.getLogger(TableViewEdit.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        disCalced = true;
+
+                        stage.setMaximized(true);
+                        mvp.axisCheck.setSelected(true);
+                        stage.setFullScreenExitHint("");
+                        bc.crossSectionImage = DrawingHandler.createSnapshot(mvp.box2D);
+
+                        XYChartDataUtil.addCurve(bc);
+                        LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]));
+                        Defaults.bucklingCurveList.add(bc);
+                        Stage s = new Stage();
+                        s.getIcons().add(ic);
+                        chart.start(s);
                     }
-
-                    XYChartDataUtil.addCurve(bc);
-                    LineChartWindow chart = new LineChartWindow("Minimum buckling stress vs physical length", "", "Length", "Stress", 0, Defaults.getBaseModel().getModelLength(), 0, (bc.getLoadFactors()[0]));
-
-                    Defaults.bucklingCurveList.add(bc);
-
-                    Stage s = new Stage();
-
-                    s.getIcons().add(ic);
-                    chart.start(s);
-
-                    disCalced = true;
-                    
-                    FileHandler.serialize(Defaults.getBaseModel(), "baseModel.Model");
-                    
 
                 }
             }

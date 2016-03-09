@@ -24,24 +24,24 @@ import javafx.stage.Window;
  *
  * @author SJ
  */
-class AnalysisChoicePrompt {
+class BooleanChoicePrompt {
 
     private boolean bucklingAnalysis;
 
-    AnalysisChoicePrompt(Window owner) {
+    BooleanChoicePrompt(Window owner, String title , String trueBtnText , String falseBtnText) {
         final Stage dialog = new Stage();
 
-        dialog.setTitle("Choose the type of analysis...");
+        dialog.setTitle(title);
         dialog.initOwner(owner);
         dialog.initStyle(StageStyle.UTILITY);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.setX(owner.getX() + owner.getWidth());
         dialog.setY(owner.getY());
 
-        final Button buckleChoiceBtn = new Button("Buckling Analysis");
-        final Button staticChoiceBtn = new Button("Static Analysis");
+        final Button trueBtn = new Button(trueBtnText);
+        final Button falseBtn = new Button(falseBtnText);
 
-        buckleChoiceBtn.setOnAction(new EventHandler<ActionEvent>() {
+        trueBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 bucklingAnalysis = true;
@@ -50,7 +50,7 @@ class AnalysisChoicePrompt {
             }
         });
 
-        staticChoiceBtn.setOnAction(new EventHandler<ActionEvent>() {
+        falseBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
                 bucklingAnalysis = false;
@@ -64,8 +64,8 @@ class AnalysisChoicePrompt {
         layout.setAlignment(Pos.CENTER);
 
         layout.getChildren().setAll(
-                buckleChoiceBtn,
-                staticChoiceBtn
+                trueBtn,
+                falseBtn
         );
         
         

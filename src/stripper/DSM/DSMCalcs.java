@@ -12,40 +12,52 @@ import javafx.scene.control.TextArea;
  * @author SJ
  */
 public class DSMCalcs {
+    
+   public enum analysisType{BEAM,COLUMN,BEAMCOLUMN}
 
-    private static double local, distortional, global;
+    //private static double local, distortional, global;
 
-    public static void setLocalFactor(double val) {
-        local = val;
-        //calcArea.appendText("Local value = " + local);
-    }
-
-    public static void setDistortionalFactor(double val) {
-        distortional = val;
-        //calcArea.appendText("Distortional value = " + distortional);
-    }
-
-    public static void setGlobalFactor(double val) {
-        global = val;
-        //calcArea.appendText("Global value = " + global);
-    }
-
-    public static double getLocalFactor() {
-        return local;
-    }
-
-    public static double getDistortionalFactor() {
-        return distortional;
-    }
-
-    public static double getGlobalFactor() {
-        return global;
-    }
+//    public static void setLocalFactor(double val) {
+//        local = val;
+//        //calcArea.appendText("Local value = " + local);
+//    }
+//
+//    public static void setDistortionalFactor(double val) {
+//        distortional = val;
+//        //calcArea.appendText("Distortional value = " + distortional);
+//    }
+//
+//    public static void setGlobalFactor(double val) {
+//        global = val;
+//        //calcArea.appendText("Global value = " + global);
+//    }
+//
+//    public static double getLocalFactor() {
+//        return local;
+//    }
+//
+//    public static double getDistortionalFactor() {
+//        return distortional;
+//    }
+//
+//    public static double getGlobalFactor() {
+//        return global;
+//    }
 
     private double My, Mcrl, Mcrd, Mcre, Cb, phiB;
+    private analysisType type;
 
     private double Py, Pcrl, Pcrd, Pcre, phiC;
     private TextArea calcArea = new TextArea();
+    
+    public void setAnalysisType(analysisType type)
+    {
+        this.type = type;
+    }
+    public analysisType getAnalysisType()
+    {
+        return type;
+    }
 
     public void setMy(double My) {
         this.My = My;
@@ -71,8 +83,62 @@ public class DSMCalcs {
         this.phiB = phiB;
     }
 
+    public double getMy() {
+        return My;
+    }
+
+    public double getMcrl() {
+        return Mcrl;
+    }
+
+    public double getMcrd() {
+        return Mcrd;
+    }
+
+    public double getMcre() {
+        return Mcre;
+    }
+
+    public double getCb() {
+        return Cb;
+    }
+
+    public double getPhiB() {
+        return phiB;
+    }
+
+    public analysisType getType() {
+        return type;
+    }
+
+    public double getPy() {
+        return Py;
+    }
+
+    public double getPcrl() {
+        return Pcrl;
+    }
+
+    public double getPcrd() {
+        return Pcrd;
+    }
+
+    public double getPcre() {
+        return Pcre;
+    }
+
+    public double getPhiC() {
+        return phiC;
+    }
+
+       
+
     public void setTextArea(TextArea textArea) {
         this.calcArea = textArea;
+    }
+    
+    public TextArea getTextArea() {
+        return calcArea;
     }
     public void setPy(double Py) {
         this.Py = Py;
@@ -270,7 +336,7 @@ public class DSMCalcs {
             Pne = Py;
 
             calcArea.appendText("For a fully braced member lateral-torsional\n"
-                    + "buckling will not occur and thus Pne = Py, Mnl and Mnd must still be checked.\n");
+                    + "buckling will not occur and thus Pne = Py, Pnl and Pnd must still be checked.\n");
         }
 
         calcArea.appendText("Pne = " + Pne + "\n");

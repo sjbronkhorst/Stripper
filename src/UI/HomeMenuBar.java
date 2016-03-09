@@ -52,22 +52,33 @@ public class HomeMenuBar {
     private MenuItem makePath = new MenuItem("Path");
     private MenuItem dsmCalcs = new MenuItem("Calc...");
 
-    public HomeMenuBar(TableViewEdit viewer, boolean hasPath) {
+    public HomeMenuBar(TableViewEdit viewer) {
 
         fileMenu.getItems().addAll(geomFileRead, geomFileWrite);
-        editMenu.getItems().addAll(materialEdit, setBC , modelMenu);
+        editMenu.getItems().addAll(materialEdit, modelMenu);
+        if(!Defaults.dsmAnalysis)
+        {
+            editMenu.getItems().add(setBC);
+        }
+        
+        
+        
         dsmMenu.getItems().add(dsmCalcs);
         modelMenu.getItems().addAll(modelPropertiesBtn,transLateToPrincipal,rotateToPrincipal);
         
         
 
-        if (hasPath) {
+        if (!Defaults.bucklingAnalysis) {
             editMenu.getItems().add(makePath);
         }
 
         menuBar.getMenus().add(fileMenu);
         menuBar.getMenus().add(editMenu);
+        
+        if(Defaults.bucklingAnalysis && Defaults.dsmAnalysis)
+        {
         menuBar.getMenus().add(dsmMenu);
+        }
 
         geomFileWrite.setOnAction(new EventHandler<ActionEvent>() {
 

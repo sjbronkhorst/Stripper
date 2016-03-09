@@ -5,6 +5,9 @@
  */
 package UI;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,8 +31,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import stripper.BucklingCurve;
 import stripper.DSM.DSMCalcs;
+import stripper.FileHandler;
 
 /**
  *
@@ -122,7 +127,7 @@ public class DSMWindow extends Application {
 
         axialPane.add(pcreLabel, 0, 3);
         axialPane.add(pcreTf, 1, 3);
-        
+
         axialPane.add(phicLabel, 0, 4);
         axialPane.add(phicTf, 1, 4);
 
@@ -134,10 +139,13 @@ public class DSMWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
 
+                BucklingCurve bc = flexCurveChoice.getSelectionModel().getSelectedItem();
+
                 calcArea.clear();
-                
+
                 DSMCalcs d = new DSMCalcs();
                 d.setTextArea(calcArea);
+                d.setAnalysisType(DSMCalcs.analysisType.BEAM);
 
                 d.setMy(Double.parseDouble(myTf.getText()));
                 d.setMcrl(Double.parseDouble(mcrlTf.getText()));
@@ -145,9 +153,24 @@ public class DSMWindow extends Application {
                 d.setMcre(Double.parseDouble(mcreTf.getText()));
                 d.setCb(Double.parseDouble(cbTf.getText()));
                 d.setPhiB(Double.parseDouble(phibTf.getText()));
-                
+
                 //d.setTextArea(calcArea);
                 d.getNominalFlexuralStrength(flexBracedCheck.isSelected());
+
+                FileHandler fh = new FileHandler();
+                StringChoicePrompt designerNamePrompt = new StringChoicePrompt(primaryStage, "Type the designer name: ");
+                String designer = designerNamePrompt.getResult();
+
+                StringChoicePrompt projectNamePrompt = new StringChoicePrompt(primaryStage, "Type the project name: ");
+                String project = projectNamePrompt.getResult();
+
+                try {
+                    fh.createReport(designer, project, bc.crossSectionImage, bc.localImage, bc.distortionalImage, bc.globalImage, bc.getModels().get(0), d);
+                } catch (IOException ex) {
+                    Logger.getLogger(DSMWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvalidFormatException ex) {
+                    Logger.getLogger(DSMWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -166,44 +189,60 @@ public class DSMWindow extends Application {
                 }
             }
         });
-        
+
         axialCalcBtn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
 
-                calcArea.clear();
                 
+                BucklingCurve bc = axialCurveChoice.getSelectionModel().getSelectedItem();
+                calcArea.clear();
+
                 DSMCalcs d = new DSMCalcs();
                 d.setTextArea(calcArea);
+                d.setAnalysisType(DSMCalcs.analysisType.COLUMN);
 
                 d.setPy(Double.parseDouble(pyTf.getText()));
                 d.setPcrl(Double.parseDouble(pcrlTf.getText()));
                 d.setPcrd(Double.parseDouble(pcrdTf.getText()));
                 d.setPcre(Double.parseDouble(pcreTf.getText()));
                 d.setPhiC(Double.parseDouble(phicTf.getText()));
-                
+
                 //d.setTextArea(calcArea);
                 d.getNominalCompressiveStrength(axialBracedCheck.isSelected());
+
+                FileHandler fh = new FileHandler();
+                StringChoicePrompt designerNamePrompt = new StringChoicePrompt(primaryStage, "Type the designer name: ");
+                String designer = designerNamePrompt.getResult();
+
+                StringChoicePrompt projectNamePrompt = new StringChoicePrompt(primaryStage, "Type the project name: ");
+                String project = projectNamePrompt.getResult();
+
+                try {
+                    fh.createReport(designer, project, bc.crossSectionImage, bc.localImage, bc.distortionalImage, bc.globalImage, bc.getModels().get(0), d);
+                } catch (IOException ex) {
+                    Logger.getLogger(DSMWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvalidFormatException ex) {
+                    Logger.getLogger(DSMWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
-        
-        
 
         axialCurveChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 
-                if (flexCurveChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
-                    BucklingCurve bc = flexCurveChoice.getItems().get((int) newValue);
-                    
-                    double Py = bc.getModels().get(0).getAllowableStress()*bc.getModels().get(0).getCrossSectionalArea();
+                if (axialCurveChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
+                    BucklingCurve bc = axialCurveChoice.getItems().get((int) newValue);
+
+                    double Py = bc.getModels().get(0).getAllowableStress() * bc.getModels().get(0).getCrossSectionalArea();
 
                     pyTf.setText("" + Py);
-                    pcrlTf.setText("" + bc.getLocalFactor()*Py);
-                    pcrdTf.setText("" + bc.getDistortionalFactor()*Py);
-                    pcreTf.setText("" + bc.getGlobalFactor()*Py);
+                    pcrlTf.setText("" + bc.getLocalFactor() * Py);
+                    pcrdTf.setText("" + bc.getDistortionalFactor() * Py);
+                    pcreTf.setText("" + bc.getGlobalFactor() * Py);
                 }
             }
         });
