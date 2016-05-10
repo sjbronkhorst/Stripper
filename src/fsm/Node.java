@@ -5,7 +5,6 @@
  */
 package fsm;
 
-import UI.Model;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;

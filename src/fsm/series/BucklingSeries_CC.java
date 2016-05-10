@@ -5,7 +5,7 @@
  */
 package fsm.series;
 
-import UI.Model;
+import fsm.Model;
 import fsm.Strip;
 import fsm.Strip_General;
 

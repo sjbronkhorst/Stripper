@@ -5,7 +5,6 @@ package fsm;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import UI.Model;
 import UI.PointLoad;
 import linalg.Matrix;
 import linalg.Vector;
@@ -24,9 +23,9 @@ public class Strip_SS extends Strip {
 
         setNode1(node1);
         setNode2(node2);
-        
+
         this.model = model;
-       
+
     }
 
     public Strip_SS(Model model) {
@@ -36,7 +35,7 @@ public class Strip_SS extends Strip {
         this.node1Id.set(0);
         this.node2Id.set(0);
         this.model = model;
-        
+
     }
 
 //    public Strip_SS(UIStrip uiStrip, Model model) {
@@ -66,8 +65,6 @@ public class Strip_SS extends Strip {
 //        }
 //        this.model = model;
 //       }
-
-   
     public Matrix getBendingStiffnessMatrix(int m, int n) {
 
         Matrix S = Matrix.getMatrix(4, 4);
@@ -218,11 +215,8 @@ public class Strip_SS extends Strip {
         return K;
     }
 
-    
-    
-    
-      @Override
+    @Override
     public String toString() {
-        return "Strip S-S " + stripId.getValue().toString() + "     t = " + getStripThickness() + "     L = " + getStripLength() + "        "+ node1.toString() + "     "+ node2.toString();
+        return "Strip S-S ";
     }
 }

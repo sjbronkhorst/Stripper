@@ -219,6 +219,13 @@ public class HomeMenuBar {
                 println("principal axis angle = " + MyMath.round(Defaults.getBaseModel().getPrincipalAxisAngle(),2) + "  radians");
                 println("Ixx Principal = " + MyMath.round(Defaults.getBaseModel().getIxxPrincipal(),2));
                 println("Izz Principal = " + MyMath.round(Defaults.getBaseModel().getIzzPrincipal(),2));
+                
+                println("XBar (max) = " + MyMath.round(Defaults.getBaseModel().getXBarMax(),2));
+                println("ZBar (max) = " + MyMath.round(Defaults.getBaseModel().getZBarMax(),2));
+                
+                println("Zx (min) = " + MyMath.round(Defaults.getBaseModel().getZxMin(),2));
+                println("Zz (min) = " + MyMath.round(Defaults.getBaseModel().getZzMin(),2));
+                
                 println("---------------------------------------------------------------------------------------------- ");
                 
             }

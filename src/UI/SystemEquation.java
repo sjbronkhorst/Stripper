@@ -5,6 +5,7 @@
  */
 package UI;
 
+import fsm.Model;
 import fsm.Assembler;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +102,7 @@ public class SystemEquation {
         Cholesky c = new Cholesky();
 
         Series Y = model.getFourierSeries();
-
+        
         Main.println("Series simply suppported : " + Y.isSimplySupported());
 
         if (Y.isSimplySupported()) {
@@ -118,6 +119,7 @@ public class SystemEquation {
             }
 
             Assembler a = new Assembler(strips, model.getNodeList().size() * 4, localToGlobalConfNumbering);
+            a.getK(1).printf("K");
 
             for (int i = 1; i <= model.getFourierTerms(); i++) {
 

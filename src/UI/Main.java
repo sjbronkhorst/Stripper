@@ -1,6 +1,7 @@
 package UI;
 
 
+import fsm.Model;
 import Utils.XYChartDataUtil;
 import Utils.StripTableUtil;
 import Utils.StringChoicePrompt;
@@ -223,6 +224,7 @@ public class Main extends Application {
                 progInd.progressProperty().bind(s.progressProperty());
 
                 s.computeParameterVector();
+                
 
                 //s.setDisplacedState((int) slider.getValue());
                 //TableViewEdit.println(Integer.toString((int) slider.getValue()));

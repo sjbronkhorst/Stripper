@@ -52,21 +52,21 @@ public class Profile
     {
         
         Node n1 = new Node(0, 0);
-        Node n2 = new Node(0,10);
+        Node n2 = new Node(0,12.7);
         
-        Node n3 = new Node(100,10);
-        Node n4 = new Node(100,-90);
+        Node n3 = new Node(-41.275,12.7);
+        Node n4 = new Node(-41.275,-76.2);
         
-        Node n5 = new Node(0,-90);
-        Node n6 = new Node(0,-80);
+        Node n5 = new Node(0,-76.2);
+        Node n6 = new Node(0,-63.5);
         Segment s;
         
         
-        s = new StraightSegment(n1, n2, 10);
-        new StraightSegment(n2, n3, 10);
-        new StraightSegment(n3, n4, 10);
-        new StraightSegment(n4, n5, 10);
-        new StraightSegment(n5, n6, 10);
+        s = new StraightSegment(n1, n2, 5);
+        new StraightSegment(n2, n3, 5);
+        new StraightSegment(n3, n4, 5);
+        new StraightSegment(n4, n5, 5);
+        new StraightSegment(n5, n6, 5);
         
         Profile p = new Profile(s);
         

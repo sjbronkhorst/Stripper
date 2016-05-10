@@ -5,7 +5,7 @@
  */
 package fsm.series;
 
-import UI.Model;
+import fsm.Model;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import fsm.Strip;
 import fsm.Strip_SS;

@@ -6,7 +6,7 @@
 package Utils;
 
 import UI.Defaults;
-import UI.Model;
+import fsm.Model;
 import UI.Main;
 import UI.TestClass;
 import fsm.Node;
@@ -64,15 +64,15 @@ import fsm.material.Material_User;
  *
  */
 public class FileHandler {
-    
+
     private Map<Integer, Node> nodeMap = new HashMap<>();
     private ObservableList<Node> nodes = FXCollections.<Node>observableArrayList();
     private ObservableList<Strip> strips = FXCollections.<Strip>observableArrayList();
     private Material mat;
     private FileChooser fileDialog = new FileChooser();
-    
+
     public FileHandler() {
-        
+
     }
 
 //    public void writeGeom(ObservableList<Node> nodes, ObservableList<UIStrip> strips) throws IOException {
@@ -104,18 +104,18 @@ public class FileHandler {
     public void writeGeom(ObservableList<Node> nodes, ObservableList<Strip> strips) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showSaveDialog(null);
-        
+
         if (file != null) {
-            
+
             FileWriter fw = new FileWriter(file);
-            
+
             BufferedWriter bw = new BufferedWriter(fw);
-            
+
             for (Node node : nodes) {
-                bw.append("n " + node.getXCoord() + "," + node.getZCoord());
+                bw.append("n," + node.getXCoord() + "," + node.getZCoord());
                 bw.newLine();
             }
-            
+
             for (Strip strip : strips) {
                 bw.append("e," + strip.getNode1Id() + "," + strip.getNode2Id() + "," + strip.getStripThickness());
                 bw.newLine();
@@ -127,46 +127,46 @@ public class FileHandler {
         }
         fileDialog.getExtensionFilters().clear();
     }
-    
+
     public ObservableList<Node> getNodeList() {
         return nodes;
     }
-    
+
     public ObservableList<Strip> getStripList() {
         return strips;
     }
-    
+
     public void readGeom() throws FileNotFoundException, IOException, IllegalStateException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Geometry Files", "*.sgf"));
         File file = fileDialog.showOpenDialog(null);
-        
+
         if (file != null) {
-            
+
             Node.clearNumbering();
             Strip.clearNumbering();
-            
+
             FileReader fr = new FileReader(file);
-            
+
             BufferedReader br = new BufferedReader(fr);
             int nrOfLines = 0;
-            
+
             String line = br.readLine();
-            
+
             while (line != null) {
                 nrOfLines++;
                 line = br.readLine();
             }
-            
+
             br.close();
             fr.close();
-            
+
             FileReader fr2 = new FileReader(file);
             BufferedReader br2 = new BufferedReader(fr2);
             String[] s = new String[nrOfLines];
 
             //TableViewEdit.println("Nr of lines " + nrOfLines);
             if (nrOfLines != 0) {
-                
+
                 for (int i = 0; i < nrOfLines; i++) {
                     s[i] = br2.readLine();
                     //TableViewEdit.println(s[i]);
@@ -175,20 +175,20 @@ public class FileHandler {
 
                     // TableViewEdit.println("words 0 " +words[0]);
                     if (words[0].equals("n")) {
-                        
+
                         Node tempNode = new Node(Double.parseDouble(words[1]), Double.parseDouble(words[2]), Defaults.getBaseModel());
                         nodeMap.put(tempNode.getNodeId(), tempNode);
                         nodes.add(tempNode);
                     } else if (words[0].equals("e")) {
-                        
+
                         Node n1 = nodeMap.get(Integer.parseInt(words[1]));
-                        
+
                         Node n2 = nodeMap.get(Integer.parseInt(words[2]));
-                        
+
                         double thickness = Double.parseDouble(words[3]);
-                        
+
                         if (n1 != null && n2 != null) {
-                            
+
                             Strip strip = Defaults.getBaseModel().getFourierSeries().getStrip(Defaults.getBaseModel());
                             strip.setNode1(n1);
                             strip.setNode2(n2);
@@ -198,105 +198,171 @@ public class FileHandler {
                     } else {
                         Main.println("File syntax error");
                     }
-                    
+
                 }
             } else {
                 Main.println("Error : File does not contain data");
             }
-            
+
             br2.close();
             fr2.close();
         }
         fileDialog.getExtensionFilters().clear();
     }
-    
+
+    public void fileEdit() throws FileNotFoundException, IOException {
+        File file = new File("C:/Users/SJ/Desktop/filedata.csv");
+
+        File in = new File("C:/Users/SJ/Desktop/in.csv");
+        File out = new File("C:/Users/SJ/Desktop/out.csv");
+
+        FileReader fr = new FileReader(file);
+
+        BufferedReader br = new BufferedReader(fr);
+        int nrOfLines = 0;
+
+        String line = br.readLine();
+
+        while (line != null) {
+            nrOfLines++;
+            line = br.readLine();
+        }
+
+        br.close();
+        fr.close();
+
+        String[][] filedata = new String[nrOfLines][3];
+        String[] s = new String[nrOfLines];
+
+        FileReader fr2 = new FileReader(file);
+        BufferedReader br2 = new BufferedReader(fr2);
+
+            //TableViewEdit.println("Nr of lines " + nrOfLines);
+        for (int i = 0; i < nrOfLines; i++) {
+            s[i] = br2.readLine();
+            //TableViewEdit.println(s[i]);
+
+            filedata[i] = s[i].split(",");
+
+        }
+
+        FileWriter fw = new FileWriter(in);
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        FileWriter fw2 = new FileWriter(out);
+        BufferedWriter bw2 = new BufferedWriter(fw2);
+        
+        
+        for (int i = 0; i < nrOfLines; i++) 
+        {
+            
+            bw.append(filedata[i][0]);
+            bw.newLine();
+            bw2.append(filedata[i][1]);
+            bw2.newLine();
+            
+            
+        }
+        
+        
+        bw.close();
+        fw.close();
+        bw2.close();
+        fw2.close();
+        
+        
+        
+        
+
+    }
+
     public void writeCSV(String[][] data) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Comma Separated Values", "*.csv"));
         int cols = data[0].length;
         int rows = data.length;
-        
+
         File file = fileDialog.showSaveDialog(null);
-        
+
         if (file != null) {
-            
+
             try {
-                
+
                 FileWriter fw = new FileWriter(file);
                 BufferedWriter bw = new BufferedWriter(fw);
-                
+
                 for (int i = 0; i < rows; i++) {
                     for (int j = 0; j < cols; j++) {
                         bw.append(data[i][j] + ";");
-                        
+
                     }
                     bw.newLine();
                 }
-                
+
                 bw.close();
                 fw.close();
-                
+
             } catch (Exception e) {
-                
+
                 Main.println("File not found/available, close it and try again");
                 return;
-                
+
             }
-            
+
             fileDialog.getExtensionFilters().clear();
         }
     }
-    
+
     public void writeCSV(String[][][] data) throws IOException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Comma Separated Values", "*.csv"));
         int cols = data[0][0].length;
         int rows = data[0].length;
-        
+
         File file = fileDialog.showSaveDialog(null);
-        
+
         if (file != null) {
-            
+
             try {
-                
+
                 FileWriter fw = new FileWriter(file);
                 BufferedWriter bw = new BufferedWriter(fw);
                 for (int k = 0; k < data.length; k++) {
-                    
+
                     for (int i = 0; i < rows; i++) {
                         for (int j = 0; j < cols; j++) {
                             bw.append(data[k][i][j] + ";");
-                            
+
                         }
                         bw.newLine();
                     }
-                    
+
                 }
-                
+
                 bw.close();
                 fw.close();
-                
+
             } catch (Exception e) {
-                
+
                 Main.println("File not found/available, close it and try again");
                 return;
-                
+
             }
-            
+
             fileDialog.getExtensionFilters().clear();
         }
     }
-    
+
     public void writeMaterial(Material mat) {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
-        
+
         File file = fileDialog.showSaveDialog(null);
-        
+
         if (file != null) {
-            
+
             try {
-                
+
                 FileWriter fw = new FileWriter(file);
                 BufferedWriter bw = new BufferedWriter(fw);
-                
+
                 bw.append(mat.getName());
                 bw.newLine();
                 bw.append(Double.toString(mat.getEx()));
@@ -308,35 +374,35 @@ public class FileHandler {
                 bw.append(Double.toString(mat.getVy()));
                 bw.newLine();
                 bw.append(Double.toString(mat.getG()));
-                
+
                 bw.close();
                 fw.close();
-                
+
             } catch (Exception e) {
-                
+
                 Main.println("File not found/available, close it and try again");
                 return;
-                
+
             }
-            
+
             fileDialog.getExtensionFilters().clear();
         }
-        
+
         this.mat = mat;
-        
+
     }
-    
+
     public void readMaterial() throws FileNotFoundException, IOException, IllegalStateException {
         fileDialog.getExtensionFilters().add(new ExtensionFilter("Stripper Material File", "*.material"));
-        
+
         File file = fileDialog.showOpenDialog(null);
-        
+
         if (file != null) {
-            
+
             FileReader fr = new FileReader(file);
-            
+
             BufferedReader br = new BufferedReader(fr);
-            
+
             String name = br.readLine();
             double Ex = Double.parseDouble(br.readLine());
             double Ey = Double.parseDouble(br.readLine());
@@ -345,23 +411,23 @@ public class FileHandler {
             double G = Double.parseDouble(br.readLine());
             double fy = Double.parseDouble(br.readLine());
             mat = new Material_User(name, Ex, Ey, vx, vy, G, fy);
-            
+
             br.close();
             fr.close();
             fileDialog.getExtensionFilters().clear();
-            
+
         }
     }
-    
+
     public Material getMaterial() {
         return mat;
     }
-    
+
     public void createReport(String designerName, String projectName, File crossSectionImg, File img1, File img2, File img3, Model model, DSMCalcs dsm) throws FileNotFoundException, IOException, InvalidFormatException {
 
         //Start of document
         XWPFDocument doc = new XWPFDocument();
-        
+
         XWPFTable poiTable = doc.createTable(1, 3);
 
         //Paragraph 1
@@ -369,7 +435,7 @@ public class FileHandler {
         p1.setAlignment(ParagraphAlignment.CENTER);
         p1.setVerticalAlignment(TextAlignment.CENTER);
         p1.setSpacingAfter(0);
-        
+
         boldText(p1, "Designer: ");
         text(p1, designerName);
 
@@ -380,19 +446,19 @@ public class FileHandler {
         p8.setSpacingAfter(0);
         boldText(p8, "Project: ");
         text(p8, projectName);
-        
+
         XWPFParagraph p9 = poiTable.getRow(0).getCell(2).getParagraphs().get(0);
         p9.setAlignment(ParagraphAlignment.CENTER);
         p9.setVerticalAlignment(TextAlignment.CENTER);
         p9.setSpacingAfter(0);
-        
+
         boldText(p9, "Date: ");
-        
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        
+
         text(p9, dateFormat.format(date));
-        
+
         CTTbl table = poiTable.getCTTbl();
         CTTblPr pr = table.getTblPr();
         CTTblWidth tblW = pr.getTblW();
@@ -400,7 +466,7 @@ public class FileHandler {
         tblW.setType(STTblWidth.PCT);
         pr.setTblW(tblW);
         table.setTblPr(pr);
-        
+
         XWPFParagraph modelParagraph = doc.createParagraph();
         modelParagraph.setAlignment(ParagraphAlignment.LEFT);
         lineBreak(modelParagraph);
@@ -415,22 +481,22 @@ public class FileHandler {
         boldText(modelParagraph, "Cross-sectional Area: ");
         text(modelParagraph, Double.toString(model.getCrossSectionalArea()));
         lineBreak(modelParagraph);
-        
+
         boldText(modelParagraph, "Ixx: ");
         text(modelParagraph, Double.toString(model.getIxx()));
         lineBreak(modelParagraph);
-        
+
         boldText(modelParagraph, "Ixx (principal): ");
         text(modelParagraph, Double.toString(model.getIxxPrincipal()));
         lineBreak(modelParagraph);
-        
+
         boldText(modelParagraph, "Izz: ");
         text(modelParagraph, Double.toString(model.getIzz()));
         lineBreak(modelParagraph);
-        
+
         boldText(modelParagraph, "Izz (principal): ");
         text(modelParagraph, Double.toString(model.getIzzPrincipal()));
-        
+
         XWPFParagraph materialParagraph = doc.createParagraph();
         materialParagraph.setAlignment(ParagraphAlignment.LEFT);
         lineBreak(materialParagraph);
@@ -457,38 +523,38 @@ public class FileHandler {
         boldText(materialParagraph, "Yield Stress: ");
         text(materialParagraph, "" + model.getModelMaterial().getFy());
         lineBreak(materialParagraph);
-        
+
         if (crossSectionImg != null) {
             boldText(doc.createParagraph(), "Cross-Section: ", true);
             fullWidthPicture(doc, crossSectionImg);
         }
         pageBreak(doc.createParagraph());
-        
+
         if (img1 != null) {
             XWPFParagraph p = doc.createParagraph();
-            boldText(p, "Local Buckling Factor chosen by user: ",true);
+            boldText(p, "Local Buckling Factor chosen by user: ", true);
             p.setSpacingAfter(0);
             lineBreak(p);
             fullWidthPicture(doc, img1);
         }
-        
+
         if (img2 != null) {
             XWPFParagraph p = doc.createParagraph();
-            boldText(p, "Distortional Buckling Factor chosen by user: ",true);
+            boldText(p, "Distortional Buckling Factor chosen by user: ", true);
             p.setSpacingAfter(0);
             lineBreak(p);
-            fullWidthPicture(doc, img2);            
+            fullWidthPicture(doc, img2);
         }
-       
+
         if (img3 != null) {
             XWPFParagraph p = doc.createParagraph();
-            boldText(p, "Global Buckling Factor chosen by user: ",true);
+            boldText(p, "Global Buckling Factor chosen by user: ", true);
             p.setSpacingAfter(0);
             lineBreak(p);
             fullWidthPicture(doc, img3);
         }
         pageBreak(doc.createParagraph());
-        
+
         String type = "None";
         String local = "";
         String distortional = "";
@@ -498,8 +564,7 @@ public class FileHandler {
         double d = 0;
         double g = 0;
         double y = 0;
-        
-        
+
         if (dsm.getAnalysisType() == DSMCalcs.analysisType.BEAM) {
             type = "Beam";
             local = "Mcrl";
@@ -510,7 +575,7 @@ public class FileHandler {
             d = dsm.getMcrd();
             g = dsm.getMcre();
             y = dsm.getMy();
-            
+
         }
         if (dsm.getAnalysisType() == DSMCalcs.analysisType.COLUMN) {
             type = "Column";
@@ -521,25 +586,25 @@ public class FileHandler {
             l = dsm.getPcrl();
             d = dsm.getPcrd();
             g = dsm.getPcre();
-            y=dsm.getPy();
+            y = dsm.getPy();
         }
-        
+
         XWPFParagraph inputParagraph = doc.createParagraph();
-        boldText(inputParagraph, "DSM Input: " , true);
+        boldText(inputParagraph, "DSM Input: ", true);
         lineBreak(inputParagraph);
         text(inputParagraph, "Analysis type: " + type);
         lineBreak(inputParagraph);
-        text(inputParagraph, yield +" = " + y);
+        text(inputParagraph, yield + " = " + y);
         lineBreak(inputParagraph);
-        text(inputParagraph, local +" = " + l);
+        text(inputParagraph, local + " = " + l);
         lineBreak(inputParagraph);
-        text(inputParagraph, distortional +" = " + d);
+        text(inputParagraph, distortional + " = " + d);
         lineBreak(inputParagraph);
-        text(inputParagraph, global +" = " + g);
-        
+        text(inputParagraph, global + " = " + g);
+
         String[] calcs = dsm.getTextArea().getText().split("\n");
         XWPFParagraph calcParagraph = doc.createParagraph();
-        boldText(calcParagraph, "DSM Calculations: ",true);
+        boldText(calcParagraph, "DSM Calculations: ", true);
         lineBreak(calcParagraph);
         for (int i = 0; i < calcs.length; i++) {
             text(calcParagraph, calcs[i]);
@@ -548,47 +613,46 @@ public class FileHandler {
 
         fileDialog.getExtensionFilters().add(new ExtensionFilter("MS Word", "*.docx"));
         File file = fileDialog.showSaveDialog(null);
-        
-        
+
         FileOutputStream out = new FileOutputStream(file);
         doc.write(out);
         out.close();
         fileDialog.getExtensionFilters().clear();
-        
+
     }
-    
+
     private void boldText(XWPFParagraph paragraph, String text) {
         XWPFRun r = paragraph.createRun();
         r.setText(text);
         r.setBold(true);
     }
-    
+
     private void boldText(XWPFParagraph paragraph, String text, boolean underline) {
         XWPFRun r = paragraph.createRun();
         r.setText(text);
         r.setBold(true);
-        
+
         if (underline) {
             r.setUnderline(UnderlinePatterns.SINGLE);
         }
     }
-    
+
     private void lineBreak(XWPFParagraph paragraph) {
         XWPFRun r = paragraph.createRun();
         r.addCarriageReturn();
     }
-    
+
     private void pageBreak(XWPFParagraph paragraph) {
         XWPFRun r = paragraph.createRun();
         r.addBreak(BreakType.PAGE);
     }
-    
+
     private void text(XWPFParagraph paragraph, String text) {
         XWPFRun r = paragraph.createRun();
         r.setText(text);
-        
+
     }
-    
+
     private void fullWidthPicture(XWPFDocument doc, File imgFile) throws InvalidFormatException, IOException {
         XWPFParagraph p2 = doc.createParagraph();
         p2.setAlignment(ParagraphAlignment.LEFT);
@@ -601,46 +665,56 @@ public class FileHandler {
         p2.setBorderTop(Borders.SINGLE);
         p2.setBorderRight(Borders.SINGLE);
         p2.setBorderLeft(Borders.SINGLE);
-        
+
     }
-    
+
     public static void serialize(Object obj, String fileName) {
         try {
-            
+
             File f = ResourceLoader.getFileUserDirectory(fileName);
             FileOutputStream fout = new FileOutputStream(f);
-            
-            ObjectOutputStream oos = new ObjectOutputStream(fout);            
+
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(obj);
-            
+
             oos.close();
             System.out.println("Done serialising...");
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
+
     public static Object deserialze(String givenfileName) {
-        
+
         Object in;
-        
+
         try {
-            
+
             File f = ResourceLoader.getFileUserDirectory(givenfileName);
             FileInputStream fin = new FileInputStream(f);
             ObjectInputStream ois = new ObjectInputStream(fin);
             in = ois.readObject();
             ois.close();
-            
+
             System.out.println("Done deserialising...");
-            
+
             return in;
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
-        }        
-    }    
+        }
+    }
     
+    public static void main (String[]args) throws IOException
+    {
+        
+        FileHandler f = new FileHandler();
+        f.fileEdit();
+        
+        
+        
+    }
+
 }

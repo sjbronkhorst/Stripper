@@ -5,7 +5,6 @@
  */
 package fsm;
 
-import UI.Model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.Callable;

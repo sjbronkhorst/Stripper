@@ -5,7 +5,7 @@
  */
 package fsm.series;
 
-import UI.Model;
+import fsm.Model;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

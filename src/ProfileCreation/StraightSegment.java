@@ -24,7 +24,7 @@ public class StraightSegment extends Segment {
 
         Node n = start;
         
-        for (int i = 1; i < nodeAmount - 1; i++) {
+        for (int i = 1; i < nodeAmount ; i++) {
             
             n.setNext(new Node(start.getX()+xStep*i,start.getY()+yStep*i));
             n = n.next();

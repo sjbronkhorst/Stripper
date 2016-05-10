@@ -1,5 +1,6 @@
 package UI;
 
+import fsm.Model;
 import Utils.XYChartDataUtil;
 import Utils.DrawingHandler;
 import com.sun.javafx.iio.ImageStorage;

@@ -3,32 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package UI;
+package fsm;
 
+import UI.Defaults;
+import UI.Main;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import linalg.Matrix;
 import linalg.Vector;
-import fsm.BucklingCurve;
-import fsm.BucklingDataPoint;
-import fsm.Node;
-import fsm.Strip;
-import fsm.Strip_General;
-import fsm.Strip_SS;
 import fsm.material.Material;
 import fsm.material.Material_Steel;
-import fsm.material.Material_Z_Li;
 import fsm.series.Series;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author SJ
  */
-public class Model implements Serializable{
+public class Model implements Serializable {
 
     private Material modelMaterial = new Material_Steel();
     private double modelLength = 100;
@@ -222,14 +216,12 @@ public class Model implements Serializable{
 
         }
     }
-    
-    public void setAllowableStress(double stress)
-    {
-        this.maxAllowableStress=stress;
+
+    public void setAllowableStress(double stress) {
+        this.maxAllowableStress = stress;
     }
-    
-    public double getAllowableStress()
-    {
+
+    public double getAllowableStress() {
         return maxAllowableStress;
     }
 
@@ -262,16 +254,14 @@ public class Model implements Serializable{
     public Point2D.Double getCrossSectionalCentroid() {
         return new Point2D.Double(getCentroidX(), getCentroidZ());
     }
-    
-    public double getCrossSectionalArea()
-    {
+
+    public double getCrossSectionalArea() {
         double A = 0;
-        
-        for (Strip s : strips)
-        {
-         A+=s.getCrossSectionalArea();
+
+        for (Strip s : strips) {
+            A += s.getCrossSectionalArea();
         }
-        
+
         return A;
     }
 
@@ -279,10 +269,19 @@ public class Model implements Serializable{
 
         //I = sum(Ixx +Ad^2)
         double I = 0;
-        double xbar = getCentroidX();
+        double zbar = getCentroidZ();
+System.out.println("Cross section centroid z = " + zbar);
 
         for (Strip s : strips) {
-            double d = xbar - s.getXBar();
+            
+            System.out.println(s.toString() + "=========================");
+            System.out.println("strip centroid z = " + s.getZBar());
+            
+            double d = zbar - s.getZBar();
+            
+            System.out.println("d = " + d);
+            System.out.println("Ixx = " + s.getIxx());
+            System.out.println("A = "+ s.getCrossSectionalArea());
 
             I = I + s.getIxx() + s.getCrossSectionalArea() * d * d;
         }
@@ -294,10 +293,20 @@ public class Model implements Serializable{
 
         //I = sum(Ixx +Ad^2)
         double I = 0;
-        double zbar = getCentroidZ();
+        double xbar = getCentroidX();
+        
+        System.out.println("Cross section centroid x = " + xbar);
 
         for (Strip s : strips) {
-            double d = zbar - s.getZBar();
+            
+            System.out.println(s.toString() + "=========================");
+            System.out.println("strip centroid x = " + s.getXBar());
+            
+            double d = xbar - s.getXBar();
+            
+            System.out.println("d = " + d);
+            System.out.println("Izz = " + s.getIzz());
+            System.out.println("A = "+ s.getCrossSectionalArea());
 
             I = I + s.getIzz() + s.getCrossSectionalArea() * d * d;
         }
@@ -329,6 +338,10 @@ public class Model implements Serializable{
         double Ixx = getIxx();
         double Izz = getIzz();
 
+        if(Ixz == 0)
+        {
+            return 0.0;
+        }
         return Math.atan((-Ixz * 2.0) / (Ixx - Izz)) / 2.0;
     }
 
@@ -351,13 +364,97 @@ public class Model implements Serializable{
         return ((Ixx + Izz) / 2.0) - ((Ixx - Izz) / 2.0) * Math.cos(2 * theta) + Ixz * Math.sin(2 * theta);
     }
 
-//    public double getZx() {
-//        return getIxx() / getXBar();
-//    }
-//
-//    public double getZz() {
-//        return getIzz() / getZBar();
-//    }
+    public double getXBarMax() {
+        double xMax = Math.abs(nodes.get(0).getXCoord() - getCentroidX());
+         Node noi = nodes.get(0);
+
+        for (Node n : nodes) {
+
+            if (Math.abs(n.getXCoord() - getCentroidX()) > xMax) {
+                xMax = Math.abs(n.getXCoord() - getCentroidX());
+                noi = n;
+            }
+
+        }
+ List<Strip> adjoinedStrips = new ArrayList();
+        
+        for (Strip s : strips) 
+        {
+         if(s.getNode1() == noi  || s.getNode2() == noi)
+         {
+             adjoinedStrips.add(s);
+         }
+          
+        }
+        
+        
+        Strip mostVert = adjoinedStrips.get(0);
+        
+        
+        for (Strip s : adjoinedStrips) 
+        {
+         if(s.getStripAngle() > mostVert.getStripAngle())
+         {
+             mostVert = s;
+         }
+          
+        }
+
+        return xMax+ Math.abs(Math.sin(mostVert.getStripAngle())*mostVert.getStripThickness()/2.0);
+
+    }
+
+    public double getZBarMax() {
+        double zMax = Math.abs(nodes.get(0).getZCoord() - getCentroidZ());
+        
+        Node noi = nodes.get(0);
+
+        for (Node n : nodes) {
+
+            if (Math.abs(n.getZCoord() - getCentroidZ()) > zMax) {
+                zMax = Math.abs(n.getZCoord() - getCentroidZ());
+                noi = n;
+            }
+
+        }
+        
+        List<Strip> adjoinedStrips = new ArrayList();
+        
+        for (Strip s : strips) 
+        {
+         if(s.getNode1() == noi  || s.getNode2() == noi)
+         {
+             adjoinedStrips.add(s);
+         }
+          
+        }
+        
+        
+        Strip mostHoriz = adjoinedStrips.get(0);
+        
+        
+        for (Strip s : adjoinedStrips) 
+        {
+         if(s.getStripAngle() < mostHoriz.getStripAngle())
+         {
+             mostHoriz = s;
+         }
+          
+        }
+
+        return zMax+ Math.abs(Math.cos(mostHoriz.getStripAngle())*mostHoriz.getStripThickness()/2.0);
+
+    }
+
+    public double getZxMin() {
+        return getIxx() / getZBarMax();
+    }
+
+    public double getZzMin() {
+        return getIzz() / getXBarMax();
+    }
+    
+    
     public void matchCentroidToOrigin() {
         double xOff = getCentroidX();
         double zOff = getCentroidZ();
@@ -388,7 +485,7 @@ public class Model implements Serializable{
 
     public void setDisplacedState(BucklingDataPoint point) {
 
-        double scale = 40.0;
+        double scale = -40.0;
         int[] indices = {0, 1, 2, 3};
 
         for (Node n : nodes) {
@@ -412,6 +509,7 @@ public class Model implements Serializable{
             zVec.set(s.getGlobalBendingDisplacementVector(0, modelLength / (2 * (point.getMinIndex() + 1))).get(0), s.getNode1Id() - 1);
             xVec.set(s.getGlobalPlaneDisplacementVector(0, modelLength / (2 * (point.getMinIndex() + 1))).get(0), s.getNode1Id() - 1);
 
+           
             zVec.set(s.getGlobalBendingDisplacementVector(s.getStripWidth(), modelLength / (2 * (point.getMinIndex() + 1))).get(0), s.getNode2Id() - 1);
             xVec.set(s.getGlobalPlaneDisplacementVector(s.getStripWidth(), modelLength / (2 * (point.getMinIndex() + 1))).get(0), s.getNode2Id() - 1);
 

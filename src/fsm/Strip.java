@@ -5,7 +5,6 @@
  */
 package fsm;
 
-import UI.Model;
 import UI.Main;
 import java.awt.geom.Point2D;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -416,7 +415,7 @@ public abstract class Strip {
     }
 
     public Matrix getBendingDisplacementShapeFunctionMatrix(double x, double y, int m) {
-        Matrix N = Matrix.getMatrix(2, 4);
+        Matrix N = Matrix.getMatrix(1, 4);
         Series Y = model.getFourierSeries();
         double b = getStripWidth();
         double s = Y.getFunctionValue(y, m);
@@ -424,16 +423,13 @@ public abstract class Strip {
 
         x = x / b;
 
-        N.set((1 - x) * s, 0, 0);
-        N.set(0, 0, 1);
-        N.set(x * s, 0, 2);
-        N.set(0, 0, 3);
+        N.set(1-3*x*x + 2*x*x*x, 0, 0);
+        N.set(x*b*(1-2*x+x*x), 0, 1);
+        N.set(3*x*x - 2*x*x*x, 0, 2);
+        N.set(x*b*(x*x - x), 0, 3);
 
-        N.set(0, 1, 0);
-        N.set((1 - x) * a / Y.getMu_m(m) * s, 1, 1);
-        N.set(0, 1, 2);
-        N.set(x * a / Y.getMu_m(m) * s, 1, 3);
 
+        N.scale(s);
         return N;
     }
 
@@ -475,7 +471,7 @@ public abstract class Strip {
             ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(6), 2);
             ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(7), 3);
 
-            Matrix B = getBendingStrainMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            Matrix B = getBendingStrainMatrix(localXCoordinate, localYCoordinate, m + 1);
 
             strain.add(B.multiply(ub));
 
@@ -501,7 +497,7 @@ public abstract class Strip {
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(4), 2);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(5), 3);
 
-            Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate, m + 1);
             f.add(Nplane.multiply(param));
 
         }
@@ -527,7 +523,7 @@ public abstract class Strip {
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(4), 2);
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(5), 3);
 
-            Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            Nplane = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate, m + 1);
             f.add(Nplane.multiply(param));
 
         }
@@ -539,10 +535,10 @@ public abstract class Strip {
     }
 
     public Vector getBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
-        Vector w = Vector.getVector(2);
+        Vector w = Vector.getVector(1);
         Vector param = Vector.getVector(4);
         double a = model.getModelLength();
-        Matrix Nbend = Matrix.getMatrix(2, 4);
+        Matrix Nbend = Matrix.getMatrix(1, 4);
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
 
@@ -553,7 +549,7 @@ public abstract class Strip {
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(6), 2);
             param.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(7), 3);
 
-            Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            Nbend = getBendingDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate, m + 1);
             w.add(Nbend.multiply(param));
 
         }
@@ -579,7 +575,7 @@ public abstract class Strip {
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(6), 2);
             param.add(/*getRotationMatrix().transpose().multiply*/(getParameterContributionVector(m)).get(7), 3);
 
-            Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            Nbend = getPlaneDisplacementShapeFunctionMatrix(localXCoordinate, localYCoordinate, m + 1);
             w.add(Nbend.multiply(param));
 
         }
@@ -611,7 +607,7 @@ public abstract class Strip {
             ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(4), 2);
             ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(5), 3);
 
-            Matrix B = getPlaneStrainMatrix(localXCoordinate, localYCoordinate * a, m + 1);
+            Matrix B = getPlaneStrainMatrix(localXCoordinate, localYCoordinate, m + 1);
 
             strain.add(B.multiply(ub));
 

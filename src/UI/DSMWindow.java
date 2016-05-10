@@ -37,6 +37,10 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import fsm.BucklingCurve;
 import DSM.DSMCalcs;
 import Utils.FileHandler;
+import Utils.MyMath;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.util.StringConverter;
 
 /**
  *
@@ -47,13 +51,19 @@ public class DSMWindow extends Application {
     private final ChoiceBox<BucklingCurve> flexCurveChoice = new ChoiceBox<>(XYChartDataUtil.getCurveList());
     private final ChoiceBox<BucklingCurve> axialCurveChoice = new ChoiceBox<>(XYChartDataUtil.getCurveList());
 
-    Label myLabel = new Label("My = fy * Z = STILL INCORRECT");
+    Label fyLabel = new Label("fy (max stress) = ");
+    Label zLabel = new Label("Z = ");
+    Label myLabel = new Label("My = fy * Z = ");
     Label mcrlLabel = new Label("Mcrl = ");
     Label mcrdLabel = new Label("Mcrd = ");
     Label mcreLabel = new Label("Mcre = ");
     Label cbLabel = new Label("Cb = ");
     Label phibLabel = new Label("φb = ");
 
+    ChoiceBox<Double> zChoice = new ChoiceBox<>();
+
+    TextField fyTf = new TextField("");
+    TextField zTf = new TextField("");
     TextField myTf = new TextField("");
     TextField mcrlTf = new TextField("");
     TextField mcrdTf = new TextField("");
@@ -61,7 +71,7 @@ public class DSMWindow extends Application {
     TextField cbTf = new TextField("1");
     TextField phibTf = new TextField("0.9");
 
-    Label pyLabel = new Label("Py = fy * A = STILL INCORRECT");
+    Label pyLabel = new Label("Py = fy * A =");
     Label pcrlLabel = new Label("Pcrl = ");
     Label pcrdLabel = new Label("Pcrd = ");
     Label pcreLabel = new Label("Pcre = ");
@@ -88,33 +98,56 @@ public class DSMWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        
+        
 
         cbTf.setTooltip(new Tooltip("Bending coefficent dependent on moment gradient"));
         phibTf.setTooltip(new Tooltip("φb = 0.9 for pre-qualified sections (DSM Section\n"
                 + "1.1.1.2) else, φb = 0.8 "));
+        
+        zChoice.setDisable(true);
+        zChoice.setConverter(new StringConverter<Double>() {
+
+                        @Override
+                        public String toString(Double object) {
+                            return ""+MyMath.round(object, 2);
+                        }
+
+                        @Override
+                        public Double fromString(String string) {
+                            return 0.0;
+                        }
+                    });
 
         GridPane flexuralPane = new GridPane();
 
-        flexuralPane.add(myLabel, 0, 0);
-        flexuralPane.add(myTf, 1, 0);
+        flexuralPane.add(fyLabel, 0, 0);
+        flexuralPane.add(fyTf, 1, 0);
 
-        flexuralPane.add(mcrlLabel, 0, 1);
-        flexuralPane.add(mcrlTf, 1, 1);
+        flexuralPane.add(zLabel, 0, 1);
+        flexuralPane.add(zTf, 1, 1);
+        flexuralPane.add(zChoice, 2, 1);
 
-        flexuralPane.add(mcrdLabel, 0, 2);
-        flexuralPane.add(mcrdTf, 1, 2);
+        flexuralPane.add(myLabel, 0, 2);
+        flexuralPane.add(myTf, 1, 2);
 
-        flexuralPane.add(mcreLabel, 0, 3);
-        flexuralPane.add(mcreTf, 1, 3);
+        flexuralPane.add(mcrlLabel, 0, 3);
+        flexuralPane.add(mcrlTf, 1, 3);
 
-        flexuralPane.add(cbLabel, 0, 4);
-        flexuralPane.add(cbTf, 1, 4);
+        flexuralPane.add(mcrdLabel, 0, 4);
+        flexuralPane.add(mcrdTf, 1, 4);
 
-        flexuralPane.add(phibLabel, 0, 5);
-        flexuralPane.add(phibTf, 1, 5);
+        flexuralPane.add(mcreLabel, 0, 5);
+        flexuralPane.add(mcreTf, 1, 5);
 
-        flexuralPane.add(flexBracedCheck, 0, 6);
-        flexuralPane.add(flexuralCalcBtn, 1, 6);
+        flexuralPane.add(cbLabel, 0, 6);
+        flexuralPane.add(cbTf, 1, 6);
+
+        flexuralPane.add(phibLabel, 0, 7);
+        flexuralPane.add(phibTf, 1, 7);
+
+        flexuralPane.add(flexBracedCheck, 0, 8);
+        flexuralPane.add(flexuralCalcBtn, 1, 8);
 
         GridPane axialPane = new GridPane();
 
@@ -184,10 +217,23 @@ public class DSMWindow extends Application {
                 if (flexCurveChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
                     BucklingCurve bc = flexCurveChoice.getItems().get((int) newValue);
 
-                    myTf.setText(" " + bc.getModels().get(0).getAllowableStress());
-                    mcrlTf.setText(" " + bc.getLocalFactor());
-                    mcrdTf.setText(" " + bc.getDistortionalFactor());
-                    mcreTf.setText(" " + bc.getGlobalFactor());
+                    ObservableList<Double> zList = FXCollections.<Double>observableArrayList();
+                    zList.add(bc.getModels().get(0).getZxMin());
+                    zList.add(bc.getModels().get(0).getZzMin());
+                    
+                    
+
+                    zChoice.setItems(zList);
+                    zTf.setText(""+bc.getModels().get(0).getZxMin());
+                    //zChoice.getSelectionModel().selectFirst();
+
+                    fyTf.setText("" + bc.getModels().get(0).getAllowableStress());
+                    myTf.setText("" + Double.parseDouble(fyTf.getText()) * Double.parseDouble(zTf.getText()));
+                    mcrlTf.setText("" + bc.getLocalFactor() * Double.parseDouble(myTf.getText()));
+                    mcrdTf.setText("" + bc.getDistortionalFactor() * Double.parseDouble(myTf.getText()));
+                    mcreTf.setText("" + bc.getGlobalFactor() * Double.parseDouble(myTf.getText()));
+                    
+                    zChoice.setDisable(false);
                 }
             }
         });
@@ -197,7 +243,6 @@ public class DSMWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
 
-                
                 BucklingCurve bc = axialCurveChoice.getSelectionModel().getSelectedItem();
                 calcArea.clear();
 
@@ -266,11 +311,71 @@ public class DSMWindow extends Application {
 
                         }
 
-                        mcrlTf.setText(" " + My * bc.getLocalFactor());
-                        mcrdTf.setText(" " + My * bc.getDistortionalFactor());
-                        mcreTf.setText(" " + My * bc.getGlobalFactor());
+                        mcrlTf.setText("" + My * bc.getLocalFactor());
+                        mcrdTf.setText("" + My * bc.getDistortionalFactor());
+                        mcreTf.setText("" + My * bc.getGlobalFactor());
                     }
                 }
+            }
+        });
+        
+         pyTf.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent event) {
+
+                BucklingCurve bc = axialCurveChoice.getValue();
+
+                if (bc != null) {
+
+                    if (pyTf.getText().length() > 0) {
+                        double Py = 0;
+                        try {
+                            Py = Double.parseDouble(pyTf.getText());
+                        } catch (Exception e) {
+
+                        }
+
+                        pcrlTf.setText("" + Py * bc.getLocalFactor());
+                        pcrdTf.setText("" + Py * bc.getDistortionalFactor());
+                        pcreTf.setText("" + Py * bc.getGlobalFactor());
+                    }
+                }
+            }
+        });
+
+        zChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+                double fy = 0;
+                double z = 0;
+                double My = 0;
+                BucklingCurve bc = flexCurveChoice.getValue();
+
+                try {
+                    fy = Double.parseDouble(fyTf.getText());
+
+                    if (zChoice.getSelectionModel().selectedIndexProperty().get() >= 0) {
+                        z = zChoice.getItems().get((int) newValue);
+
+                    }
+
+                } catch (Exception e) {
+
+                }
+
+                zTf.setText("" + z);
+                My = fy*z;
+                myTf.setText("" + My);
+
+                
+
+                mcrlTf.setText("" + My * bc.getLocalFactor());
+                mcrdTf.setText("" + My * bc.getDistortionalFactor());
+                mcreTf.setText("" + My * bc.getGlobalFactor());
+
             }
         });
 

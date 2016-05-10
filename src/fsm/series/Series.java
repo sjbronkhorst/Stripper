@@ -6,7 +6,7 @@
 package fsm.series;
 
 
-import UI.Model;
+import fsm.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import fsm.Strip;
