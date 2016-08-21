@@ -144,7 +144,7 @@ public class LoadPane {
                 
                 for (Node n : Defaults.getBaseModel().getNodeList())
                 {
-                    if(Math.abs(n.getXCoord() - xOff) > farthestFromCentroid)
+                    if(Math.abs(n.getXCoord() - xOff) > Math.abs(farthestFromCentroid))
                     {
                         farthestFromCentroid = n.getXCoord() - xOff;
                     }
@@ -170,16 +170,21 @@ public class LoadPane {
             public void handle(ActionEvent event) {
                 
                 double zOff = Defaults.getBaseModel().getCrossSectionalCentroid().getY();
+               
                 double farthestFromCentroid = 0;
+               
                 
                 for (Node n : Defaults.getBaseModel().getNodeList())
                 {
-                    if(Math.abs(n.getZCoord() - zOff) > farthestFromCentroid)
+                    if(Math.abs(n.getZCoord() - zOff) > Math.abs(farthestFromCentroid))
                     {
                         farthestFromCentroid = n.getZCoord() - zOff;
+                      
                     }
                                        
                 }
+                
+                
                          
                 for(Strip s : Defaults.getBaseModel().getStripList())
                 {

@@ -97,7 +97,7 @@ public abstract class Series{
     }
     
     
-     public abstract double getYmIntegral(int m, double a);
+     public abstract double getYmIntegral(int m);
 
     
     public abstract double getFirstDerivativeValue(double y, int m);

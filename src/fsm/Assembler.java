@@ -97,7 +97,7 @@ public class Assembler {
             }
             
             
-            
+     
         }
         Vector F = T.transpose().multiply(Ft);
         

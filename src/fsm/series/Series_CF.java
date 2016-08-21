@@ -191,7 +191,7 @@ public class Series_CF extends Series{
     }
 
     @Override
-    public double getYmIntegral(int m, double a) {
+    public double getYmIntegral(int m) {
 
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(64, 0.98, 5);
         return ilg.integrate(2000, getFunction(m), 0, a);

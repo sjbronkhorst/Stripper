@@ -34,5 +34,22 @@ public abstract class Segment {
         this.end = end;
 
     }
+    
+    @Override
+    public String toString()
+    {
+        String s = start.toString()+"\n";
+        
+        Node n = start;
+        while(n.next() != null)
+        {
+            
+            n = n.next();
+            s+= n.toString()+"\n";
+            
+        }
+        
+        return s;
+    }
 
 }

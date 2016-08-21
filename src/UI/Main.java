@@ -326,14 +326,14 @@ public class Main extends Application {
 
                     }
 
-                    if (!Defaults.dsmAnalysis) {
+                   // if (!Defaults.dsmAnalysis) {
                         FileHandler f = new FileHandler();
                         try {
                             f.writeCSV(stringData);
                         } catch (IOException ex) {
                             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
+                       }
+                  //  } else {
                         disCalced = true;
 
                         stage.setMaximized(true);
@@ -347,7 +347,7 @@ public class Main extends Application {
                         Stage s = new Stage();
                         s.getIcons().add(ic);
                         chart.start(s);
-                    }
+                   // }
 
                 }
             }

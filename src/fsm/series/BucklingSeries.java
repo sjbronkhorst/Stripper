@@ -16,7 +16,7 @@ public abstract class BucklingSeries extends Series {
     }
 
     @Override
-    public double getYmIntegral(int m, double a) {
+    public double getYmIntegral(int m) {
         throw new UnsupportedOperationException("This series function does not suppport static analysis"); //To change body of generated methods, choose Tools | Templates.
     }
 

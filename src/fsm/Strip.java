@@ -52,10 +52,31 @@ public abstract class Strip {
     protected Model model;
 
     protected boolean hasNode1, hasNode2;
+    
+    public Strip(Node node1, Node node2, Model model) {
+
+        setNode1(node1);
+        setNode2(node2);
+
+        this.model = model;
+
+    }
+
+    public Strip(Model model) {
+
+        hasNode1 = false;
+        hasNode2 = false;
+        this.node1Id.set(0);
+        this.node2Id.set(0);
+        this.model = model;
+
+    }
 
     public static void clearNumbering() {
         stripSequence.set(0);
     }
+    
+    
 
     public Vector getStatusVector() {
         Vector status = Vector.getVector(8);
@@ -244,7 +265,7 @@ public abstract class Strip {
             F.set(getStripWidth() / 2.0, 6);
             F.set(-getStripWidth() * getStripWidth() / 12.0, 7);
 
-            F.scale(Y.getYmIntegral(m, a) * udlZ.doubleValue());
+            F.scale(Y.getYmIntegral(m) * udlZ.doubleValue());
         }
 
         // In plane udl
@@ -252,9 +273,9 @@ public abstract class Strip {
 
         double b = getStripWidth();
 
-        fp.set((b / 2.0) * udlX.doubleValue() * Y.getYmIntegral(m, a), 0);
+        fp.set((b / 2.0) * udlX.doubleValue() * Y.getYmIntegral(m), 0);
         fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 1);
-        fp.set((b / 2.0) * udlX.doubleValue() * Y.getYmIntegral(m, a), 4);
+        fp.set((b / 2.0) * udlX.doubleValue() * Y.getYmIntegral(m), 4);
         fp.set(udlY.doubleValue() * (a / Y.getMu_m(m) * Y.getFirstDerivativeIntegral(m)), 5);
 
         F.add(fp);
@@ -459,7 +480,7 @@ public abstract class Strip {
      */
     public Vector getBendingStressVector(double localXCoordinate, double localYCoordinate) {
         Vector ub = Vector.getVector(4);
-        double a = model.getModelLength();
+       
         Vector strain = Vector.getVector(3);
         strain.clear();
 
@@ -485,7 +506,7 @@ public abstract class Strip {
     public Vector getPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector f = Vector.getVector(2);
         Vector param = Vector.getVector(4);
-        double a = model.getModelLength();
+        
         Matrix Nplane = Matrix.getMatrix(2, 4);
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
@@ -508,6 +529,13 @@ public abstract class Strip {
         return f;
     }
 
+    /**
+     * Method is used exclusively to draw buckled shape.
+     * 
+     * @param localXCoordinate
+     * @param localYCoordinate
+     * @return 
+     */
     public Vector getGlobalPlaneDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector f = Vector.getVector(2);
         Vector param = Vector.getVector(4);
@@ -559,7 +587,13 @@ public abstract class Strip {
 
         return w;
     }
-
+    
+/**
+ * Method used exclusively for drawing buckled shape
+ * @param localXCoordinate
+ * @param localYCoordinate
+ * @return 
+ */
     public Vector getGlobalBendingDisplacementVector(double localXCoordinate, double localYCoordinate) {
         Vector w = Vector.getVector(2);
         Vector param = Vector.getVector(4);
@@ -594,27 +628,27 @@ public abstract class Strip {
      * the strip.
      */
     public Vector getPlaneStressVector(double localXCoordinate, double localYCoordinate) {
-        Vector ub = Vector.getVector(4);
-        double a = model.getModelLength();
+        Vector um = Vector.getVector(4);
+     
         Vector strain = Vector.getVector(3);
         strain.clear();
 
         for (int m = 0; m < model.getFourierTerms(); m++) {
-            ub.clear();
+            um.clear();
 
-            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(0), 0);
-            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(1), 1);
-            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(4), 2);
-            ub.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(5), 3);
+            um.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(0), 0);
+            um.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(1), 1);
+            um.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(4), 2);
+            um.add(getRotationMatrix().transpose().multiply(getParameterContributionVector(m)).get(5), 3);
 
             Matrix B = getPlaneStrainMatrix(localXCoordinate, localYCoordinate, m + 1);
 
-            strain.add(B.multiply(ub));
+            strain.add(B.multiply(um));
 
             B.release();
         }
 
-        ub.release();
+        um.release();
         return getPlanePropertyMatrix().multiply(strain);
     }
 
@@ -811,20 +845,7 @@ public abstract class Strip {
         return -Math.tan(2*getStripAngle())*(getIxx() - getIzz())/2.0;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  
     
     
     public void clone(Strip strip)
@@ -854,4 +875,5 @@ public abstract class Strip {
         }
     }
 
+    
 }

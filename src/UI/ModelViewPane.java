@@ -433,24 +433,24 @@ public class ModelViewPane {
             }
         });
 
-        box2D.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent event) {
-
-                
-                WritableImage img = box2D.snapshot(new SnapshotParameters(),null);
-                
-                FileChooser fileDialog = new FileChooser();
-                fileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
-                File file = fileDialog.showSaveDialog(null);
-
-                try {
-                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", file);
-                } catch (Exception s) {
-                }
-            }
-        });
+//        box2D.setOnMouseClicked(new EventHandler<MouseEvent>() {
+//
+//            @Override
+//            public void handle(MouseEvent event) {
+//
+//                
+//                WritableImage img = box2D.snapshot(new SnapshotParameters(),null);
+//                
+//                FileChooser fileDialog = new FileChooser();
+//                fileDialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
+//                File file = fileDialog.showSaveDialog(null);
+//
+//                try {
+//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", file);
+//                } catch (Exception s) {
+//                }
+//            }
+//        });
 
         box2D.setOnMousePressed(new EventHandler<MouseEvent>() {
 

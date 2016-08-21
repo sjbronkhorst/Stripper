@@ -242,7 +242,7 @@ public class Series_CC extends Series {
     }
 
     @Override
-    public double getYmIntegral(int m, double a) {
+    public double getYmIntegral(int m) {
 
         IterativeLegendreGaussIntegrator ilg = new IterativeLegendreGaussIntegrator(gausspoints, 0.98, 5);
         return ilg.integrate(2000, this.getFunction(m), 0, a);

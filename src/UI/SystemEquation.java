@@ -39,16 +39,7 @@ public class SystemEquation {
 
     public Vector[] fourierTermParameterContributions;
 
-    private double[] xData = new double[101];
-    private double[] yData = new double[101];
-
-    public double[] getxData() {
-        return xData;
-    }
-
-    public double[] getyData() {
-        return yData;
-    }
+    
 
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
 

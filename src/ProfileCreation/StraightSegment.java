@@ -36,21 +36,7 @@ public class StraightSegment extends Segment {
 
     }
     
-    public String toString()
-    {
-        String s = start.toString()+"\n";
-        
-        Node n = start;
-        while(n.next() != null)
-        {
-            
-            n = n.next();
-            s+= n.toString()+"\n";
-            
-        }
-        
-        return s;
-    }
+    
     
     public static void main (String [] args)
     {

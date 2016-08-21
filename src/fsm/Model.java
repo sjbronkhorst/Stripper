@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import linalg.Vector;
 import fsm.material.Material;
 import fsm.material.Material_Steel;
+import fsm.material.Material_Z_Li;
 import fsm.series.Series;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class Model implements Serializable {
 
-    private Material modelMaterial = new Material_Steel();
+    private Material modelMaterial = new Material_Z_Li();
     private double modelLength = 100;
     private int fourierTerms = 1;
     private Series fourierSeries = Series.getSerieslList().get(0);
@@ -229,7 +230,7 @@ public class Model implements Serializable {
         double sumAx = 0;
         double sumA = 0;
 
-        for (Strip strip : Defaults.getBaseModel().getStripList()) {
+        for (Strip strip : strips) {
             sumAx += strip.getCrossSectionalArea() * strip.getXBar();
             sumA += strip.getCrossSectionalArea();
 
@@ -242,7 +243,7 @@ public class Model implements Serializable {
         double sumAz = 0;
         double sumA = 0;
 
-        for (Strip strip : Defaults.getBaseModel().getStripList()) {
+        for (Strip strip : strips) {
             sumAz += strip.getCrossSectionalArea() * strip.getZBar();
             sumA += strip.getCrossSectionalArea();
 
@@ -270,18 +271,11 @@ public class Model implements Serializable {
         //I = sum(Ixx +Ad^2)
         double I = 0;
         double zbar = getCentroidZ();
-System.out.println("Cross section centroid z = " + zbar);
 
-        for (Strip s : strips) {
-            
-            System.out.println(s.toString() + "=========================");
-            System.out.println("strip centroid z = " + s.getZBar());
+
+        for (Strip s : strips) {           
             
             double d = zbar - s.getZBar();
-            
-            System.out.println("d = " + d);
-            System.out.println("Ixx = " + s.getIxx());
-            System.out.println("A = "+ s.getCrossSectionalArea());
 
             I = I + s.getIxx() + s.getCrossSectionalArea() * d * d;
         }
@@ -291,23 +285,15 @@ System.out.println("Cross section centroid z = " + zbar);
 
     public double getIzz() {
 
-        //I = sum(Ixx +Ad^2)
+        //I = sum(Izz +Ad^2)
         double I = 0;
         double xbar = getCentroidX();
         
-        System.out.println("Cross section centroid x = " + xbar);
 
         for (Strip s : strips) {
             
-            System.out.println(s.toString() + "=========================");
-            System.out.println("strip centroid x = " + s.getXBar());
-            
             double d = xbar - s.getXBar();
-            
-            System.out.println("d = " + d);
-            System.out.println("Izz = " + s.getIzz());
-            System.out.println("A = "+ s.getCrossSectionalArea());
-
+           
             I = I + s.getIzz() + s.getCrossSectionalArea() * d * d;
         }
 

@@ -20,21 +20,14 @@ import fsm.series.Series;
 public class Strip_SS extends Strip {
 
     public Strip_SS(Node node1, Node node2, Model model) {
-
-        setNode1(node1);
-        setNode2(node2);
-
-        this.model = model;
+super(node1, node2, model);
+       
 
     }
 
     public Strip_SS(Model model) {
 
-        hasNode1 = false;
-        hasNode2 = false;
-        this.node1Id.set(0);
-        this.node2Id.set(0);
-        this.model = model;
+       super(model);
 
     }
 
@@ -65,7 +58,7 @@ public class Strip_SS extends Strip {
 //        }
 //        this.model = model;
 //       }
-    public Matrix getBendingStiffnessMatrix(int m, int n) {
+    private Matrix getBendingStiffnessMatrix(int m, int n) {
 
         Matrix S = Matrix.getMatrix(4, 4);
         Material mat = model.getModelMaterial();
@@ -122,7 +115,7 @@ public class Strip_SS extends Strip {
         return S;
     }
 
-    public Matrix getMembraneStiffnessMatrix(int m, int n) {
+    private Matrix getMembraneStiffnessMatrix(int m, int n) {
 
         Matrix M = Matrix.getMatrix(4, 4);
         Material mat = model.getModelMaterial();

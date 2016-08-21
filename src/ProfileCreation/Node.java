@@ -49,6 +49,15 @@ public class Node {
     {
         return "n," + getX() + "," + getY();
     }
+    
+    public double distanceTo(Node n)
+    {
+        double dx = x-n.getX();
+        double dy = y-n.getY();
+        
+        return Math.sqrt(dx*dx + dy*dy);
+        
+    }
             
     
     

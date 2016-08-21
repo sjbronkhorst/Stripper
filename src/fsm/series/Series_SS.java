@@ -116,7 +116,7 @@ public class Series_SS extends Series{
     }
 
     @Override
-    public double getYmIntegral(int m, double a) {
+    public double getYmIntegral(int m) {
 
         double pi = Math.PI;
         return a / (pi * m) - (a * cos(pi * m)) / (pi * m);

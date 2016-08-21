@@ -32,9 +32,7 @@ public class Strip_General extends Strip {
 
     public Strip_General(Node node1, Node node2, Model model) {
 
-        setNode1(node1);
-        setNode2(node2);
-        this.model = model;
+        super(node1, node2, model);
        
     }
 
@@ -82,12 +80,7 @@ public class Strip_General extends Strip {
     }
 
     public Strip_General(Model model) {
-
-        hasNode1 = false;
-        hasNode2 = false;
-        this.node1Id.set(0);
-        this.node2Id.set(0);
-        this.model = model;
+super(model);
       
     }
 
